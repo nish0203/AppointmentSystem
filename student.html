@@ -5,7 +5,157 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Student Dashboard - Uni Bookings</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <style>
+    
+/* == Reset & Base == */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background: #f9fafb; color: #333; }
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
+
+/* == Login Page == */
+.login-page { display: flex; justify-content: center; align-items: center; height: 100vh; background: #eef2f5; }
+.login-card { background: #fff; border: 2px solid #333; padding: 32px; width: 300px; text-align: center; }
+.login-card h2 { margin-bottom: 24px; }
+.login-card label { display: block; text-align: left; margin-top: 16px; }
+.login-card input { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px; }
+.role-selection { margin-bottom: 16px; }
+.role-btn { margin: 0 8px; padding: 8px 16px; border: 2px solid #000; background: none; cursor: pointer; }
+.role-btn.active { background: #1E3A8A; color: #fff; }
+.submit-btn { margin-top: 24px; padding: 10px 20px; background: #10B981; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+.error-msg { display: none; color: #EF4444; margin-bottom: 12px; font-size: 0.9rem; }
+
+/* == Header & Layout == */
+header { background: #1E3A8A; color: #fff; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
+header .logo { font-size: 1.25rem; font-weight: bold; }
+header .top-nav a { color: #eef; }
+
+.container { display: flex; min-height: calc(100vh - 64px); }
+.sidebar { width: 200px; background: #fff; border-right: 1px solid #ddd; padding: 24px; }
+.sidebar ul li { margin-bottom: 12px; }
+.sidebar ul li a { color: #1E3A8A; font-weight: 500; }
+.sidebar ul li input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95rem; }
+.sidebar ul li button { margin-top: 8px; padding: 8px 16px; background: #1E3A8A; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+.search-error { color: #EF4444; margin-top: 8px; font-size: 0.9rem; }
+
+main { flex: 1; padding: 24px; }
+.card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+/* == Responsive == */
+@media (max-width: 768px) {
+  .container { flex-direction: column; }
+  .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #ddd; }
+}
+
+/* == Collapsible Cards == */
+.collapsible h3 {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
+
+.arrow {
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease, padding 0.5s ease;
+  padding: 0 0;
+}
+
+/* When expanded */
+.card.active .content {
+  max-height: 500px; /* Enough to show inside content */
+  padding: 10px 0;
+}
+
+.card.active .arrow {
+  transform: rotate(180deg);
+}
+
+.booking-dropdown {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.calendar-box {
+  width: 200px;
+  height: auto;
+  flex-shrink: 0; /* prevent calendar from shrinking */
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 122.5px;
+}
+.calendar-input {
+  width: 100%;
+  font-size: 16px;
+}
+
+
+.time-slots {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.time-slot {
+  margin-bottom: 12px;
+}
+
+.time-slot button {
+  margin-left: 8px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.time-book-btn {
+  border: 2px solid green;
+  color: green;
+  background: none;
+}
+
+.cancel-btn {
+  border: 2px solid #00f;
+  color: #00f;
+  background: none;
+  margin-left: 8px;
+}
+
+.appointment-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 200px; /* space between calendar and time slots */
+}
+
+
+
+
+
+.slot {
+  margin-bottom: 16px;
+}
+
+.book-btn, .cancel-btn {
+  margin-left: 8px;
+}
+
+
+  </style>
+
+
 </head>
 <body>
   <header>
@@ -29,26 +179,106 @@
     </aside>
     <main>
       <h2>Student Dashboard</h2>
-      <div class="card">
-        <h3>Announcements</h3>
-        <!-- announcements list here -->
+    
+      <div class="card collapsible">
+        <h3>Announcements <span class="arrow">&#9662;</span></h3>
+        <div class="content">
+          <!-- Announcements content goes here -->
+        </div>
       </div>
-      <div class="card">
-        Available slots list here
+    
+      <div class="card collapsible">
+        <h3>Available Appointment Slots <span class="arrow">&#9662;</span></h3>
+        <div class="content">
+          <br>
+          <h4 style="font-weight: bold;">Lecturer</h4>
+          <br>
+          <div class="asmabook">
+            <p>1&#41; Nurasma &nbsp;&nbsp;<button class="book-main-btn">Book</button></p>
+      
+            <div class="booking-dropdown" style="display: none;">
+              <div class="appointment-section">
+  
+                <!-- Calendar Section -->
+                <div class="calendar-box">
+                  <input type="text" id="appointment-date" class="calendar-input" placeholder="Select Date">
+                </div>
+              
+                <!-- Time Slots Section -->
+                <div class="time-slots">
+                  <h3 style="color: red;">Time available</h3>
+                  <div style="margin-bottom: 10px;">
+                    12pm - 2pm
+                    <button onclick="bookTime('12pm-2pm')" style="margin-left: 10px;">Book</button>
+                    <button id="cancel-12pm-2pm" onclick="cancelTime('12pm-2pm')" style="margin-left: 5px; display: none;">Cancel</button>
+                  </div>
+                  <div>
+                    3pm - 5pm
+                    <button onclick="bookTime('3pm-5pm')" style="margin-left: 10px;">Book</button>
+                    <button id="cancel-3pm-5pm" onclick="cancelTime('3pm-5pm')" style="margin-left: 5px; display: none;">Cancel</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br>
+          <div class="asmabook">
+            <p>2&#41; Rubiah &nbsp;&nbsp;<button class="book-main-btn">Book</button></p>
+          
+            <div class="booking-dropdown" style="display: none;">
+              <div class="appointment-section">
+          
+                <!-- Calendar Section -->
+                <div class="calendar-box">
+                  <input type="text" class="calendar-input appointment-date" placeholder="Select Date">
+                </div>
+          
+                <!-- Time Slots Section -->
+                <div class="time-slots">
+                  <h3 style="color: red;">Time available</h3>
+                  <div style="margin-bottom: 10px;">
+                    12pm - 2pm
+                    <button onclick="bookTime('rubiah-12pm-2pm')" style="margin-left: 10px;">Book</button>
+                    <button id="cancel-rubiah-12pm-2pm" onclick="cancelTime('rubiah-12pm-2pm')" style="margin-left: 5px; display: none;">Cancel</button>
+                  </div>
+                  <div>
+                    3pm - 5pm
+                    <button onclick="bookTime('rubiah-3pm-5pm')" style="margin-left: 10px;">Book</button>
+                    <button id="cancel-rubiah-3pm-5pm" onclick="cancelTime('rubiah-3pm-5pm')" style="margin-left: 5px; display: none;">Cancel</button>
+                  </div>
+                </div>
+          
+              </div>
+            </div>
+          </div>
+          
+        </div>
       </div>
-      <div class="card">
-        <h3>Booked Appointments</h3>
-        <!-- booked appointments list here -->
+      
+    
+      <div class="card collapsible">
+        <h3>Booked Appointments <span class="arrow">&#9662;</span></h3>
+        <div class="content">
+          <!-- Booked appointments content goes here -->
+        </div>
       </div>
-      <div class="card">
-        <h3>Booking History</h3>
-        <!-- booking history list here -->
+    
+      <div class="card collapsible">
+        <h3>Booking History <span class="arrow">&#9662;</span></h3>
+        <div class="content">
+          <!-- Booking history content goes here -->
+        </div>
       </div>
-      <div class="card">
-        <h3>Inquiry History</h3>
-        <!-- inquiry history list here -->
+    
+      <div class="card collapsible">
+        <h3>Inquiry History <span class="arrow">&#9662;</span></h3>
+        <div class="content">
+          <!-- Inquiry history content goes here -->
+        </div>
       </div>
+    
     </main>
+    
   </div>
   <script>
     document.getElementById('search-btn').addEventListener('click', function() {
@@ -61,37 +291,81 @@
         errorDiv.textContent = 'Lecturer not found';
       }
     });
+    
+  // Your existing search lecturer script...
+
+  // Collapsible functionality
+  document.querySelectorAll('.collapsible h3').forEach(h3 => {
+    h3.addEventListener('click', function() {
+      const card = this.parentElement;
+      card.classList.toggle('active');
+    });
+  });
+
+  
+  // Toggle the dropdown
+  document.querySelector('.book-main-btn').addEventListener('click', function () {
+    const dropdown = document.querySelector('.booking-dropdown');
+    dropdown.style.display = dropdown.style.display === 'none' ? 'flex' : 'none';
+  });
+
+  // Manage booking and cancel buttons
+  const bookButtons = document.querySelectorAll('.time-book-btn');
+  const cancelButtons = document.querySelectorAll('.cancel-btn');
+
+  bookButtons.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+      // Hide all cancel buttons first
+      cancelButtons.forEach(c => c.style.display = 'none');
+
+      // Show only the corresponding cancel button
+      cancelButtons[index].style.display = 'inline-block';
+    });
+  });
+
+  cancelButtons.forEach((cancelBtn, index) => {
+    cancelBtn.addEventListener('click', () => {
+      // Hide this cancel button
+      cancelBtn.style.display = 'none';
+    });
+  });
+  
+  function bookTime(slot) {
+  // First hide all cancel buttons
+  document.getElementById('cancel-12pm-2pm').style.display = 'none';
+  document.getElementById('cancel-3pm-5pm').style.display = 'none';
+
+  // Then show only the selected cancel button
+  var cancelButton = document.getElementById('cancel-' + slot);
+  if (cancelButton) {
+    cancelButton.style.display = 'inline-block';
+  } else {
+    console.log('Cancel button not found for slot:', slot);
+  }
+}
+
+function cancelTime(slot) {
+  // Hide the cancel button for that slot
+  var cancelButton = document.getElementById('cancel-' + slot);
+  if (cancelButton) {
+    cancelButton.style.display = 'none';
+  }
+}
+</script>
+
+<!-- Initialize Flatpickr -->
+<script>
+flatpickr("#appointment-date", {
+  inline: true,
+  minDate: "today",
+  dateFormat: "Y-m-d"
+});
+
+
+
   </script>
 </body>
 </html>
 
-<!-- File: lecturer-profile.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lecturer Profile – Nurasma' Binti Shamsuddin</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header>
-    <div class="logo">Uni Bookings</div>
-    <nav class="top-nav">
-      <a href="student.html">← Back to Dashboard</a>
-    </nav>
-  </header>
-  <div class="container">
-    <main>
-      <div class="card">
-        <h2>Nurasma' Binti Shamsuddin</h2>
-        <p><strong>Department:</strong> Computing and Informatics</p>
-        <p><strong>Email:</strong> nurasma.shamsuddin@example.com</p>
-        <p><strong>Office Hours:</strong> Mon &amp; Wed, 2–4 PM</p>
-      </div>
-    </main>
-  </div>
-</body>
-</html>
 
 
