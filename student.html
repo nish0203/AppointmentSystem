@@ -1,0 +1,97 @@
+<!-- File: student.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Dashboard - Uni Bookings</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="logo">Uni Bookings</div>
+    <nav class="top-nav">
+      <a href="login.html">Logout</a>
+    </nav>
+  </header>
+  <div class="container">
+    <aside class="sidebar">
+      <ul>
+        <li><a href="#">Submit Inquiry</a></li>
+        <li><a href="#">Your Profile</a></li>
+        <li><a href="#">Search Lecturer</a></li>
+        <li>
+          <input type="text" id="search-lecturer" placeholder="Enter lecturer name">
+          <button id="search-btn">Search</button>
+          <div id="search-error" class="search-error"></div>
+        </li>
+      </ul>
+    </aside>
+    <main>
+      <h2>Student Dashboard</h2>
+      <div class="card">
+        <h3>Announcements</h3>
+        <!-- announcements list here -->
+      </div>
+      <div class="card">
+        Available slots list here
+      </div>
+      <div class="card">
+        <h3>Booked Appointments</h3>
+        <!-- booked appointments list here -->
+      </div>
+      <div class="card">
+        <h3>Booking History</h3>
+        <!-- booking history list here -->
+      </div>
+      <div class="card">
+        <h3>Inquiry History</h3>
+        <!-- inquiry history list here -->
+      </div>
+    </main>
+  </div>
+  <script>
+    document.getElementById('search-btn').addEventListener('click', function() {
+      const keyword = document.getElementById('search-lecturer').value.trim().toLowerCase();
+      const errorDiv = document.getElementById('search-error');
+      errorDiv.textContent = '';
+      if (keyword.includes('asma')) {
+        window.location.href = 'lecturer-profile.html';
+      } else {
+        errorDiv.textContent = 'Lecturer not found';
+      }
+    });
+  </script>
+</body>
+</html>
+
+<!-- File: lecturer-profile.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecturer Profile – Nurasma' Binti Shamsuddin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="logo">Uni Bookings</div>
+    <nav class="top-nav">
+      <a href="student.html">← Back to Dashboard</a>
+    </nav>
+  </header>
+  <div class="container">
+    <main>
+      <div class="card">
+        <h2>Nurasma' Binti Shamsuddin</h2>
+        <p><strong>Department:</strong> Computing and Informatics</p>
+        <p><strong>Email:</strong> nurasma.shamsuddin@example.com</p>
+        <p><strong>Office Hours:</strong> Mon &amp; Wed, 2–4 PM</p>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
+
+
