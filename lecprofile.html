@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecturer Profile - Ms. Nurasma'</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9fafb;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .profile-card {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 700px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .profile-header {
+      text-align: center;
+    }
+
+    .profile-pic {
+      width: 120px;
+      height: 120px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid #555;
+      margin-bottom: 15px;
+    }
+
+    h2 {
+      margin: 10px 0;
+      color: #1E3A8A;
+    }
+
+    .section {
+      margin-top: 20px;
+    }
+
+    .section h4 {
+      margin-bottom: 8px;
+    }
+
+    .section p {
+      margin: 4px 0;
+      color: #555;
+      word-wrap: break-word;
+    }
+
+    .student-feedback {
+      margin-top: 20px;
+      background: #f3f4f6;
+      padding: 10px;
+      border-radius: 5px;
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    .feedback-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .feedback-item:last-child {
+      border-bottom: none;
+    }
+
+    .feedback-text {
+      flex: 1;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .stars {
+      color: #facc15;
+      font-size: 1rem;
+      margin-left: 10px;
+    }
+
+    .feedback-buttons button {
+      margin-left: 5px;
+      padding: 4px 8px;
+      font-size: 0.8rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .edit-btn {
+      background-color: #3b82f6;
+      color: white;
+    }
+
+    .delete-btn {
+      background-color: #ef4444;
+      color: white;
+    }
+
+    input.edit-input {
+      width: 70%;
+      padding: 4px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="profile-card">
+    <div class="profile-header">
+      <img src="https://static-00.iconduck.com/assets.00/profile-user-icon-2048x2048-m41rxkoe.png" alt="Profile Picture" class="profile-pic">
+      <h2>Ms. Nurasma' Binti Shamsuddin</h2>
+    </div>
+
+    <br>
+
+    <div class="section">
+      <h4>Department</h4>
+      <p>Computing and Informatics</p>
+    </div>
+
+    <div class="section">
+      <h4>Email</h4>
+      <p>nurasma.shamsuddin@example.com</p>
+    </div>
+
+    <div class="section">
+      <h4>Office Hours</h4>
+      <p>Mon & Friday, 8AM – 6PM</p>
+    </div>
+
+    <div class="section">
+      <h4>Contact Phone</h4>
+      <p>03-83125840</p>
+    </div>
+
+    <br>
+
+    <div class="section student-feedback">
+      <h4>Student Feedback</h4>
+      <div class="feedback-item">
+        <div class="feedback-text">
+          "Very helpful and explains concepts clearly." <span class="stars">⭐⭐⭐⭐⭐ (5/5)</span>
+        </div>
+        <div class="feedback-buttons">
+          <button class="edit-btn" onclick="editFeedback(this)">Edit</button>
+          <button class="delete-btn" onclick="deleteFeedback(this)">Delete</button>
+        </div>
+      </div>
+
+      <div class="feedback-item">
+        <div class="feedback-text">
+          "Approachable and patient during consultations." <span class="stars">⭐⭐⭐⭐☆ (4/5)</span>
+        </div>
+        <div class="feedback-buttons">
+          <button class="edit-btn" onclick="editFeedback(this)">Edit</button>
+          <button class="delete-btn" onclick="deleteFeedback(this)">Delete</button>
+        </div>
+      </div>
+
+      <div class="feedback-item">
+        <div class="feedback-text">
+          "Gives useful feedback on assignments." <span class="stars">⭐⭐⭐⭐☆ (4/5)</span>
+        </div>
+        <div class="feedback-buttons">
+          <button class="edit-btn" onclick="editFeedback(this)">Edit</button>
+          <button class="delete-btn" onclick="deleteFeedback(this)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function deleteFeedback(button) {
+      const item = button.closest('.feedback-item');
+      item.remove();
+    }
+
+    function editFeedback(button) {
+      const item = button.closest('.feedback-item');
+      const feedbackTextDiv = item.querySelector('.feedback-text');
+      const currentText = feedbackTextDiv.textContent.trim();
+      const ratingMatch = currentText.match(/\⭐+.*\)/);
+      const commentOnly = ratingMatch ? currentText.replace(ratingMatch[0], '').trim() : currentText;
+
+      feedbackTextDiv.innerHTML = `
+        <input type="text" class="edit-input" value="${commentOnly}">
+        <span class="stars">${ratingMatch ? ratingMatch[0] : ''}</span>
+      `;
+      
+      button.textContent = 'Save';
+      button.onclick = function() {
+        const newComment = item.querySelector('.edit-input').value;
+        feedbackTextDiv.innerHTML = `"${newComment}" <span class="stars">${ratingMatch ? ratingMatch[0] : ''}</span>`;
+        button.textContent = 'Edit';
+        button.onclick = function() { editFeedback(button); };
+      };
+    }
+  </script>
+
+</body>
+</html>
