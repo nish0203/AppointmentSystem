@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Student Dashboard - Uni Bookings</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <style>
     
@@ -203,17 +204,17 @@ main { flex: 1; padding: 24px; }
                 <div class="time-slots">
                   <h3 style="color: red;">Time available</h3>
                   <div style="margin-bottom: 10px;">
-                    9am - 11am
+                    8am - 10am
                     <button onclick="bookTime('8am-10am')" style="margin-left: 10px;">Book</button>
                     <button id="cancel-8am-10am" onclick="cancelTime('8am-10am')" style="margin-left: 5px; display: none;">Cancel</button>
                   </div>
                   <div style="margin-bottom: 10px;">
-                    12pm - 2pm
+                    10am - 12pm
                     <button onclick="bookTime('10am-12pm')" style="margin-left: 10px;">Book</button>
                     <button id="cancel-10am-12pm" onclick="cancelTime('10am-12pm')" style="margin-left: 5px; display: none;">Cancel</button>
                   </div>
                   <div style="margin-bottom: 10px;">
-                    3pm - 5pm
+                    4pm - 6pm
                     <button onclick="bookTime('4pm-6pm')" style="margin-left: 10px;">Book</button>
                     <button id="cancel-4pm-6pm" onclick="cancelTime('4pm-6pm')" style="margin-left: 5px; display: none;">Cancel</button>
                   </div>
