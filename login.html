@@ -176,9 +176,12 @@
         }
 
         // Numeric ID validation
-        if (!/^[0-9]+$/.test(idValue)) return showError('ID must be numeric');
-        // Exact format check
-        if (idValue !== '1231201369') return showError('ID must be exactly 1231201369');
+        if (!/^[0-9]+$/.test(idValue)) 
+        return showError('ID must be numeric');
+      
+        // Length check
+        if (idValue.length !== 10) 
+        return showError('ID must be exactly 10 digits long');
 
         // Redirect based on role
         window.location.href = selectedRole + '.html';
