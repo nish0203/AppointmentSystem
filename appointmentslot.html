@@ -7,7 +7,7 @@
   <style>
     body { font-family: Arial, sans-serif; background: #f9fafb; margin: 0; padding: 20px; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
-    h1 { margin: 0; }
+    h2 { margin: 0; }
     #searchInput { padding: 8px 12px; width: 250px; border-radius: 20px; border: 1px solid #ccc; transition: 0.3s; }
     #searchInput:focus { outline: none; border-color: #1E3A8A; box-shadow: 0 0 5px rgba(30, 58, 138, 0.5); }
 
@@ -38,9 +38,9 @@
 <body>
 
 <div class="header">
-    <h1>Appointment Slots</h1>
+    <h2>Appointment Slots</h2>
     <div class="search-container">
-      <input type="text" id="searchInput" placeholder="🔍 Search lecturer..." oninput="searchLecturers()">
+      <input type="text" id="searchInput" placeholder="Search lecturer..." oninput="searchLecturers()">
     </div>
 </div>
 
@@ -83,12 +83,14 @@
         <tr>
           <th>No.</th>
           <th>Date</th>
-          <th>Time</th>
+          <th>Start</th>
+          <th>End</th>
           <th>Action</th>
         </tr>
       </thead>
       <tbody id="slotTable"></tbody>
     </table>
+    
 
     <div class="bottom-buttons">
       <button class="add-btn" onclick="addSlot()">Add</button>
@@ -100,42 +102,31 @@
   let currentLecturer = '';
   let editIndex = -1;
 
+  // slots now hold { date: 'YYYY-MM-DD', time: 'any text' }
   let slots = {
-    "Nurasma' Binti Shamsuddin": [
-      { date: '2025-05-02', time: '4-6' },
-      { date: '2025-05-05', time: '10-12' },
-      { date: '2025-05-05', time: '2-4' }
-    ],
-    "Rubiah Binti Mohd Yunus": [],
-    "Ruzanna Binti Abdullah": []
-  };
+  "Nurasma' Binti Shamsuddin": [
+    { date: '2025-05-02', start: '16:00', end: '18:00' },
+    { date: '2025-05-05', start: '10:00', end: '12:00' },
+    { date: '2025-05-05', start: '14:00', end: '16:00' }
+  ],
+  "Rubiah Binti Mohd Yunus": [],
+  "Ruzanna Binti Abdullah": []
+};
 
-  const timeSlots = [
-    { label: '8:00 AM - 10:00 AM', value: '8-10' },
-    { label: '10:00 AM - 12:00 PM', value: '10-12' },
-    { label: '12:00 PM - 2:00 PM', value: '12-2' },
-    { label: '2:00 PM - 4:00 PM', value: '2-4' },
-    { label: '4:00 PM - 6:00 PM', value: '4-6' },
-    { label: '6:00 PM - 8:00 PM', value: '6-8' },
-  ];
-
-  function openModal(lecturerName) {
+function openModal(lecturerName) {
     currentLecturer = lecturerName;
     editIndex = -1;
     renderSlots();
     document.getElementById('modalTitle').textContent = lecturerName;
     document.getElementById('modal').style.display = 'flex';
   }
-
   function closeModal() {
     document.getElementById('modal').style.display = 'none';
   }
-
   function formatDate(dateStr) {
-    const [year, month, day] = dateStr.split('-');
-    return `${day}/${month}/${year}`;
+    const [y,m,d] = dateStr.split('-');
+    return `${d}/${m}/${y}`;
   }
-
   function getTodayMY() {
     const now = new Date();
     now.setHours(now.getHours() + 8);
@@ -147,62 +138,74 @@
     table.innerHTML = '';
     const today = getTodayMY();
 
-    slots[currentLecturer].forEach((slot, index) => {
-      const isEditing = index === editIndex;
+    slots[currentLecturer].forEach((slot, idx) => {
+      const editing = idx === editIndex;
       table.innerHTML += `
         <tr>
-          <td>${index + 1}</td>
-          <td>${isEditing ? `<input type="date" min="${today}" value="${slot.date}" onchange="updateSlot(${index}, 'date', this.value)">` : formatDate(slot.date)}</td>
-          <td>${isEditing ? `
-            <select onchange="updateSlot(${index}, 'time', this.value)">
-              ${timeSlots.map(option => 
-                `<option value="${option.value}" ${slot.time === option.value ? 'selected' : ''}>${option.label}</option>`
-              ).join('')}
-            </select>` : timeSlots.find(t => t.value === slot.time)?.label || ''}
+          <td>${idx + 1}</td>
+          <td>
+            ${editing
+              ? `<input type="date" min="${today}" value="${slot.date}"
+                        onchange="updateSlot(${idx}, 'date', this.value)">`
+              : formatDate(slot.date)}
           </td>
           <td>
-            <button class="edit-btn" onclick="toggleEdit(${index})">${isEditing ? 'Done' : 'Edit'}</button>
-            <button class="delete-btn" onclick="deleteSlot(${index})">Delete</button>
+            ${editing
+              ? `<input type="time" value="${slot.start}"
+                        onchange="updateSlot(${idx}, 'start', this.value)">`
+              : slot.start}
+          </td>
+          <td>
+            ${editing
+              ? `<input type="time" value="${slot.end}"
+                        onchange="updateSlot(${idx}, 'end', this.value)">`
+              : slot.end}
+          </td>
+          <td>
+            <button class="edit-btn" onclick="toggleEdit(${idx})">
+              ${editing ? 'Done' : 'Edit'}
+            </button>
+            <button class="delete-btn" onclick="deleteSlot(${idx})">
+              Delete
+            </button>
           </td>
         </tr>
       `;
     });
   }
 
-  function toggleEdit(index) {
-    if (editIndex === index) {
-      editIndex = -1;
-    } else {
-      editIndex = index;
-    }
+  function toggleEdit(i) {
+    editIndex = (editIndex === i ? -1 : i);
     renderSlots();
   }
 
-  function updateSlot(index, field, value) {
-    slots[currentLecturer][index][field] = value;
+  function updateSlot(i, field, val) {
+    slots[currentLecturer][i][field] = val;
   }
 
-  function deleteSlot(index) {
-    slots[currentLecturer].splice(index, 1);
+  function deleteSlot(i) {
+    slots[currentLecturer].splice(i, 1);
     renderSlots();
   }
 
   function addSlot() {
-    const newIndex = slots[currentLecturer].length;
-    slots[currentLecturer].push({ date: getTodayMY(), time: '8-10' });
-    editIndex = newIndex;
+    slots[currentLecturer].push({
+      date: getTodayMY(),
+      start: '08:00',
+      end: '10:00'
+    });
+    editIndex = slots[currentLecturer].length - 1;
     renderSlots();
   }
 
   function searchLecturers() {
-    const input = document.getElementById('searchInput').value.toLowerCase();
-    const items = document.querySelectorAll('.slot-item');
-    items.forEach(item => {
-      const lecturerName = item.querySelector('.slot-lecturer').textContent.toLowerCase();
-      item.style.display = lecturerName.includes(input) ? 'flex' : 'none';
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('.slot-item').forEach(item => {
+      item.style.display =
+        item.querySelector('.slot-lecturer').textContent.toLowerCase().includes(q)
+          ? 'flex' : 'none';
     });
   }
 </script>
-
 </body>
 </html>

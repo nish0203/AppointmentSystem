@@ -9,11 +9,34 @@
       background-color: #f6fafa;
       padding: 20px;
     }
-    h2 {
+
+    /* header with title + search */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .header h2 {
+      margin: 0;
       color: #000;
     }
-    /* back-to-home button */
+    #searchInput {
+      padding: 8px 12px;
+      width: 250px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      transition: 0.3s;
+      margin: 0;
+    }
+    #searchInput:focus {
+      outline: none;
+      border-color: #1E3A8A;
+      box-shadow: 0 0 5px rgba(30, 58, 138, 0.5);
+    }
 
+    /* table */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -28,6 +51,8 @@
       background-color: #333;
       color: white;
     }
+
+    /* buttons */
     .action-button {
       background-color: #3b57c0;
       color: white;
@@ -47,6 +72,8 @@
     .add-button:hover {
       background-color: #218838;
     }
+
+    /* modal backdrop */
     .modal {
       display: none;
       position: fixed;
@@ -55,6 +82,8 @@
       width: 100%; height: 100%;
       background-color: rgba(0, 0, 0, 0.4);
     }
+
+    /* modal content */
     .modal-content {
       background-color: #fff;
       margin: 10% auto;
@@ -63,19 +92,20 @@
       width: 400px;
       border-radius: 8px;
     }
+    .modal-content input[type="text"],
+    .modal-content input[type="email"] {
+      width: 100%;
+      padding: 8px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
     .close {
       float: right;
       font-size: 20px;
       font-weight: bold;
       cursor: pointer;
-    }
-    input[type="text"], input[type="email"] {
-      width: 100%;
-      padding: 8px;
-      margin-top: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
     }
     .submit-btn {
       background-color: #3b57c0;
@@ -89,6 +119,7 @@
       background-color: #2f45a0;
     }
 
+    /* back-to-home button */
     #backBtn {
       background-color: #00aaff;
       color: white;
@@ -97,10 +128,10 @@
       font-size: 1rem;
       cursor: pointer;
       border-radius: 4px;
-      }
-
+      margin-bottom: 10px;
+    }
     #backBtn:hover {
-        background-color: #14214e;
+      background-color: #14214e;
     }
   </style>
 </head>
@@ -108,7 +139,11 @@
 
   <!-- Fixed Back button -->
   <button id="backBtn">Go back to homepage</button>
-  <h2>Manage Student</h2>
+
+  <div class="header">
+    <h2>Manage Student</h2>
+    <input type="text" id="searchInput" placeholder="Search name..." oninput="searchStudents()">
+  </div>
 
   <table id="studentTable">
     <thead>
@@ -126,7 +161,7 @@
       <tr>
         <td>1</td>
         <td>1231201369</td>
-        <td>MUHAMMAD DANISH BIN MOHD</td>
+        <td>MUHAMMAD DANISH BIN MOHD HARIS GOH</td>
         <td>1231201369@student.mmu.edu.my</td>
         <td>nish_1369</td>
         <td>AD001</td>
@@ -174,7 +209,6 @@
         <input type="text" id="studentName" placeholder="Student Name" required>
         <input type="email" id="studentEmail" placeholder="Student Email" required>
         <input type="text" id="studentPassword" placeholder="Student Password" required>
-        <!-- locked to AD001 -->
         <input type="text" id="studentCreatedBy" value="AD001" readonly>
         <button type="submit" class="submit-btn">Save</button>
       </form>
@@ -185,7 +219,7 @@
     // back button logic
     document.getElementById('backBtn').addEventListener('click', () => {
       if (confirm('Are you sure you want to go back to the homepage?')) {
-        window.location.href = 'admin.html'; // adjust to your actual homepage filename
+        window.location.href = 'admin.html';
       }
     });
 
@@ -204,11 +238,10 @@
 
     function submitStudent(event) {
       event.preventDefault();
-      const id        = document.getElementById("studentId").value;
-      const name      = document.getElementById("studentName").value;
-      const email     = document.getElementById("studentEmail").value;
-      const password  = document.getElementById("studentPassword").value;
-      // force AD001 every time
+      const id       = document.getElementById("studentId").value;
+      const name     = document.getElementById("studentName").value;
+      const email    = document.getElementById("studentEmail").value;
+      const password = document.getElementById("studentPassword").value;
       const createdBy = 'AD001';
 
       const tbody = document.querySelector("#studentTable tbody");
@@ -239,14 +272,11 @@
 
     function editStudent(button) {
       editTargetRow = button.closest("tr");
-
-      document.getElementById("studentId").value        = editTargetRow.cells[1].textContent;
-      document.getElementById("studentName").value      = editTargetRow.cells[2].textContent;
-      document.getElementById("studentEmail").value     = editTargetRow.cells[3].textContent;
-      document.getElementById("studentPassword").value  = editTargetRow.cells[4].textContent;
-      // always keep AD001
-      document.getElementById("studentCreatedBy").value = 'AD001';
-
+      document.getElementById("studentId").value       = editTargetRow.cells[1].textContent;
+      document.getElementById("studentName").value     = editTargetRow.cells[2].textContent;
+      document.getElementById("studentEmail").value    = editTargetRow.cells[3].textContent;
+      document.getElementById("studentPassword").value = editTargetRow.cells[4].textContent;
+      document.getElementById("studentCreatedBy").value= 'AD001';
       openModal(true);
     }
 
@@ -258,6 +288,15 @@
     function renumberRows() {
       document.querySelectorAll("#studentTable tbody tr").forEach((row, i) => {
         row.cells[0].textContent = i + 1;
+      });
+    }
+
+    // live search by student name
+    function searchStudents() {
+      const filter = document.getElementById('searchInput').value.toLowerCase();
+      document.querySelectorAll('#studentTable tbody tr').forEach(row => {
+        const name = row.cells[2].textContent.toLowerCase();
+        row.style.display = name.includes(filter) ? '' : 'none';
       });
     }
 

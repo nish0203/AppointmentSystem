@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Manage Lecturer</title>
   <style>
     body {
@@ -10,8 +10,29 @@
       background-color: #f6fafa;
       padding: 20px;
     }
+    /* header with title + search */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
     h2 {
+      margin: 0;
       color: #000;
+    }
+    #searchInput {
+      padding: 8px 12px;
+      width: 250px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      transition: 0.3s;
+    }
+    #searchInput:focus {
+      outline: none;
+      border-color: #1E3A8A;
+      box-shadow: 0 0 5px rgba(30, 58, 138, 0.5);
     }
     table {
       width: 100%;
@@ -68,7 +89,8 @@
       font-weight: bold;
       cursor: pointer;
     }
-    input[type="text"], input[type="email"] {
+    input[type="text"],
+    input[type="email"] {
       width: 100%;
       padding: 8px;
       margin-top: 10px;
@@ -87,8 +109,6 @@
     .submit-btn:hover {
       background-color: #2f45a0;
     }
-
-    /* back-to-home button */
     #backBtn {
       background-color: #00aaff;
       color: white;
@@ -97,187 +117,188 @@
       font-size: 1rem;
       cursor: pointer;
       border-radius: 4px;
-      }
-
-    #backBtn:hover {
-        background-color: #14214e;
+      margin-bottom: 10px;
     }
-
+    #backBtn:hover {
+      background-color: #14214e;
+    }
   </style>
 </head>
 <body>
-<button id="backBtn">Go back to homepage</button>
-<h2>Manage Lecturer</h2>
 
-<table id="lecturerTable">
-  <thead>
-    <tr>
-      <th>No.</th>
-      <th>LECTURER_ID</th>
-      <th>LECTURER_NAME</th>
-      <th>LECTURER_EMAIL</th>
-      <th>LECTURER_PASSWORD</th>
-      <th>LECTURER_CONTACT</th>
-      <th>CREATED_BY</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>1</td>
-      <td>2424244444</td>
-      <td>NURASMA' BINTI SHAMSUDDIN</td>
-      <td>nurasma.shamsuddin@mmu.edu.my</td>
-      <td>asma_520</td>
-      <td>03-83125840</td>
-      <td>AD001</td>
-      <td>
-        <button class="action-button" onclick="editLecturer(this)">Edit</button>
-        <button class="action-button" onclick="deleteRow(this)">Delete</button>
-      </td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td>5151511111</td>
-      <td>RUBIAH BINTI MOHD YUNUS</td>
-      <td>rubiah.yunus@mmu.edu.my</td>
-      <td>ruby_789</td>
-      <td>03-12344566</td>
-      <td>AD001</td>
-      <td>
-        <button class="action-button" onclick="editLecturer(this)">Edit</button>
-        <button class="action-button" onclick="deleteRow(this)">Delete</button>
-      </td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td>6767688888</td>
-      <td>RUZANNA BINTI ABDULLAH</td>
-      <td>ruzanna.abdullah@mmu.edu.my</td>
-      <td>zanna_20</td>
-      <td>03-22658072</td>
-      <td>AD001</td>
-      <td>
-        <button class="action-button" onclick="editLecturer(this)">Edit</button>
-        <button class="action-button" onclick="deleteRow(this)">Delete</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+  <button id="backBtn">Go back to homepage</button>
 
-<button class="action-button add-button" onclick="openModal()">Add Lecturer</button>
-
-<!-- Modal -->
-<div id="addModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <h3 id="modalTitle">Add New Lecturer</h3>
-    <form id="lecturerForm" onsubmit="submitLecturer(event)">
-      <input type="text" id="lecturerId" placeholder="Lecturer ID" required>
-      <input type="text" id="lecturerName" placeholder="Lecturer Name" required>
-      <input type="email" id="lecturerEmail" placeholder="Lecturer Email" required>
-      <input type="text" id="lecturerPassword" placeholder="Lecturer Password" required>
-      <input type="text" id="lecturerContact" placeholder="Lecturer Contact" required>
-      <input type="text" id="createdBy" value="ADM001" readonly>
-      <button type="submit" class="submit-btn">Save</button>
-    </form>
+  <div class="header">
+    <h2>Manage Lecturer</h2>
+    <input type="text" id="searchInput" placeholder="Search name..." oninput="searchLecturers()">
   </div>
-</div>
 
-<script>
-  let editTargetRow = null;
+  <table id="lecturerTable">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>LECTURER_ID</th>
+        <th>LECTURER_NAME</th>
+        <th>LECTURER_EMAIL</th>
+        <th>LECTURER_PASSWORD</th>
+        <th>LECTURER_CONTACT</th>
+        <th>CREATED_BY</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>2424244444</td>
+        <td>NURASMA' BINTI SHAMSUDDIN</td>
+        <td>nurasma.shamsuddin@mmu.edu.my</td>
+        <td>asma_520</td>
+        <td>03-83125840</td>
+        <td>AD001</td>
+        <td>
+          <button class="action-button" onclick="editLecturer(this)">Edit</button>
+          <button class="action-button" onclick="deleteRow(this)">Delete</button>
+        </td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>5151511111</td>
+        <td>RUBIAH BINTI MOHD YUNUS</td>
+        <td>rubiah.yunus@mmu.edu.my</td>
+        <td>ruby_789</td>
+        <td>03-12344566</td>
+        <td>AD001</td>
+        <td>
+          <button class="action-button" onclick="editLecturer(this)">Edit</button>
+          <button class="action-button" onclick="deleteRow(this)">Delete</button>
+        </td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>6767688888</td>
+        <td>RUZANNA BINTI ABDULLAH</td>
+        <td>ruzanna.abdullah@mmu.edu.my</td>
+        <td>zanna_20</td>
+        <td>03-22658072</td>
+        <td>AD001</td>
+        <td>
+          <button class="action-button" onclick="editLecturer(this)">Edit</button>
+          <button class="action-button" onclick="deleteRow(this)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-  function openModal(edit = false) {
-    document.getElementById("addModal").style.display = "block";
-    document.getElementById("modalTitle").textContent = edit ? "Edit Lecturer" : "Add New Lecturer";
-  }
+  <button class="action-button add-button" onclick="openModal()">Add Lecturer</button>
 
-  function closeModal() {
-    document.getElementById("addModal").style.display = "none";
-    document.getElementById("lecturerForm").reset();
-    editTargetRow = null;
-  }
+  <!-- Modal -->
+  <div id="addModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h3 id="modalTitle">Add New Lecturer</h3>
+      <form id="lecturerForm" onsubmit="submitLecturer(event)">
+        <input type="text" id="lecturerId" placeholder="Lecturer ID" required>
+        <input type="text" id="lecturerName" placeholder="Lecturer Name" required>
+        <input type="email" id="lecturerEmail" placeholder="Lecturer Email" required>
+        <input type="text" id="lecturerPassword" placeholder="Lecturer Password" required>
+        <input type="text" id="lecturerContact" placeholder="Lecturer Contact" required>
+        <input type="text" id="createdBy" value="ADM001" readonly>
+        <button type="submit" class="submit-btn">Save</button>
+      </form>
+    </div>
+  </div>
 
-  function submitLecturer(event) {
-  event.preventDefault();
-  const id       = document.getElementById("lecturerId").value;
-  const name     = document.getElementById("lecturerName").value;
-  const email    = document.getElementById("lecturerEmail").value;
-  const password = document.getElementById("lecturerPassword").value;
-  const contact  = document.getElementById("lecturerContact").value;
-  // force AD001 every time:
-  const createdBy = 'AD001';
-
-  const table = document.getElementById("lecturerTable").getElementsByTagName("tbody")[0];
-
-  if (editTargetRow) {
-    editTargetRow.cells[1].textContent = id;
-    editTargetRow.cells[2].textContent = name;
-    editTargetRow.cells[3].textContent = email;
-    editTargetRow.cells[4].textContent = password;
-    editTargetRow.cells[5].textContent = contact;
-    editTargetRow.cells[6].textContent = createdBy;
-  } else {
-    const newRow = table.insertRow();
-      const cells = [];
-      for (let i = 0; i < 8; i++) {
-        cells[i] = newRow.insertCell(i);
+  <script>
+    // Back button
+    document.getElementById('backBtn').addEventListener('click', () => {
+      if (confirm('Are you sure you want to go back to the homepage?')) {
+        window.location.href = 'admin.html';
       }
-      cells[1].textContent = id;
-      cells[2].textContent = name;
-      cells[3].textContent = email;
-      cells[4].textContent = password;
-      cells[5].textContent = contact;
-      cells[6].textContent = createdBy;
-      cells[7].innerHTML = `
-        <button class="action-button" onclick="editLecturer(this)">Edit</button>
-        <button class="action-button" onclick="deleteRow(this)">Delete</button>
-      `;
-    }
-    renumberRows();
-    closeModal();
-  }
-
-  function editLecturer(button) {
-    editTargetRow = button.closest("tr");
-
-    document.getElementById("lecturerId").value = editTargetRow.cells[1].textContent;
-    document.getElementById("lecturerName").value = editTargetRow.cells[2].textContent;
-    document.getElementById("lecturerEmail").value = editTargetRow.cells[3].textContent;
-    document.getElementById("lecturerPassword").value = editTargetRow.cells[4].textContent;
-    document.getElementById("lecturerContact").value = editTargetRow.cells[5].textContent;
-    document.getElementById("createdBy").value = editTargetRow.cells[6].textContent;
-
-    openModal(true);
-  }
-
-  function deleteRow(button) {
-    const row = button.closest("tr");
-    row.remove();
-    renumberRows();
-  }
-
-  function renumberRows() {
-    const rows = document.querySelectorAll("#lecturerTable tbody tr");
-    rows.forEach((row, index) => {
-      row.cells[0].textContent = index + 1;
     });
-  }
 
-  window.onclick = function(event) {
-    if (event.target === document.getElementById("addModal")) {
+    let editTargetRow = null;
+
+    function openModal(edit = false) {
+      document.getElementById("addModal").style.display = "block";
+      document.getElementById("modalTitle").textContent = edit ? "Edit Lecturer" : "Add New Lecturer";
+    }
+
+    function closeModal() {
+      document.getElementById("addModal").style.display = "none";
+      document.getElementById("lecturerForm").reset();
+      editTargetRow = null;
+    }
+
+    function submitLecturer(event) {
+      event.preventDefault();
+      const id      = document.getElementById("lecturerId").value;
+      const name    = document.getElementById("lecturerName").value;
+      const email   = document.getElementById("lecturerEmail").value;
+      const pwd     = document.getElementById("lecturerPassword").value;
+      const contact = document.getElementById("lecturerContact").value;
+      const createdBy = 'AD001';
+
+      const tbody = document.querySelector("#lecturerTable tbody");
+      if (editTargetRow) {
+        editTargetRow.cells[1].textContent = id;
+        editTargetRow.cells[2].textContent = name;
+        editTargetRow.cells[3].textContent = email;
+        editTargetRow.cells[4].textContent = pwd;
+        editTargetRow.cells[5].textContent = contact;
+        editTargetRow.cells[6].textContent = createdBy;
+      } else {
+        const row = tbody.insertRow();
+        row.insertCell(0).textContent = tbody.rows.length;
+        row.insertCell(1).textContent = id;
+        row.insertCell(2).textContent = name;
+        row.insertCell(3).textContent = email;
+        row.insertCell(4).textContent = pwd;
+        row.insertCell(5).textContent = contact;
+        row.insertCell(6).textContent = createdBy;
+        row.insertCell(7).innerHTML = `
+          <button class="action-button" onclick="editLecturer(this)">Edit</button>
+          <button class="action-button" onclick="deleteRow(this)">Delete</button>
+        `;
+      }
+      renumberRows();
       closeModal();
     }
-  }
 
-  document.getElementById('backBtn')
-    .addEventListener('click', () => {
-      if (confirm('Are you sure you want to go back to the homepage?')) {
-        window.location.href = 'admin.html';  // or whatever your homepage filename is
-      }
-    });
+    function editLecturer(btn) {
+      editTargetRow = btn.closest("tr");
+      document.getElementById("lecturerId").value      = editTargetRow.cells[1].textContent;
+      document.getElementById("lecturerName").value    = editTargetRow.cells[2].textContent;
+      document.getElementById("lecturerEmail").value   = editTargetRow.cells[3].textContent;
+      document.getElementById("lecturerPassword").value= editTargetRow.cells[4].textContent;
+      document.getElementById("lecturerContact").value = editTargetRow.cells[5].textContent;
+      document.getElementById("createdBy").value       = editTargetRow.cells[6].textContent;
+      openModal(true);
+    }
 
-</script>
+    function deleteRow(btn) {
+      btn.closest("tr").remove();
+      renumberRows();
+    }
+
+    function renumberRows() {
+      document.querySelectorAll("#lecturerTable tbody tr").forEach((row, i) => {
+        row.cells[0].textContent = i + 1;
+      });
+    }
+
+    // Filter function
+    function searchLecturers() {
+      const filter = document.getElementById('searchInput').value.toLowerCase();
+      document.querySelectorAll('#lecturerTable tbody tr').forEach(row => {
+        const name = row.cells[2].textContent.toLowerCase();
+        row.style.display = name.includes(filter) ? '' : 'none';
+      });
+    }
+
+    window.onclick = e => {
+      if (e.target === document.getElementById("addModal")) closeModal();
+    }
+  </script>
 
 </body>
 </html>

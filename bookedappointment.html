@@ -7,7 +7,7 @@
   <style>
     body { font-family: Arial, sans-serif; background: #f9fafb; margin: 0; padding: 20px; }
     .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
-    h1 { margin: 0; }
+    h2 { margin: 0; }
     #searchInput { padding: 8px 12px; width: 250px; border-radius: 20px; border: 1px solid #ccc; transition: 0.3s; }
     #searchInput:focus { outline: none; border-color: #1E3A8A; box-shadow: 0 0 5px rgba(30, 58, 138, 0.5); }
 
@@ -17,7 +17,7 @@
     .slot-item:nth-child(even) { background-color: #f3f4f6; }
     .slot-no { width: 50px; }
     .slot-lecturer { flex: 1; }
-    .slot-action { width: 160px; text-align: center; }
+    .slot-action { width: 200px; text-align: center; }
     .manage-btn, .edit-btn, .delete-btn, .add-btn { padding: 6px 12px; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 5px; }
     .manage-btn, .edit-btn, .delete-btn { background-color: #1E3A8A; }
     .add-btn { background-color: #28a745; }
@@ -32,16 +32,16 @@
     th { background-color: rgb(90, 90, 90); color: white; }
     tr:nth-child(even) { background-color: #f3f4f6; }
     .bottom-buttons { text-align: left; margin-top: 10px; }
-    input[type="date"], select, input[type="text"] { padding: 5px; border-radius: 4px; margin: 5px 0; }
+    input[type="date"], input[type="time"], input[type="text"] { padding: 5px; border-radius: 4px; margin: 5px 0; }
   </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>Booked Appointment</h1>
-    <div class="search-container">
-      <input type="text" id="searchInput" placeholder="🔍 Search lecturer..." oninput="searchLecturers()">
-    </div>
+  <h2>Booked Appointment</h2>
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search lecturer..." oninput="searchLecturers()">
+  </div>
 </div>
 
 <div class="slot-list">
@@ -83,7 +83,8 @@
         <tr>
           <th>No.</th>
           <th>Date</th>
-          <th>Time</th>
+          <th>Start</th>
+          <th>End</th>
           <th>Student ID</th>
           <th>Action</th>
         </tr>
@@ -103,22 +104,13 @@
 
   let slots = {
     "Nurasma' Binti Shamsuddin": [
-      { date: '2025-05-02', time: '4-6', studentId: '12345678' },
-      { date: '2025-05-05', time: '10-12', studentId: '23456789' },
-      { date: '2025-05-05', time: '2-4', studentId: '34567890' }
+      { date: '2025-05-02', start: '16:00', end: '18:00', studentId: '12345678' },
+      { date: '2025-05-05', start: '10:00', end: '12:00', studentId: '23456789' },
+      { date: '2025-05-05', start: '14:00', end: '16:00', studentId: '34567890' }
     ],
     "Rubiah Binti Mohd Yunus": [],
     "Ruzanna Binti Abdullah": []
   };
-
-  const timeSlots = [
-    { label: '8:00 AM - 10:00 AM', value: '8-10' },
-    { label: '10:00 AM - 12:00 PM', value: '10-12' },
-    { label: '12:00 PM - 2:00 PM', value: '12-2' },
-    { label: '2:00 PM - 4:00 PM', value: '2-4' },
-    { label: '4:00 PM - 6:00 PM', value: '4-6' },
-    { label: '6:00 PM - 8:00 PM', value: '6-8' },
-  ];
 
   function openModal(lecturerName) {
     currentLecturer = lecturerName;
@@ -133,13 +125,13 @@
   }
 
   function formatDate(dateStr) {
-    const [year, month, day] = dateStr.split('-');
-    return `${day}/${month}/${year}`;
+    const [y, m, d] = dateStr.split('-');
+    return `${d}/${m}/${y}`;
   }
 
   function getTodayMY() {
     const now = new Date();
-    now.setHours(now.getHours() + 8); // Malaysia is UTC+8
+    now.setHours(now.getHours() + 8);
     return now.toISOString().split('T')[0];
   }
 
@@ -148,60 +140,70 @@
     table.innerHTML = '';
     const today = getTodayMY();
 
-    slots[currentLecturer].forEach((slot, index) => {
-      const isEditing = index === editIndex;
+    slots[currentLecturer].forEach((slot, idx) => {
+      const editing = idx === editIndex;
       table.innerHTML += `
         <tr>
-          <td>${index + 1}</td>
-          <td>${isEditing ? `<input type="date" min="${today}" value="${slot.date}" onchange="updateSlot(${index}, 'date', this.value)">` : formatDate(slot.date)}</td>
-          <td>${isEditing ? `
-            <select onchange="updateSlot(${index}, 'time', this.value)">
-              ${timeSlots.map(option => 
-                `<option value="${option.value}" ${slot.time === option.value ? 'selected' : ''}>${option.label}</option>`
-              ).join('')}
-            </select>` : timeSlots.find(t => t.value === slot.time)?.label || ''}
-          </td>
-          <td>${isEditing ? `<input type="text" value="${slot.studentId}" onchange="updateSlot(${index}, 'studentId', this.value)">` : slot.studentId}</td>
+          <td>${idx + 1}</td>
+          <td>${editing
+            ? `<input type="date" min="${today}" value="${slot.date}"
+                     onchange="updateSlot(${idx}, 'date', this.value)">`
+            : formatDate(slot.date)}</td>
+          <td>${editing
+            ? `<input type="time" value="${slot.start}"
+                     onchange="updateSlot(${idx}, 'start', this.value)">`
+            : slot.start}</td>
+          <td>${editing
+            ? `<input type="time" value="${slot.end}"
+                     onchange="updateSlot(${idx}, 'end', this.value)">`
+            : slot.end}</td>
+          <td>${editing
+            ? `<input type="text" value="${slot.studentId}"
+                     onchange="updateSlot(${idx}, 'studentId', this.value)">`
+            : slot.studentId}</td>
           <td>
-            <button class="edit-btn" onclick="toggleEdit(${index})">${isEditing ? 'Done' : 'Edit'}</button>
-            <button class="delete-btn" onclick="deleteSlot(${index})">Delete</button>
+            <button class="edit-btn" onclick="toggleEdit(${idx})">
+              ${editing ? 'Done' : 'Edit'}
+            </button>
+            <button class="delete-btn" onclick="deleteSlot(${idx})">
+              Delete
+            </button>
           </td>
-        </tr>
-      `;
+        </tr>`;
     });
   }
 
-  function toggleEdit(index) {
-    if (editIndex === index) {
-      editIndex = -1;
-    } else {
-      editIndex = index;
-    }
+  function toggleEdit(i) {
+    editIndex = (editIndex === i ? -1 : i);
     renderSlots();
   }
 
-  function updateSlot(index, field, value) {
-    slots[currentLecturer][index][field] = value;
+  function updateSlot(i, field, val) {
+    slots[currentLecturer][i][field] = val;
   }
 
-  function deleteSlot(index) {
-    slots[currentLecturer].splice(index, 1);
+  function deleteSlot(i) {
+    slots[currentLecturer].splice(i, 1);
     renderSlots();
   }
 
   function addSlot() {
-    const newIndex = slots[currentLecturer].length;
-    slots[currentLecturer].push({ date: getTodayMY(), time: '8-10', studentId: '' }); // Default values for new slot
-    editIndex = newIndex; // Set the new slot to be in edit mode
+    slots[currentLecturer].push({
+      date: getTodayMY(),
+      start: '08:00',
+      end: '10:00',
+      studentId: ''
+    });
+    editIndex = slots[currentLecturer].length - 1;
     renderSlots();
   }
-  
+
   function searchLecturers() {
-    const input = document.getElementById('searchInput').value.toLowerCase();
-    const items = document.querySelectorAll('.slot-item');
-    items.forEach(item => {
-      const lecturerName = item.querySelector('.slot-lecturer').textContent.toLowerCase();
-      item.style.display = lecturerName.includes(input) ? 'flex' : 'none';
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    document.querySelectorAll('.slot-item').forEach(item => {
+      item.style.display =
+        item.querySelector('.slot-lecturer').textContent.toLowerCase().includes(q)
+          ? 'flex' : 'none';
     });
   }
 </script>
