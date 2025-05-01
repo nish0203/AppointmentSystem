@@ -2,64 +2,70 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Profile Page</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile - Danish</title>
   <style>
     body {
       font-family: Arial, sans-serif;
+      background: #f9fafb;
       margin: 0;
-      padding: 20px;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
 
-    .profile-container {
-      max-width: 800px;
-      margin: auto;
+    .profile-card {
+      background: #fff;
       padding: 30px;
       border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
       text-align: center;
-      border: 1px black solid;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: relative;
     }
 
     .profile-pic {
       width: 120px;
       height: 120px;
-      border-radius: 50%;
+      border-radius: 10px;
       object-fit: cover;
       border: 2px solid #555;
       margin-bottom: 15px;
     }
 
     h2 {
-      margin: 0;
+      margin: 10px 0;
     }
 
     .section {
-      margin-top: 25px;
+      margin-top: 20px;
       text-align: left;
     }
 
     .section h4 {
       margin-bottom: 5px;
-     
     }
 
-    .contact-info p {
-      margin: 5px 0;
+    .section p {
+      margin: 0;
+      color: #555;
+      word-wrap: break-word;
     }
   </style>
 </head>
 <body>
 
-  <div class="profile-container">
-    <img src="https://static-00.iconduck.com/assets.00/profile-user-icon-2048x2048-m41rxkoe.png" alt="Profile Picture" class="profile-pic" />
+  <div class="profile-card">
+    <img src="https://static-00.iconduck.com/assets.00/profile-user-icon-2048x2048-m41rxkoe.png" alt="Profile Picture" class="profile-pic">
     <h2>Mr. MUHAMMAD DANISH BIN MOHD</h2>
-    <br>
     <br>
     <div class="section about-me">
       <h4>About Me</h4>
       <p>1231201369@student.mmu.edu.my</p>
     </div>
-
     <div class="section contact-info">
       <h4>Contact Information</h4>
       <p>Phone: +60 12-345 6789</p>
