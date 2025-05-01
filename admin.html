@@ -1,12 +1,114 @@
-<!-- File: admin.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin Dashboard - Uni Bookings</title>
-  <link rel="stylesheet" href="style.css">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f9fafb; color: #333; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+
+    header { background: #1E3A8A; color: #fff; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
+    header .logo { font-size: 1.25rem; font-weight: bold; }
+    header .top-nav a { color: #eef; }
+
+    .container { display: flex; min-height: calc(100vh - 64px); }
+    .sidebar { width: 200px; background: #fff; border-right: 1px solid #ddd; padding: 24px; }
+    .sidebar ul li { margin-bottom: 12px; }
+    .sidebar ul li a { color: #1E3A8A; font-weight: 500; cursor: pointer; }
+
+    .search-box {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.95rem;
+    }
+
+    .search-box button {
+      padding: 8px 16px;
+      background: #1E3A8A;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .search-error {
+      color: #EF4444;
+      margin-top: 8px;
+      font-size: 0.9rem;
+    }
+
+    main { flex: 1; padding: 24px; }
+    .card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+    @media (max-width: 768px) {
+      .container { flex-direction: column; }
+      .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #ddd; }
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 600px;
+      text-align: center;
+      position: relative;
+    }
+
+    .close-btn {
+      color: #aaa;
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .profile-pic {
+      width: 120px;
+      height: 120px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 2px solid #555;
+      margin-bottom: 15px;
+    }
+
+    .section {
+      margin-top: 25px;
+      text-align: left;
+    }
+
+    .section h4 {
+      margin-bottom: 5px;
+    }
+  </style>
 </head>
+
 <body>
   <header>
     <div class="logo">Uni Bookings</div>
@@ -14,22 +116,107 @@
       <a href="login.html">Logout</a>
     </nav>
   </header>
+
   <div class="container">
     <aside class="sidebar">
       <ul>
-        <li><a href="#">Edit Feedback</a></li>
-        <li><a href="#">View/Reply Inquiry</a></li>
-        <li><a href="#">Manage Students</a></li>
-        <li><a href="#">Manage Lecturers</a></li>
-        <li><a href="#">Manage Appointments</a></li>
-        <li><a href="#">Upload Announcement</a></li>
-        <li><a href="#">Search Users</a></li>
+        <li><a href="#" onclick="openModal()">Your Profile</a></li>
+        <li><a href="#">Manage Inquiry</a></li>
+        <li>
+          <a href="#" onclick="toggleSearch()">Search Users</a>
+          <div class="search-box" id="search-section">
+            <input type="text" id="search-users" placeholder="Enter users name">
+            <button id="search-btn">Search</button>
+            <div id="search-error" class="search-error"></div>
+          </div>
+        </li>
       </ul>
     </aside>
+
     <main>
       <h2>Admin Dashboard</h2>
-      <div class="card">Admin functionality placeholder</div>
+      <hr><br>
+
+      <div class="card">
+        <h3>Manage Appointment Slot</h3>
+      </div>
+
+      <div class="card">
+        <h3>Manage Booked Appointment</h3>
+      </div>
+
+      <div class="card">
+        <h3>Manage Student</h3>
+      </div>
+
+      <div class="card">
+        <h3>Manage Lecturer</h3>
+      </div>
+
+      <div class="card">
+        <h3>Manage Administrator</h3>
+      </div>
+
+      <a href="announcement.html" target="_blank" style="text-decoration: none; color: inherit;">
+        <div class="card">
+          <h3>Upload Announcement</h3>
+        </div>
+      </a>
     </main>
   </div>
+
+  <!-- Profile Modal -->
+  <div id="profileModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <img src="https://static-00.iconduck.com/assets.00/profile-user-icon-2048x2048-m41rxkoe.png" alt="Profile Picture" class="profile-pic">
+      <h2>Mr. Ng Zi Rui</h2>
+      <div class="section about-me">
+        <h4>About Me</h4>
+        <p>1231200969@admin.mmu.edu.my</p>
+      </div>
+      <div class="section contact-info">
+        <h4>Contact Information</h4>
+        <p>Phone: +60 12-345 6789</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openModal() {
+      document.getElementById('profileModal').style.display = 'flex';
+    }
+  
+    function closeModal() {
+      document.getElementById('profileModal').style.display = 'none';
+    }
+  
+    window.onclick = function(event) {
+      const modal = document.getElementById('profileModal');
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    }
+  
+    function toggleSearch() {
+      const section = document.getElementById('search-section');
+      section.style.display = section.style.display === 'none' || section.style.display === '' ? 'block' : 'none';
+    }
+  
+    document.getElementById('search-btn').addEventListener('click', function() {
+      const keyword = document.getElementById('search-users').value.trim().toLowerCase(); // Ensure the correct input ID is used
+      const errorDiv = document.getElementById('search-error');
+      errorDiv.textContent = ''; // Reset any previous error messages
+  
+      // Check for valid users
+      if (keyword.includes('asma')) {
+        window.location.href = 'lecturer-profile.html'; // Redirect to Asma's profile
+      } else if (keyword.includes('danish')) {
+        window.location.href = 'profile.html'; // Redirect to Danish's profile
+      } else {
+        errorDiv.textContent = 'User not found'; // Show error if user not found
+      }
+    });
+  </script>
 </body>
 </html>
