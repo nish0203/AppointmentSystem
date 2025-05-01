@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inquiry Tickets</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9fafb;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 { margin-bottom: 20px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      text-align: left;
+    }
+    th { background-color: rgb(90, 90, 90); color: white; }
+    tr:nth-child(even) { background-color: #f3f4f6; }
+    .reply-btn, .delete-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+    .reply-btn { background-color: #1E3A8A; }
+    .reply-btn:hover { background-color: #374fc7; }
+    .delete-btn { background-color: #c0392b; }
+    .delete-btn:hover { background-color: #e74c3c; }
+  </style>
+</head>
+<body>
+
+<h1>Inquiry Tickets</h1>
+
+<table id="tickets-table">
+  <thead>
+    <tr>
+      <th style="width: 50px;">No.</th>
+      <th style="width: 220px;">Booking ID</th>
+      <th style="width: 700px;">Subject</th>
+      <th>Date</th>
+      <th>Time</th>
+      <th style="width: 200px;">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr data-id="BK0001">
+      <td>1</td>
+      <td>BK0001</td>
+      <td>Booking Issues</td>
+      <td>2/5/2025</td>
+      <td>12:12:45</td>
+      <td>
+        <button class="reply-btn">Reply</button>
+        <button class="delete-btn" onclick="deleteTicket('BK0001')">Delete</button>
+      </td>
+    </tr>
+    <tr data-id="BK0002">
+      <td>2</td>
+      <td>BK0002</td>
+      <td>Booking Issues</td>
+      <td>3/5/2025</td>
+      <td>14:30:22</td>
+      <td>
+        <button class="reply-btn" onclick="replyTicket('BK0002')">Reply</button>
+        <button class="delete-btn" onclick="deleteTicket('BK0002')">Delete</button>
+      </td>
+    </tr>
+    <tr data-id="BK0003">
+      <td>3</td>
+      <td>BK0003</td>
+      <td>System Bug</td>
+      <td>4/5/2025</td>
+      <td>09:15:10</td>
+      <td>
+        <button class="reply-btn">Reply</button>
+        <button class="delete-btn" onclick="deleteTicket('BK0003')">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<script>
+  function replyTicket(id) {
+    localStorage.setItem('replyTicketId', id);
+    window.open('reinquirylect.html', '_blank');
+  }
+
+  function deleteTicket(id) {
+    document.querySelector(`tr[data-id="${id}"]`).remove();
+  }
+
+  window.onload = function() {
+    const resolvedId = localStorage.getItem('resolvedTicketId');
+    if (resolvedId) {
+      deleteTicket(resolvedId);
+      localStorage.removeItem('resolvedTicketId');
+    }
+  };
+</script>
+
+</body>
+</html>
