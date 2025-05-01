@@ -11,7 +11,22 @@
       margin: 0;
       padding: 20px;
     }
-    h1 { margin-bottom: 20px; }
+
+    /* back-to-home button */
+    #backBtn {
+      background-color: #00aaff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      }
+
+    #backBtn:hover {
+        background-color: #14214e;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -22,9 +37,27 @@
       padding: 12px 15px;
       border: 1px solid #ddd;
       text-align: left;
+      white-space: nowrap;
     }
     th { background-color: rgb(90, 90, 90); color: white; }
     tr:nth-child(even) { background-color: #f3f4f6; }
+
+    /* status indicator */
+    .status-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .status-dot.resolved   { background-color: #28a745; }
+    .status-dot.unresolved { background-color: #e74c3c; }
+    .status-text {
+      vertical-align: middle;
+      font-weight: bold;
+    }
+
     .reply-btn, .delete-btn {
       padding: 6px 12px;
       border: none;
@@ -41,74 +74,134 @@
 </head>
 <body>
 
-<h1>Inquiry Tickets</h1>
+  <!-- Back to homepage -->
+  <button id="backBtn">Go back to homepage</button>
 
-<table id="tickets-table">
-  <thead>
-    <tr>
-      <th style="width: 50px;">No.</th>
-      <th style="width: 220px;">Booking ID</th>
-      <th style="width: 700px;">Subject</th>
-      <th>Date</th>
-      <th>Time</th>
-      <th style="width: 200px;">Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr data-id="BK0001">
-      <td>1</td>
-      <td>BK0001</td>
-      <td>Booking Issues</td>
-      <td>2/5/2025</td>
-      <td>12:12:45</td>
-      <td>
-        <button class="reply-btn">Reply</button>
-        <button class="delete-btn" onclick="deleteTicket('BK0001')">Delete</button>
-      </td>
-    </tr>
-    <tr data-id="BK0002">
-      <td>2</td>
-      <td>BK0002</td>
-      <td>Booking Issues</td>
-      <td>3/5/2025</td>
-      <td>14:30:22</td>
-      <td>
-        <button class="reply-btn" onclick="replyTicket('BK0002')">Reply</button>
-        <button class="delete-btn" onclick="deleteTicket('BK0002')">Delete</button>
-      </td>
-    </tr>
-    <tr data-id="BK0003">
-      <td>3</td>
-      <td>BK0003</td>
-      <td>System Bug</td>
-      <td>4/5/2025</td>
-      <td>09:15:10</td>
-      <td>
-        <button class="reply-btn">Reply</button>
-        <button class="delete-btn" onclick="deleteTicket('BK0003')">Delete</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+  <h2>Inquiry Tickets</h2>
 
-<script>
-  function replyTicket(id) {
-    localStorage.setItem('replyTicketId', id);
-    window.open('reinquirylect.html', '_blank');
-  }
+  <table id="tickets-table">
+    <thead>
+      <tr>
+        <th style="width:50px">No.</th>
+        <th style="width:150px">Booking ID</th>
+        <th style="width:300px">Subject</th>
+        <th style="width:130px">Status</th>
+        <th>Date</th>
+        <th>Time</th>
+        <th style="width:200px">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-id="BK0001">
+        <td>1</td>
+        <td>BK0001</td>
+        <td>Booking Issues</td>
+        <td>
+          <span class="status-dot unresolved"></span>
+          <span class="status-text">Not Resolved</span>
+        </td>
+        <td>2/5/2025</td>
+        <td>12:12:45</td>
+        <td>
+          <button class="reply-btn" onclick="replyTicket('BK0001')">Reply</button>
+          <button class="delete-btn" onclick="deleteTicket('BK0001')">Delete</button>
+        </td>
+      </tr>
+      <tr data-id="BK0002">
+        <td>2</td>
+        <td>BK0002</td>
+        <td>Booking Issues</td>
+        <td>
+          <span class="status-dot unresolved"></span>
+          <span class="status-text">Not Resolved</span>
+        </td>
+        <td>3/5/2025</td>
+        <td>14:30:22</td>
+        <td>
+          <button class="reply-btn" onclick="replyTicket('BK0002')">Reply</button>
+          <button class="delete-btn" onclick="deleteTicket('BK0002')">Delete</button>
+        </td>
+      </tr>
+      <tr data-id="BK0003">
+        <td>3</td>
+        <td>BK0003</td>
+        <td>System Bug</td>
+        <td>
+          <span class="status-dot unresolved"></span>
+          <span class="status-text">Not Resolved</span>
+        </td>
+        <td>4/5/2025</td>
+        <td>09:15:10</td>
+        <td>
+          <button class="reply-btn" onclick="replyTicket('BK0003')">Reply</button>
+          <button class="delete-btn" onclick="deleteTicket('BK0003')">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-  function deleteTicket(id) {
-    document.querySelector(`tr[data-id="${id}"]`).remove();
-  }
-
-  window.onload = function() {
-    const resolvedId = localStorage.getItem('resolvedTicketId');
-    if (resolvedId) {
-      deleteTicket(resolvedId);
-      localStorage.removeItem('resolvedTicketId');
+  <script>
+    // back button logic
+    document.getElementById('backBtn').addEventListener('click', () => {
+      if (confirm('Are you sure you want to go back to the homepage?')) {
+        window.location.href = 'admin.html'; // adjust if needed
+      }
+    });
+  
+    // renumber the “No.” column
+    function renumberRows() {
+      document.querySelectorAll('#tickets-table tbody tr')
+        .forEach((row, i) => row.cells[0].textContent = i + 1);
     }
-  };
-</script>
+  
+    function replyTicket(id) {
+      localStorage.setItem('replyTicketId', id);
+      window.open('reinquirylect.html', '_blank');
+    }
+  
+    function deleteTicket(id) {
+      const row = document.querySelector(`tr[data-id="${id}"]`);
+      if (!row) return;
+  
+      // check if resolved
+      const isResolved = row.querySelector('.status-dot.resolved') !== null;
+      if (!isResolved) {
+        alert('Cannot delete a ticket that is not resolved.');
+        return;
+      }
+  
+      // safe to delete
+      row.remove();
+      renumberRows();
+    }
+  
+    window.onload = () => {
+      renumberRows();
+  
+      // if a ticket was marked resolved, update its status cell
+      const resolvedId = localStorage.getItem('resolvedTicketId');
+      if (resolvedId) {
+        const row = document.querySelector(`tr[data-id="${resolvedId}"]`);
+        if (row) {
+          row.cells[3].innerHTML = `
+            <span class="status-dot resolved"></span>
+            <span class="status-text">Resolved</span>
+          `;
+        }
+        localStorage.removeItem('resolvedTicketId');
+      }
+  
+      // disable delete-buttons on unresolved tickets
+      document.querySelectorAll('#tickets-table tbody tr').forEach(row => {
+        const deleteBtn = row.querySelector('.delete-btn');
+        const isResolved = row.querySelector('.status-dot.resolved') !== null;
+        deleteBtn.disabled = !isResolved;
+        deleteBtn.style.opacity = isResolved ? '1' : '0.5';
+        deleteBtn.style.cursor  = isResolved ? 'pointer' : 'not-allowed';
+      });
+    };
+  </script>
+  
 
 </body>
 </html>

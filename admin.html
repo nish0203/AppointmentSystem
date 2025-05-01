@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - Uni Bookings</title>
 
   <style>
@@ -24,7 +24,6 @@
       display: none;
       margin-top: 10px;
     }
-
     .search-box input {
       width: 100%;
       padding: 8px;
@@ -33,7 +32,6 @@
       border-radius: 4px;
       font-size: 0.95rem;
     }
-
     .search-box button {
       padding: 8px 16px;
       background: #1E3A8A;
@@ -60,15 +58,12 @@
       display: none;
       position: fixed;
       z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
       background-color: rgba(0,0,0,0.5);
       justify-content: center;
       align-items: center;
     }
-
     .modal-content {
       background: #fff;
       padding: 30px;
@@ -78,7 +73,6 @@
       text-align: center;
       position: relative;
     }
-
     .close-btn {
       color: #aaa;
       position: absolute;
@@ -88,7 +82,6 @@
       font-weight: bold;
       cursor: pointer;
     }
-
     .profile-pic {
       width: 120px;
       height: 120px;
@@ -97,12 +90,10 @@
       border: 2px solid #555;
       margin-bottom: 15px;
     }
-
     .section {
       margin-top: 25px;
       text-align: left;
     }
-
     .section h4 {
       margin-bottom: 5px;
     }
@@ -121,13 +112,25 @@
     <aside class="sidebar">
       <ul>
         <li><a href="#" onclick="openModal()">Your Profile</a></li>
-        <li><a href="inquiry.html" target="_blank">Reply Inquiry</a></li>
+        <li><a href="inquiry.html">Reply Inquiry</a></li>
+
+        <!-- Search Lecturer -->
         <li>
-          <a href="#" onclick="toggleSearch()">Search Users</a>
-          <div class="search-box" id="search-section">
-            <input type="text" id="search-users" placeholder="Enter users name">
-            <button id="search-btn">Search</button>
-            <div id="search-error" class="search-error"></div>
+          <a href="#" onclick="toggleSearch('lecturer')">Search Lecturer</a>
+          <div class="search-box" id="search-lecturer-section">
+            <input type="text" id="search-lecturer" placeholder="Enter lecturer name">
+            <button id="search-lecturer-btn">Search</button>
+            <div id="search-lecturer-error" class="search-error"></div>
+          </div>
+        </li>
+
+        <!-- Search Student -->
+        <li>
+          <a href="#" onclick="toggleSearch('student')">Search Student</a>
+          <div class="search-box" id="search-student-section">
+            <input type="text" id="search-student" placeholder="Enter student name">
+            <button id="search-student-btn">Search</button>
+            <div id="search-student-error" class="search-error"></div>
           </div>
         </li>
       </ul>
@@ -192,37 +195,47 @@
     function openModal() {
       document.getElementById('profileModal').style.display = 'flex';
     }
-  
     function closeModal() {
       document.getElementById('profileModal').style.display = 'none';
     }
-  
-    window.onclick = function(event) {
-      const modal = document.getElementById('profileModal');
-      if (event.target === modal) {
-        modal.style.display = 'none';
-      }
+    window.onclick = e => {
+      if (e.target === document.getElementById('profileModal')) closeModal();
+    };
+
+    // toggle the appropriate search box
+    function toggleSearch(type) {
+      const sec = document.getElementById(`search-${type}-section`);
+      sec.style.display = (sec.style.display === 'block' ? 'none' : 'block');
+      // hide the other one
+      const other = type === 'lecturer' ? 'student' : 'lecturer';
+      document.getElementById(`search-${other}-section`).style.display = 'none';
     }
-  
-    function toggleSearch() {
-      const section = document.getElementById('search-section');
-      section.style.display = section.style.display === 'none' || section.style.display === '' ? 'block' : 'none';
-    }
-  
-    document.getElementById('search-btn').addEventListener('click', function() {
-      const keyword = document.getElementById('search-users').value.trim().toLowerCase(); // Ensure the correct input ID is used
-      const errorDiv = document.getElementById('search-error');
-      errorDiv.textContent = ''; // Reset any previous error messages
-  
-      // Check for valid users
-      if (keyword.includes('asma')) {
-        window.location.href = 'lecprofile.html'; // Redirect to Asma's profile
-      } else if (keyword.includes('danish')) {
-        window.location.href = 'profile.html'; // Redirect to Danish's profile
+
+    // Lecturer search
+    document.getElementById('search-lecturer-btn').addEventListener('click', () => {
+      const kw = document.getElementById('search-lecturer').value.trim().toLowerCase();
+      const err = document.getElementById('search-lecturer-error');
+      err.textContent = '';
+      if (kw.includes('asma')) {
+        window.location.href = 'lecprofile.html';
       } else {
-        errorDiv.textContent = 'User not found'; // Show error if user not found
+        err.textContent = 'Lecturer not found';
+      }
+    });
+
+    // Student search
+    document.getElementById('search-student-btn').addEventListener('click', () => {
+      const kw = document.getElementById('search-student').value.trim().toLowerCase();
+      const err = document.getElementById('search-student-error');
+      err.textContent = '';
+      if (kw.includes('danish')) {
+        window.location.href = 'profile.html';
+      } else {
+        err.textContent = 'Student not found';
       }
     });
   </script>
+</body>
+</html>
 </body>
 </html>

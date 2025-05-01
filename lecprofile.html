@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lecturer Profile - Ms. Nurasma'</title>
   <style>
     body {
@@ -14,6 +14,33 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
+    }
+
+    /* back-to-home button */
+    #backBtn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: #00aaff;;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      font-size: 14px;
+      z-index: 1001;
+    }
+
+    
+    #backBtn {
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      }
+      
+    #backBtn:hover {
+      background-color: #14214e;;
     }
 
     .profile-card {
@@ -115,17 +142,26 @@
       padding: 4px;
       margin-right: 10px;
     }
+
+    .rating-select {
+    padding: 4px;
+    margin-right: 10px;
+  }
+
   </style>
 </head>
 <body>
 
+  <!-- Fixed Back button -->
+  <button id="backBtn" onclick="goHome()">Go back to homepage</button>
+
+
   <div class="profile-card">
     <div class="profile-header">
-      <img src="https://static-00.iconduck.com/assets.00/profile-user-icon-2048x2048-m41rxkoe.png" alt="Profile Picture" class="profile-pic">
+      <img src="https://static-00.iconduck.com/assets.00/profile-user-icon-2048x2048-m41rxkoe.png"
+           alt="Profile Picture" class="profile-pic">
       <h2>Ms. Nurasma' Binti Shamsuddin</h2>
     </div>
-
-    <br>
 
     <div class="section">
       <h4>Department</h4>
@@ -139,15 +175,13 @@
 
     <div class="section">
       <h4>Office Hours</h4>
-      <p>Mon & Friday, 8AM – 6PM</p>
+      <p>Mon &amp; Fri, 8AM – 6PM</p>
     </div>
 
     <div class="section">
       <h4>Contact Phone</h4>
       <p>03-83125840</p>
     </div>
-
-    <br>
 
     <div class="section student-feedback">
       <h4>Student Feedback</h4>
@@ -185,31 +219,52 @@
 
   <script>
     function deleteFeedback(button) {
-      const item = button.closest('.feedback-item');
-      item.remove();
+      button.closest('.feedback-item').remove();
     }
-
+  
     function editFeedback(button) {
       const item = button.closest('.feedback-item');
       const feedbackTextDiv = item.querySelector('.feedback-text');
-      const currentText = feedbackTextDiv.textContent.trim();
-      const ratingMatch = currentText.match(/\⭐+.*\)/);
-      const commentOnly = ratingMatch ? currentText.replace(ratingMatch[0], '').trim() : currentText;
-
+  
+      // extract existing comment and rating
+      const text = feedbackTextDiv.textContent.trim();
+      const ratingMatch = text.match(/\((\d)\/5\)/);
+      const currentRating = ratingMatch ? parseInt(ratingMatch[1]) : 1;
+      const commentMatch = text.match(/^"([^"]+)"/);
+      const commentOnly = commentMatch ? commentMatch[1] : text;
+  
+      // build the star‐rating dropdown
+      let selectHTML = '<select class="rating-select">';
+      for (let i = 1; i <= 5; i++) {
+        const stars = '⭐'.repeat(i) + '☆'.repeat(5 - i);
+        selectHTML += `<option value="${i}"${i === currentRating ? ' selected' : ''}>${stars} (${i}/5)</option>`;
+      }
+      selectHTML += '</select>';
+  
+      // swap to edit mode
       feedbackTextDiv.innerHTML = `
         <input type="text" class="edit-input" value="${commentOnly}">
-        <span class="stars">${ratingMatch ? ratingMatch[0] : ''}</span>
+        ${selectHTML}
       `;
-      
+  
       button.textContent = 'Save';
       button.onclick = function() {
-        const newComment = item.querySelector('.edit-input').value;
-        feedbackTextDiv.innerHTML = `"${newComment}" <span class="stars">${ratingMatch ? ratingMatch[0] : ''}</span>`;
+        const newComment = item.querySelector('.edit-input').value.trim();
+        const newRating  = parseInt(item.querySelector('.rating-select').value);
+        const stars      = '⭐'.repeat(newRating) + '☆'.repeat(5 - newRating);
+        feedbackTextDiv.innerHTML = `"${newComment}" <span class="stars">${stars} (${newRating}/5)</span>`;
         button.textContent = 'Edit';
         button.onclick = function() { editFeedback(button); };
       };
     }
+
+    function goHome() {
+    if (confirm('Are you sure you want to go back to the homepage?')) {
+      window.location.href = 'admin.html'; // or whatever your landing page is
+    }
+  }
   </script>
+  
 
 </body>
 </html>
