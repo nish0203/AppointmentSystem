@@ -73,7 +73,7 @@ main { flex: 1; padding: 24px; }
 
 /* When expanded */
 .card.active .content {
-  max-height: 500px; /* Enough to show inside content */
+  max-height: 800px; /* Enough to show inside content */
   padding: 10px 0;
 }
 
@@ -102,6 +102,9 @@ main { flex: 1; padding: 24px; }
   font-size: 16px;
 }
 
+.time-slots {
+  display: none;
+}
 
 .time-slots {
   flex: 1;
@@ -184,69 +187,68 @@ main { flex: 1; padding: 24px; }
           <br>
           <h4 style="font-weight: bold;">Lecturer</h4>
           <br>
-          <div class="asmabook">
-            <p>1&#41; Nurasma &nbsp;&nbsp;<button class="book-main-btn">Book</button></p>
+          <!-- Nurasma -->
+<!-- Nurasma -->
+<div class="asmabook">
+  <p>1&#41; Nurasma &nbsp;&nbsp;<button class="book-main-btn">Book</button></p>
+  <div class="booking-dropdown" style="display: none;">
+    <div class="appointment-section">
+      <!-- Calendar Section -->
+      <div class="calendar-box">
+        <input type="text" id="appointment-date-nurasma" class="calendar-input" data-lecturer="nurasma" placeholder="Select Date">
+      </div>
       
-            <div class="booking-dropdown" style="display: none;">
-              <div class="appointment-section">
-  
-                <!-- Calendar Section -->
-                <div class="calendar-box">
-                  <input type="text" id="appointment-date" class="calendar-input" placeholder="Select Date">
-                </div>
-              
-                <!-- Time Slots Section -->
-                <div class="time-slots">
-                  <h3 style="color: red;">Time available</h3>
-                  <div style="margin-bottom: 10px;">
-                    8am - 10am
-                    <button onclick="bookTime('8am-10am')" style="margin-left: 10px;">Book</button>
-                    <button id="cancel-8am-10am" onclick="cancelTime('8am-10am')" style="margin-left: 5px; display: none;">Cancel</button>
-                  </div>
-                  <div style="margin-bottom: 10px;">
-                    10am - 12pm
-                    <button onclick="bookTime('10am-12pm')" style="margin-left: 10px;">Book</button>
-                    <button id="cancel-10am-12pm" onclick="cancelTime('10am-12pm')" style="margin-left: 5px; display: none;">Cancel</button>
-                  </div>
-                  <div style="margin-bottom: 10px;">
-                    4pm - 6pm
-                    <button onclick="bookTime('4pm-6pm')" style="margin-left: 10px;">Book</button>
-                    <button id="cancel-4pm-6pm" onclick="cancelTime('4pm-6pm')" style="margin-left: 5px; display: none;">Cancel</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <br>
-          <div class="asmabook">
-            <p>2&#41; Rubiah &nbsp;&nbsp;<button class="book-main-btn">Book</button></p>
-          
-            <div class="booking-dropdown" style="display: none;">
-              <div class="appointment-section">
-          
-                <!-- Calendar Section -->
-                <div class="calendar-box">
-                  <input type="text" class="calendar-input appointment-date" placeholder="Select Date">
-                </div>
-          
-                <!-- Time Slots Section -->
-                <div class="time-slots">
-                  <h3 style="color: red;">Time available</h3>
-                  <div style="margin-bottom: 10px;">
-                    12pm - 2pm
-                    <button onclick="bookTime('rubiah-12pm-2pm')" style="margin-left: 10px;">Book</button>
-                    <button id="cancel-rubiah-12pm-2pm" onclick="cancelTime('rubiah-12pm-2pm')" style="margin-left: 5px; display: none;">Cancel</button>
-                  </div>
-                  <div>
-                    3pm - 5pm
-                    <button onclick="bookTime('rubiah-3pm-5pm')" style="margin-left: 10px;">Book</button>
-                    <button id="cancel-rubiah-3pm-5pm" onclick="cancelTime('rubiah-3pm-5pm')" style="margin-left: 5px; display: none;">Cancel</button>
-                  </div>
-                </div>
-          
-              </div>
-            </div>
-          </div>
+      <!-- Time Slots Section -->
+      <div class="time-slots" id="time-slots-nurasma" style="display: none;">
+        <h3 style="color: red;">Time available</h3>
+        <div style="margin-bottom: 10px;">
+          8am - 10am
+          <button onclick="bookTime('8am-10am', 'nurasma')" style="margin-left: 10px;">Book</button>
+          <button id="cancel-8am-10am" onclick="cancelTime('8am-10am')" style="margin-left: 5px; display: none;">Cancel</button>
+        </div>
+        <div style="margin-bottom: 10px;">
+          10am - 12pm
+          <button onclick="bookTime('10am-12pm', 'nurasma')" style="margin-left: 10px;">Book</button>
+          <button id="cancel-10am-12pm" onclick="cancelTime('10am-12pm')" style="margin-left: 5px; display: none;">Cancel</button>
+        </div>
+        <div style="margin-bottom: 10px;">
+          4pm - 6pm
+          <button onclick="bookTime('4pm-6pm', 'nurasma')" style="margin-left: 10px;">Book</button>
+          <button id="cancel-4pm-6pm" onclick="cancelTime('4pm-6pm')" style="margin-left: 5px; display: none;">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<br>
+<!-- Rubiah -->
+<div class="asmabook">
+  <p>2&#41; Rubiah &nbsp;&nbsp;<button class="book-main-btn">Book</button></p>
+  <div class="booking-dropdown" style="display: none;">
+    <div class="appointment-section">
+      <!-- Calendar Section -->
+      <div class="calendar-box">
+        <input type="text" id="appointment-date-rubiah" class="calendar-input" data-lecturer="rubiah" placeholder="Select Date">
+      </div>
+
+      <!-- Time Slots Section -->
+      <div class="time-slots" id="time-slots-rubiah" style="display: none;">
+        <h3 style="color: red;">Time available</h3>
+        <div style="margin-bottom: 10px;">
+          12pm - 2pm
+          <button onclick="bookTime('rubiah-12pm-2pm', 'rubiah')" style="margin-left: 10px;">Book</button>
+          <button id="cancel-rubiah-12pm-2pm" onclick="cancelTime('rubiah-12pm-2pm')" style="margin-left: 5px; display: none;">Cancel</button>
+        </div>
+        <div style="margin-bottom: 10px;">
+          3pm - 5pm
+          <button onclick="bookTime('rubiah-3pm-5pm', 'rubiah')" style="margin-left: 10px;">Book</button>
+          <button id="cancel-rubiah-3pm-5pm" onclick="cancelTime('rubiah-3pm-5pm')" style="margin-left: 5px; display: none;">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
           
         </div>
       </div>
@@ -416,10 +418,14 @@ main { flex: 1; padding: 24px; }
 
   
   // Toggle the dropdown
-  document.querySelector('.book-main-btn').addEventListener('click', function () {
-    const dropdown = document.querySelector('.booking-dropdown');
+  // Toggle the dropdowns individually
+document.querySelectorAll('.book-main-btn').forEach(button => {
+  button.addEventListener('click', function () {
+    const dropdown = this.parentElement.nextElementSibling;
     dropdown.style.display = dropdown.style.display === 'none' ? 'flex' : 'none';
   });
+});
+
 
   // Manage booking and cancel buttons
   const bookButtons = document.querySelectorAll('.time-book-btn');
@@ -468,11 +474,31 @@ function cancelTime(slot) {
 
 <!-- Initialize Flatpickr -->
 <script>
-flatpickr("#appointment-date", {
-  inline: true,
-  minDate: "today",
-  dateFormat: "Y-m-d"
+document.querySelectorAll('.calendar-input').forEach(function(input) {
+  flatpickr(input, {
+    inline: true,
+    minDate: "today",  // Disable past dates
+    dateFormat: "Y-m-d", // Date format
+
+    onChange: function(selectedDates, dateStr, instance) {
+      // Get the selected lecturer from the data-lecturer attribute
+      const lecturer = instance.input.getAttribute('data-lecturer');
+      
+      // Hide all time slots initially
+      document.querySelectorAll('.time-slots').forEach(function(slots) {
+        slots.style.display = 'none';
+      });
+      
+      // Show the time slots for the selected lecturer
+      const timeSlots = document.getElementById('time-slots-' + lecturer);
+      if (timeSlots) {
+        timeSlots.style.display = 'block';
+      }
+    }
+  });
 });
+
+
 
 let currentRating = 0;
 
@@ -498,6 +524,7 @@ let currentRating = 0;
     closeFeedback();
   }
 
+  
   </script>
 </body>
 </html>

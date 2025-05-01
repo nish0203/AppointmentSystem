@@ -311,12 +311,13 @@ const addSlotBtn = document.getElementById('add-slot-btn');
 const startTimeInput = document.getElementById('start-time-input');
 const endTimeInput = document.getElementById('end-time-input');
 
-function createSlotElement(start, end) {
+function createSlotElement(dateStr, start, end) {
   const li = document.createElement('li');
   li.style.marginBottom = '8px';
 
+  const formattedDate = new Date(dateStr).toLocaleDateString('en-US');
   const timeText = document.createElement('span');
-  timeText.textContent = `${start} – ${end}`;
+  timeText.textContent = `${formattedDate} ${start} – ${end}`;
 
   const removeBtn = document.createElement('button');
   removeBtn.textContent = 'Remove';
@@ -326,15 +327,13 @@ function createSlotElement(start, end) {
   editBtn.textContent = 'Edit';
   editBtn.style = "margin-left:8px;padding:4px 8px;border:1px solid orange;color:orange;background:none;border-radius:4px;";
 
-  // Remove button
   removeBtn.addEventListener('click', () => li.remove());
 
-  // Edit button
   editBtn.addEventListener('click', () => {
-    const [currentStart, currentEnd] = timeText.textContent.split(' – ');
+    const [ , currentTimeRange ] = timeText.textContent.split(' ');
+    const [currentStart, currentEnd] = currentTimeRange.split(' – ');
     startTimeInput._flatpickr.setDate(currentStart, true, "h:i K");
     endTimeInput._flatpickr.setDate(currentEnd, true, "h:i K");
-
     li.remove();
   });
 
@@ -345,15 +344,15 @@ function createSlotElement(start, end) {
 }
 
 addSlotBtn.addEventListener('click', () => {
+  const selectedDate = document.getElementById('availability-date').value;
   const startTime = startTimeInput.value.trim();
   const endTime = endTimeInput.value.trim();
 
-  if (!startTime || !endTime) {
-    alert("Please select both start and end times.");
+  if (!selectedDate || !startTime || !endTime) {
+    alert("Please select a date and both start and end times.");
     return;
   }
 
-  // Optional: Validate that end time is after start time
   const start = flatpickr.parseDate(startTime, "h:i K");
   const end = flatpickr.parseDate(endTime, "h:i K");
   if (start >= end) {
@@ -361,13 +360,13 @@ addSlotBtn.addEventListener('click', () => {
     return;
   }
 
-  const li = createSlotElement(startTime, endTime);
+  const li = createSlotElement(selectedDate, startTime, endTime);
   slotsList.appendChild(li);
 
-  // Clear inputs
   startTimeInput.value = "";
   endTimeInput.value = "";
 });
+
 
 document.getElementById('save-availability-btn').addEventListener('click', () => {
   const selectedDate = document.getElementById('availability-date').value;
