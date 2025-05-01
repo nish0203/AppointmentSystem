@@ -6,7 +6,11 @@
   <title>Appointment Slots</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f9fafb; margin: 0; padding: 20px; }
-    h1 { margin-bottom: 20px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+    h1 { margin: 0; }
+    #searchInput { padding: 8px 12px; width: 250px; border-radius: 20px; border: 1px solid #ccc; transition: 0.3s; }
+    #searchInput:focus { outline: none; border-color: #1E3A8A; box-shadow: 0 0 5px rgba(30, 58, 138, 0.5); }
+
     .slot-list { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
     .slot-header, .slot-item { display: flex; padding: 12px 15px; border-bottom: 1px solid #ddd; align-items: center; }
     .slot-header { background-color: rgb(90, 90, 90); color: white; font-weight: bold; }
@@ -28,12 +32,17 @@
     th { background-color: rgb(90, 90, 90); color: white; }
     tr:nth-child(even) { background-color: #f3f4f6; }
     .bottom-buttons { text-align: left; margin-top: 10px; }
-    input[type="date"], select, input[type="text"] { padding: 5px; border-radius: 4px; margin: 5px 0; }
+    input[type="date"], select { padding: 5px; border-radius: 4px; margin: 5px 0; }
   </style>
 </head>
 <body>
 
-<h1>Appointment Slots</h1>
+<div class="header">
+    <h1>Appointment Slots</h1>
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="🔍 Search lecturer..." oninput="searchLecturers()">
+    </div>
+</div>
 
 <div class="slot-list">
   <div class="slot-header">
@@ -129,7 +138,7 @@
 
   function getTodayMY() {
     const now = new Date();
-    now.setHours(now.getHours() + 8); // Malaysia is UTC+8
+    now.setHours(now.getHours() + 8);
     return now.toISOString().split('T')[0];
   }
 
@@ -180,9 +189,18 @@
 
   function addSlot() {
     const newIndex = slots[currentLecturer].length;
-    slots[currentLecturer].push({ date: getTodayMY(), time: '8-10' }); // Default time for new slot
-    editIndex = newIndex; // Set the new slot to be in edit mode
+    slots[currentLecturer].push({ date: getTodayMY(), time: '8-10' });
+    editIndex = newIndex;
     renderSlots();
+  }
+
+  function searchLecturers() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const items = document.querySelectorAll('.slot-item');
+    items.forEach(item => {
+      const lecturerName = item.querySelector('.slot-lecturer').textContent.toLowerCase();
+      item.style.display = lecturerName.includes(input) ? 'flex' : 'none';
+    });
   }
 </script>
 
