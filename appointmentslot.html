@@ -6,206 +6,263 @@
   <title>Appointment Slots</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f9fafb; margin: 0; padding: 20px; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
-    h2 { margin: 0; }
-    #searchInput { padding: 8px 12px; width: 250px; border-radius: 20px; border: 1px solid #ccc; transition: 0.3s; }
-    #searchInput:focus { outline: none; border-color: #1E3A8A; box-shadow: 0 0 5px rgba(30, 58, 138, 0.5); }
 
-    .slot-list { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
-    .slot-header, .slot-item { display: flex; padding: 12px 15px; border-bottom: 1px solid #ddd; align-items: center; }
+    /* Back button */
+    #backBtn {
+      background-color: #00aaff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-bottom: 20px;
+    }
+    #backBtn:hover {
+      background-color: #14214e;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    h2 { margin: 0; }
+    #searchInput {
+      padding: 8px 12px;
+      width: 250px;
+      border-radius: 20px;
+      border: 1px solid #ccc;
+      transition: 0.3s;
+    }
+    #searchInput:focus {
+      outline: none;
+      border-color: #1E3A8A;
+      box-shadow: 0 0 5px rgba(30, 58, 138, 0.5);
+    }
+
+    .slot-list {
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .slot-header, .slot-item {
+      display: flex;
+      padding: 12px 15px;
+      border-bottom: 1px solid #ddd;
+      align-items: center;
+    }
     .slot-header { background-color: rgb(90, 90, 90); color: white; font-weight: bold; }
     .slot-item:nth-child(even) { background-color: #f3f4f6; }
     .slot-no { width: 50px; }
     .slot-lecturer { flex: 1; }
     .slot-action { width: 160px; text-align: center; }
-    .manage-btn, .edit-btn, .delete-btn, .add-btn { padding: 6px 12px; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 5px; }
+    .manage-btn, .edit-btn, .delete-btn, .add-btn {
+      padding: 6px 12px; color: white; border: none;
+      border-radius: 4px; cursor: pointer; margin-left: 5px;
+    }
     .manage-btn, .edit-btn, .delete-btn { background-color: #1E3A8A; }
     .add-btn { background-color: #28a745; }
     .manage-btn:hover, .edit-btn:hover, .delete-btn:hover { background-color: #374fc7; }
     .add-btn:hover { background-color: #218838; }
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
-    .modal-content { background: white; padding: 20px; border-radius: 8px; width: 800px; max-width: 90%; position: relative; }
-    .modal-header { font-weight: bold; margin-bottom: 10px; font-size: 20px; }
-    .close-btn { position: absolute; top: 10px; right: 15px; background: transparent; border: none; font-size: 20px; cursor: pointer; }
-    table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
-    th, td { padding: 10px; text-align: left; border: none; }
+
+    .modal {
+      display: none; position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+      justify-content: center; align-items: center;
+    }
+    .modal-content {
+      background: white; padding: 20px; border-radius: 8px;
+      width: 800px; max-width: 90%; position: relative;
+    }
+    .modal-header {
+      font-weight: bold; margin-bottom: 10px; font-size: 20px;
+    }
+    .close-btn {
+      position: absolute; top: 10px; right: 15px;
+      background: transparent; border: none; font-size: 20px;
+      cursor: pointer;
+    }
+    table {
+      width: 100%; border-collapse: collapse; margin-bottom: 10px;
+    }
+    th, td {
+      padding: 10px; text-align: left; border: none;
+    }
     th { background-color: rgb(90, 90, 90); color: white; }
     tr:nth-child(even) { background-color: #f3f4f6; }
     .bottom-buttons { text-align: left; margin-top: 10px; }
-    input[type="date"], select { padding: 5px; border-radius: 4px; margin: 5px 0; }
+    input[type="date"], input[type="time"], input[type="text"] {
+      padding: 5px; border-radius: 4px; margin: 5px 0;
+    }
   </style>
 </head>
 <body>
 
-<div class="header">
+  <button id="backBtn">Go back to the homepage</button>
+
+  <div class="header">
     <h2>Appointment Slots</h2>
     <div class="search-container">
       <input type="text" id="searchInput" placeholder="Search lecturer..." oninput="searchLecturers()">
     </div>
-</div>
-
-<div class="slot-list">
-  <div class="slot-header">
-    <div class="slot-no">No.</div>
-    <div class="slot-lecturer">Lecturer</div>
-    <div class="slot-action">Action</div>
   </div>
-  <div class="slot-item">
-    <div class="slot-no">1</div>
-    <div class="slot-lecturer">Nurasma' Binti Shamsuddin</div>
-    <div class="slot-action">
-      <button class="manage-btn" onclick="openModal('Nurasma\' Binti Shamsuddin')">Manage Slots</button>
+
+  <div class="slot-list">
+    <div class="slot-header">
+      <div class="slot-no">No.</div>
+      <div class="slot-lecturer">Lecturer</div>
+      <div class="slot-action">Action</div>
+    </div>
+    <div class="slot-item">
+      <div class="slot-no">1</div>
+      <div class="slot-lecturer">Nurasma' Binti Shamsuddin</div>
+      <div class="slot-action">
+        <button class="manage-btn" onclick="openModal('Nurasma\' Binti Shamsuddin')">Manage Slots</button>
+      </div>
+    </div>
+    <div class="slot-item">
+      <div class="slot-no">2</div>
+      <div class="slot-lecturer">Rubiah Binti Mohd Yunus</div>
+      <div class="slot-action">
+        <button class="manage-btn" onclick="openModal('Rubiah Binti Mohd Yunus')">Manage Slots</button>
+      </div>
+    </div>
+    <div class="slot-item">
+      <div class="slot-no">3</div>
+      <div class="slot-lecturer">Ruzanna Binti Abdullah</div>
+      <div class="slot-action">
+        <button class="manage-btn" onclick="openModal('Ruzanna Binti Abdullah')">Manage Slots</button>
+      </div>
     </div>
   </div>
-  <div class="slot-item">
-    <div class="slot-no">2</div>
-    <div class="slot-lecturer">Rubiah Binti Mohd Yunus</div>
-    <div class="slot-action">
-      <button class="manage-btn" onclick="openModal('Rubiah Binti Mohd Yunus')">Manage Slots</button>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal()">×</button>
+      <div class="modal-header" id="modalTitle">Manage Slots</div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Date</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="slotTable"></tbody>
+      </table>
+
+      <div class="bottom-buttons">
+        <button class="add-btn" onclick="addSlot()">Add</button>
+      </div>
     </div>
   </div>
-  <div class="slot-item">
-    <div class="slot-no">3</div>
-    <div class="slot-lecturer">Ruzanna Binti Abdullah</div>
-    <div class="slot-action">
-      <button class="manage-btn" onclick="openModal('Ruzanna Binti Abdullah')">Manage Slots</button>
-    </div>
-  </div>
-</div>
 
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <button class="close-btn" onclick="closeModal()">×</button>
-    <div class="modal-header" id="modalTitle">Manage Slots</div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>No.</th>
-          <th>Date</th>
-          <th>Start</th>
-          <th>End</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody id="slotTable"></tbody>
-    </table>
-    
-
-    <div class="bottom-buttons">
-      <button class="add-btn" onclick="addSlot()">Add</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  let currentLecturer = '';
-  let editIndex = -1;
-
-  // slots now hold { date: 'YYYY-MM-DD', time: 'any text' }
-  let slots = {
-  "Nurasma' Binti Shamsuddin": [
-    { date: '2025-05-02', start: '16:00', end: '18:00' },
-    { date: '2025-05-05', start: '10:00', end: '12:00' },
-    { date: '2025-05-05', start: '14:00', end: '16:00' }
-  ],
-  "Rubiah Binti Mohd Yunus": [],
-  "Ruzanna Binti Abdullah": []
-};
-
-function openModal(lecturerName) {
-    currentLecturer = lecturerName;
-    editIndex = -1;
-    renderSlots();
-    document.getElementById('modalTitle').textContent = lecturerName;
-    document.getElementById('modal').style.display = 'flex';
-  }
-  function closeModal() {
-    document.getElementById('modal').style.display = 'none';
-  }
-  function formatDate(dateStr) {
-    const [y,m,d] = dateStr.split('-');
-    return `${d}/${m}/${y}`;
-  }
-  function getTodayMY() {
-    const now = new Date();
-    now.setHours(now.getHours() + 8);
-    return now.toISOString().split('T')[0];
-  }
-
-  function renderSlots() {
-    const table = document.getElementById('slotTable');
-    table.innerHTML = '';
-    const today = getTodayMY();
-
-    slots[currentLecturer].forEach((slot, idx) => {
-      const editing = idx === editIndex;
-      table.innerHTML += `
-        <tr>
-          <td>${idx + 1}</td>
-          <td>
-            ${editing
-              ? `<input type="date" min="${today}" value="${slot.date}"
-                        onchange="updateSlot(${idx}, 'date', this.value)">`
-              : formatDate(slot.date)}
-          </td>
-          <td>
-            ${editing
-              ? `<input type="time" value="${slot.start}"
-                        onchange="updateSlot(${idx}, 'start', this.value)">`
-              : slot.start}
-          </td>
-          <td>
-            ${editing
-              ? `<input type="time" value="${slot.end}"
-                        onchange="updateSlot(${idx}, 'end', this.value)">`
-              : slot.end}
-          </td>
-          <td>
-            <button class="edit-btn" onclick="toggleEdit(${idx})">
-              ${editing ? 'Done' : 'Edit'}
-            </button>
-            <button class="delete-btn" onclick="deleteSlot(${idx})">
-              Delete
-            </button>
-          </td>
-        </tr>
-      `;
+  <script>
+    // Back button
+    document.getElementById('backBtn').addEventListener('click', () => {
+      if (confirm('Are you sure you want to go back to the homepage?')) {
+        window.location.href = 'admin.html';
+      }
     });
-  }
 
-  function toggleEdit(i) {
-    editIndex = (editIndex === i ? -1 : i);
-    renderSlots();
-  }
+    let currentLecturer = '';
+    let editIndex = -1;
 
-  function updateSlot(i, field, val) {
-    slots[currentLecturer][i][field] = val;
-  }
+    let slots = {
+      "Nurasma' Binti Shamsuddin": [
+        { date: '2025-05-02', start: '16:00', end: '18:00' },
+        { date: '2025-05-05', start: '10:00', end: '12:00' },
+        { date: '2025-05-05', start: '14:00', end: '16:00' }
+      ],
+      "Rubiah Binti Mohd Yunus": [],
+      "Ruzanna Binti Abdullah": []
+    };
 
-  function deleteSlot(i) {
-    slots[currentLecturer].splice(i, 1);
-    renderSlots();
-  }
+    function openModal(lecturerName) {
+      currentLecturer = lecturerName;
+      editIndex = -1;
+      renderSlots();
+      document.getElementById('modalTitle').textContent = lecturerName;
+      document.getElementById('modal').style.display = 'flex';
+    }
 
-  function addSlot() {
-    slots[currentLecturer].push({
-      date: getTodayMY(),
-      start: '08:00',
-      end: '10:00'
-    });
-    editIndex = slots[currentLecturer].length - 1;
-    renderSlots();
-  }
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
 
-  function searchLecturers() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
-    document.querySelectorAll('.slot-item').forEach(item => {
-      item.style.display =
-        item.querySelector('.slot-lecturer').textContent.toLowerCase().includes(q)
+    function formatDate(dateStr) {
+      const [y, m, d] = dateStr.split('-');
+      return `${d}/${m}/${y}`;
+    }
+
+    function getTodayMY() {
+      const now = new Date();
+      now.setHours(now.getHours() + 8);
+      return now.toISOString().split('T')[0];
+    }
+
+    function renderSlots() {
+      const table = document.getElementById('slotTable');
+      table.innerHTML = '';
+      const today = getTodayMY();
+
+      slots[currentLecturer].forEach((slot, idx) => {
+        const editing = idx === editIndex;
+        table.innerHTML += `
+          <tr>
+            <td>${idx + 1}</td>
+            <td>${editing
+              ? `<input type="date" min="${today}" value="${slot.date}" onchange="updateSlot(${idx}, 'date', this.value)">`
+              : formatDate(slot.date)}</td>
+            <td>${editing
+              ? `<input type="time" value="${slot.start}" onchange="updateSlot(${idx}, 'start', this.value)">`
+              : slot.start}</td>
+            <td>${editing
+              ? `<input type="time" value="${slot.end}" onchange="updateSlot(${idx}, 'end', this.value)">`
+              : slot.end}</td>
+            <td>
+              <button class="edit-btn" onclick="toggleEdit(${idx})">${editing ? 'Done' : 'Edit'}</button>
+              <button class="delete-btn" onclick="deleteSlot(${idx})">Delete</button>
+            </td>
+          </tr>`;
+      });
+    }
+
+    function toggleEdit(i) {
+      editIndex = (editIndex === i ? -1 : i);
+      renderSlots();
+    }
+
+    function updateSlot(i, field, val) {
+      slots[currentLecturer][i][field] = val;
+    }
+
+    function deleteSlot(i) {
+      slots[currentLecturer].splice(i, 1);
+      renderSlots();
+    }
+
+    function addSlot() {
+      slots[currentLecturer].push({ date: getTodayMY(), start: '08:00', end: '10:00' });
+      editIndex = slots[currentLecturer].length - 1;
+      renderSlots();
+    }
+
+    function searchLecturers() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      document.querySelectorAll('.slot-item').forEach(item => {
+        item.style.display = item.querySelector('.slot-lecturer').textContent.toLowerCase().includes(q)
           ? 'flex' : 'none';
-    });
-  }
-</script>
+      });
+    }
+  </script>
+
 </body>
 </html>
