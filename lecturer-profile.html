@@ -1,10 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Lecturer Profile – Nurasma' Binti Shamsuddin</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #1E3A8A;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-weight: bold;
+      font-size: 20px;
+    }
+    .top-nav a {
+      color: white;
+      text-decoration: none;
+    }
+    .container {
+      max-width: 1800px;
+      margin: 30px auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 10px;
+    }
+    .card {
+      padding: 20px;
+      background-color: #f9f9f9;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+    .appointment-section {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+    }
+    .calendar-box {
+      margin-bottom: 20px;
+    }
+    
+    .time-slots h3 {
+      margin-top: 0;
+    }
+    .time-slots button {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -13,15 +69,70 @@
       <a href="student.html">← Back to Dashboard</a>
     </nav>
   </header>
+
   <div class="container">
     <main>
       <div class="card">
         <h2>Nurasma' Binti Shamsuddin</h2>
         <p><strong>Department:</strong> Computing and Informatics</p>
         <p><strong>Email:</strong> nurasma.shamsuddin@example.com</p>
-        <p><strong>Office Hours:</strong> Mon &amp; Wed, 2–4 PM</p>
+        <p><strong>Office Hours:</strong> Mon &amp; Friday, 8AM – 6PM</p>
+      </div>
+
+      <!-- Booking Info Section -->
+      <div class="appointment-section" style="display: flex; gap: 40px;">
+        <!-- Calendar -->
+        <div class="calendar-box" style="flex: 1;">
+          <label for="appointment-date"><strong>Select Date:</strong></label>
+          <input type="text" id="appointment-date" />
+        </div>
+      
+        <!-- Time Slots -->
+        <div class="time-slots" style="flex: 1;">
+          <h3 style="color: red;">Time available</h3>
+          <div style="margin-bottom: 10px;">
+            9am - 11am
+            <button onclick="bookTime('8am-10am')" style="margin-left: 10px;">Book</button>
+            <button id="cancel-8am-10am" onclick="cancelTime('8am-10am')" style="margin-left: 5px; display: none;">Cancel</button>
+          </div>
+          <div style="margin-bottom: 10px;">
+            12pm - 2pm
+            <button onclick="bookTime('10am-12pm')" style="margin-left: 10px;">Book</button>
+            <button id="cancel-10am-12pm" onclick="cancelTime('10am-12pm')" style="margin-left: 5px; display: none;">Cancel</button>
+          </div>
+          <div style="margin-bottom: 10px;">
+            3pm - 5pm
+            <button onclick="bookTime('4pm-6pm')" style="margin-left: 10px;">Book</button>
+            <button id="cancel-4pm-6pm" onclick="cancelTime('4pm-6pm')" style="margin-left: 5px; display: none;">Cancel</button>
+          </div>
+        </div>
       </div>
     </main>
   </div>
+
+  <script>
+    function bookTime(slot) {
+      document.getElementById('cancel-8am-10am').style.display = 'none';
+      document.getElementById('cancel-10am-12pm').style.display = 'none';
+      document.getElementById('cancel-4pm-6pm').style.display = 'none';
+
+      const cancelButton = document.getElementById('cancel-' + slot);
+      if (cancelButton) {
+        cancelButton.style.display = 'inline-block';
+      }
+    }
+
+    function cancelTime(slot) {
+      const cancelButton = document.getElementById('cancel-' + slot);
+      if (cancelButton) {
+        cancelButton.style.display = 'none';
+      }
+    }
+    flatpickr("#appointment-date", {
+  inline: true,
+  minDate: "today",
+  dateFormat: "Y-m-d"
+});
+  </script>
 </body>
 </html>

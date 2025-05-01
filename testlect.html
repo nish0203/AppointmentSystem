@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login – Uni Bookings</title>
+  <style>
+    /* Reset & Base styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+    }
+
+    .login-card {
+      background: #fff;
+      padding: 2rem 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .login-card h2 {
+      margin-bottom: 1rem;
+      color: #4a4a4a;
+      letter-spacing: 1px;
+    }
+
+    .role-selection {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .role-btn {
+      flex: 1;
+      padding: 0.6rem 0;
+      border: 2px solid #667eea;
+      background: white;
+      color: #667eea;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .role-btn.active,
+    .role-btn:hover {
+      background: #667eea;
+      color: white;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin: 0.5rem 0 0.2rem;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1.5px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus {
+      border-color: #667eea;
+      outline: none;
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 0.75rem;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background: #5a67d8;
+    }
+
+    .error-msg {
+      background: #ffe0e0;
+      color: #b00020;
+      padding: 0.5rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      display: none;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <h2>Uni Bookings Login</h2>
+    <form id="login-form">
+      <div id="error-msg" class="error-msg" aria-live="polite"></div>
+
+      <div class="role-selection">
+        <button type="button" class="role-btn" data-role="student">Student</button>
+        <button type="button" class="role-btn" data-role="lecturer">Lecturer</button>
+      </div>
+
+      <label for="user-id">ID</label>
+      <input type="text" id="user-id" placeholder="Enter your ID" />
+
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Enter your password" />
+
+      <button type="submit" class="submit-btn">Log In</button>
+    </form>
+  </div>
+
+  <script>
+    (function() {
+      const form = document.getElementById('login-form');
+      const roleBtns = document.querySelectorAll('.role-btn');
+      const errorEl = document.getElementById('error-msg');
+      let selectedRole = null;
+
+      function showError(msg) {
+        errorEl.textContent = msg;
+        errorEl.style.display = 'block';
+      }
+      function clearError() {
+        errorEl.textContent = '';
+        errorEl.style.display = 'none';
+      }
+
+      roleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          roleBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          selectedRole = btn.dataset.role;
+          clearError();
+        });
+      });
+
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        clearError();
+
+        const idValue = document.getElementById('user-id').value.trim();
+        const passValue = document.getElementById('password').value.trim();
+
+        if (!idValue) return showError('ID cannot be blank');
+        if (!passValue) return showError('Password cannot be blank');
+        if (!selectedRole) return showError('Please select Student or Lecturer');
+
+        // Admin shortcut
+        if (idValue === 'admin' && passValue === 'admin') {
+          window.location.href = 'admin.html';
+          return;
+        }
+
+        // Numeric ID validation
+        if (!/^[0-9]+$/.test(idValue)) return showError('ID must be numeric');
+        // Exact format check
+        if (idValue !== '1231201369') return showError('ID must be exactly 1231201369');
+
+        // Redirect based on role
+        window.location.href = selectedRole + '.html';
+      });
+
+      clearError();
+    })();
+  </script>
+</body>
+</html>
