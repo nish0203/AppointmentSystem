@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Booked Appointment</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9fafb; margin: 0; padding: 20px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+    h1 { margin: 0; }
+    #searchInput { padding: 8px 12px; width: 250px; border-radius: 20px; border: 1px solid #ccc; transition: 0.3s; }
+    #searchInput:focus { outline: none; border-color: #1E3A8A; box-shadow: 0 0 5px rgba(30, 58, 138, 0.5); }
+
+    .slot-list { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
+    .slot-header, .slot-item { display: flex; padding: 12px 15px; border-bottom: 1px solid #ddd; align-items: center; }
+    .slot-header { background-color: rgb(90, 90, 90); color: white; font-weight: bold; }
+    .slot-item:nth-child(even) { background-color: #f3f4f6; }
+    .slot-no { width: 50px; }
+    .slot-lecturer { flex: 1; }
+    .slot-action { width: 160px; text-align: center; }
+    .manage-btn, .edit-btn, .delete-btn, .add-btn { padding: 6px 12px; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 5px; }
+    .manage-btn, .edit-btn, .delete-btn { background-color: #1E3A8A; }
+    .add-btn { background-color: #28a745; }
+    .manage-btn:hover, .edit-btn:hover, .delete-btn:hover { background-color: #374fc7; }
+    .add-btn:hover { background-color: #218838; }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+    .modal-content { background: white; padding: 20px; border-radius: 8px; width: 800px; max-width: 90%; position: relative; }
+    .modal-header { font-weight: bold; margin-bottom: 10px; font-size: 20px; }
+    .close-btn { position: absolute; top: 10px; right: 15px; background: transparent; border: none; font-size: 20px; cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+    th, td { padding: 10px; text-align: left; border: none; }
+    th { background-color: rgb(90, 90, 90); color: white; }
+    tr:nth-child(even) { background-color: #f3f4f6; }
+    .bottom-buttons { text-align: left; margin-top: 10px; }
+    input[type="date"], select, input[type="text"] { padding: 5px; border-radius: 4px; margin: 5px 0; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Booked Appointment</h1>
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="🔍 Search lecturer..." oninput="searchLecturers()">
+    </div>
+</div>
+
+<div class="slot-list">
+  <div class="slot-header">
+    <div class="slot-no">No.</div>
+    <div class="slot-lecturer">Lecturer</div>
+    <div class="slot-action">Action</div>
+  </div>
+  <div class="slot-item">
+    <div class="slot-no">1</div>
+    <div class="slot-lecturer">Nurasma' Binti Shamsuddin</div>
+    <div class="slot-action">
+      <button class="manage-btn" onclick="openModal('Nurasma\' Binti Shamsuddin')">Manage Slots</button>
+    </div>
+  </div>
+  <div class="slot-item">
+    <div class="slot-no">2</div>
+    <div class="slot-lecturer">Rubiah Binti Mohd Yunus</div>
+    <div class="slot-action">
+      <button class="manage-btn" onclick="openModal('Rubiah Binti Mohd Yunus')">Manage Slots</button>
+    </div>
+  </div>
+  <div class="slot-item">
+    <div class="slot-no">3</div>
+    <div class="slot-lecturer">Ruzanna Binti Abdullah</div>
+    <div class="slot-action">
+      <button class="manage-btn" onclick="openModal('Ruzanna Binti Abdullah')">Manage Slots</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <button class="close-btn" onclick="closeModal()">×</button>
+    <div class="modal-header" id="modalTitle">Manage Slots</div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Student ID</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="slotTable"></tbody>
+    </table>
+
+    <div class="bottom-buttons">
+      <button class="add-btn" onclick="addSlot()">Add</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentLecturer = '';
+  let editIndex = -1;
+
+  let slots = {
+    "Nurasma' Binti Shamsuddin": [
+      { date: '2025-05-02', time: '4-6', studentId: '12345678' },
+      { date: '2025-05-05', time: '10-12', studentId: '23456789' },
+      { date: '2025-05-05', time: '2-4', studentId: '34567890' }
+    ],
+    "Rubiah Binti Mohd Yunus": [],
+    "Ruzanna Binti Abdullah": []
+  };
+
+  const timeSlots = [
+    { label: '8:00 AM - 10:00 AM', value: '8-10' },
+    { label: '10:00 AM - 12:00 PM', value: '10-12' },
+    { label: '12:00 PM - 2:00 PM', value: '12-2' },
+    { label: '2:00 PM - 4:00 PM', value: '2-4' },
+    { label: '4:00 PM - 6:00 PM', value: '4-6' },
+    { label: '6:00 PM - 8:00 PM', value: '6-8' },
+  ];
+
+  function openModal(lecturerName) {
+    currentLecturer = lecturerName;
+    editIndex = -1;
+    renderSlots();
+    document.getElementById('modalTitle').textContent = lecturerName;
+    document.getElementById('modal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('modal').style.display = 'none';
+  }
+
+  function formatDate(dateStr) {
+    const [year, month, day] = dateStr.split('-');
+    return `${day}/${month}/${year}`;
+  }
+
+  function getTodayMY() {
+    const now = new Date();
+    now.setHours(now.getHours() + 8); // Malaysia is UTC+8
+    return now.toISOString().split('T')[0];
+  }
+
+  function renderSlots() {
+    const table = document.getElementById('slotTable');
+    table.innerHTML = '';
+    const today = getTodayMY();
+
+    slots[currentLecturer].forEach((slot, index) => {
+      const isEditing = index === editIndex;
+      table.innerHTML += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${isEditing ? `<input type="date" min="${today}" value="${slot.date}" onchange="updateSlot(${index}, 'date', this.value)">` : formatDate(slot.date)}</td>
+          <td>${isEditing ? `
+            <select onchange="updateSlot(${index}, 'time', this.value)">
+              ${timeSlots.map(option => 
+                `<option value="${option.value}" ${slot.time === option.value ? 'selected' : ''}>${option.label}</option>`
+              ).join('')}
+            </select>` : timeSlots.find(t => t.value === slot.time)?.label || ''}
+          </td>
+          <td>${isEditing ? `<input type="text" value="${slot.studentId}" onchange="updateSlot(${index}, 'studentId', this.value)">` : slot.studentId}</td>
+          <td>
+            <button class="edit-btn" onclick="toggleEdit(${index})">${isEditing ? 'Done' : 'Edit'}</button>
+            <button class="delete-btn" onclick="deleteSlot(${index})">Delete</button>
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  function toggleEdit(index) {
+    if (editIndex === index) {
+      editIndex = -1;
+    } else {
+      editIndex = index;
+    }
+    renderSlots();
+  }
+
+  function updateSlot(index, field, value) {
+    slots[currentLecturer][index][field] = value;
+  }
+
+  function deleteSlot(index) {
+    slots[currentLecturer].splice(index, 1);
+    renderSlots();
+  }
+
+  function addSlot() {
+    const newIndex = slots[currentLecturer].length;
+    slots[currentLecturer].push({ date: getTodayMY(), time: '8-10', studentId: '' }); // Default values for new slot
+    editIndex = newIndex; // Set the new slot to be in edit mode
+    renderSlots();
+  }
+  
+  function searchLecturers() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const items = document.querySelectorAll('.slot-item');
+    items.forEach(item => {
+      const lecturerName = item.querySelector('.slot-lecturer').textContent.toLowerCase();
+      item.style.display = lecturerName.includes(input) ? 'flex' : 'none';
+    });
+  }
+</script>
+
+</body>
+</html>
