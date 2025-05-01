@@ -4,115 +4,143 @@
   <meta charset="UTF-8">
   <title>Manage Administrator</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f6fafa;
-      padding: 20px;
-    }
-    h2 {
-      color: #000;
-    }
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f6fafa;
+  padding: 20px;
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: white;
-    }
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+h2 {
+  margin: 0;
+  color: #000;
+}
 
-    th, td {
-      border: 1px solid #ddd;
-      padding: 12px;
-      text-align: left;
-    }
+/* Search bar */
+#searchInput {
+  padding: 8px 12px;
+  width: 250px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  transition: 0.3s;
+  margin: 0;           /* no extra top/bottom margin */
+}
+#searchInput:focus {
+  outline: none;
+  border-color: #1E3A8A;
+  box-shadow: 0 0 5px rgba(30, 58, 138, 0.5);
+}
 
-    thead {
-      background-color: #333;
-      color: white;
-    }
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+th, td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+thead {
+  background-color: #333;
+  color: white;
+}
 
-    .action-button {
-      background-color: #3b57c0;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      margin-right: 5px;
-      cursor: pointer;
-      border-radius: 4px;
-    }
+/* Buttons */
+.action-button {
+  background-color: #3b57c0;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  margin-right: 5px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.action-button:hover {
+  background-color: #2f45a0;
+}
+.add-button {
+  margin-top: 20px;
+  background-color: #28a745;
+}
+.add-button:hover {
+  background-color: #218838;
+}
 
-    .action-button:hover {
-      background-color: #2f45a0;
-    }
+/* Modal backdrop */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+}
 
-    .add-button {
-      margin-top: 20px;
-      background-color: #28a745;
-    }
+/* Modal content */
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 400px;
+  border-radius: 8px;
+}
 
-    .add-button:hover {
-      background-color: #218838;
-    }
+/* Only modal inputs get full width */
+.modal-content input[type="text"],
+.modal-content input[type="email"] {
+  width: 100%;
+  padding: 8px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
 
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0, 0, 0, 0.4);
-    }
+/* Close icon */
+.close {
+  float: right;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    .modal-content {
-      background-color: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 400px;
-      border-radius: 8px;
-    }
-    
-    .close {
-      float: right;
-      font-size: 20px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+/* Submit button inside modal */
+.submit-btn {
+  background-color: #3b57c0;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.submit-btn:hover {
+  background-color: #2f45a0;
+}
 
-    input[type="text"], input[type="email"] {
-      width: 100%;
-      padding: 8px;
-      margin-top: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    
-    .submit-btn {
-      background-color: #3b57c0;
-      color: white;
-      padding: 8px 14px;
-      border: none;
-      cursor: pointer;
-      border-radius: 4px;
-    }
+/* Back-to-home button */
+#backBtn {
+  background-color: #00aaff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+#backBtn:hover {
+  background-color: #14214e;
+}
 
-    .submit-btn:hover {
-      background-color: #2f45a0;
-    }
-
-    #backBtn {
-      background-color: #00aaff;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 1rem;
-      cursor: pointer;
-      border-radius: 4px;
-      }
-
-    #backBtn:hover {
-        background-color: #14214e;
-    }
   </style>
 </head>
 <body>
@@ -120,7 +148,10 @@
   <!-- Fixed Back button -->
   <button id="backBtn">Go back to homepage</button>
 
-  <h2>Manage Administrator</h2>
+  <div class="header">
+    <h2>Manage Administrator</h2>
+    <input type="text" id="searchInput" placeholder="Search name..." oninput="searchAdmins()">
+  </div>
 
   <table id="adminTable">
     <thead>
@@ -173,7 +204,6 @@
         <input type="text" id="adminName" placeholder="Admin Name" required>
         <input type="email" id="adminEmail" placeholder="Admin Email" required>
         <input type="text" id="adminPassword" placeholder="Admin Password" required>
-        <!-- locked to AD001 -->
         <input type="text" id="adminCreatedBy" value="AD001" readonly>
         <button type="submit" class="submit-btn">Save</button>
       </form>
@@ -181,41 +211,39 @@
   </div>
 
   <script>
-    // back button logic
     document.getElementById('backBtn').addEventListener('click', () => {
       if (confirm('Are you sure you want to go back to the homepage?')) {
         window.location.href = 'admin.html';
       }
     });
-  
+
     let editTargetRow = null;
-  
+
     function openModal(edit = false) {
       document.getElementById("addModal").style.display = "block";
       document.getElementById("modalTitle").textContent = edit
         ? "Edit Administrator"
         : "Add New Administrator";
     }
-  
+
     function closeModal() {
       document.getElementById("addModal").style.display = "none";
       document.getElementById("adminForm").reset();
       editTargetRow = null;
     }
-  
+
     function submitAdmin(event) {
       event.preventDefault();
       const id       = document.getElementById("adminId").value;
       const name     = document.getElementById("adminName").value;
       const email    = document.getElementById("adminEmail").value;
       const password = document.getElementById("adminPassword").value;
-      // if editing, keep whatever the row already has (NULL or AD001), otherwise default to AD001
       const createdBy = editTargetRow
         ? editTargetRow.cells[5].textContent
         : 'AD001';
-  
+
       const tbody = document.querySelector("#adminTable tbody");
-  
+
       if (editTargetRow) {
         editTargetRow.cells[1].textContent = id;
         editTargetRow.cells[2].textContent = name;
@@ -235,40 +263,44 @@
           <button class="action-button" onclick="deleteRow(this)">Delete</button>
         `;
       }
-  
+
       renumberRows();
       closeModal();
     }
-  
+
     function editAdmin(button) {
       editTargetRow = button.closest("tr");
-  
       document.getElementById("adminId").value        = editTargetRow.cells[1].textContent;
       document.getElementById("adminName").value      = editTargetRow.cells[2].textContent;
       document.getElementById("adminEmail").value     = editTargetRow.cells[3].textContent;
       document.getElementById("adminPassword").value  = editTargetRow.cells[4].textContent;
-      // show exactly whatever the row has (NULL or AD001)
       document.getElementById("adminCreatedBy").value = editTargetRow.cells[5].textContent;
-  
       openModal(true);
     }
-  
+
     function deleteRow(button) {
       button.closest("tr").remove();
       renumberRows();
     }
-  
+
     function renumberRows() {
       document.querySelectorAll("#adminTable tbody tr").forEach((row, i) => {
         row.cells[0].textContent = i + 1;
       });
     }
-  
+
+    function searchAdmins() {
+      const filter = document.getElementById('searchInput').value.toLowerCase();
+      document.querySelectorAll('#adminTable tbody tr').forEach(row => {
+        const name = row.cells[2].textContent.toLowerCase();
+        row.style.display = name.includes(filter) ? '' : 'none';
+      });
+    }
+
     window.onclick = e => {
       if (e.target === document.getElementById("addModal")) closeModal();
     }
   </script>
-  
 
 </body>
 </html>
