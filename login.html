@@ -110,6 +110,14 @@
       display: none;
       font-size: 0.9rem;
     }
+
+    /* Loading message */
+    .loading-msg {
+      display: none;
+      margin-top: 1rem;
+      font-weight: bold;
+      color: #667eea;
+    }
   </style>
 </head>
 <body>
@@ -131,6 +139,7 @@
 
       <button type="submit" class="submit-btn">Log In</button>
     </form>
+    <div id="loading-msg" class="loading-msg">Logging in... Please wait.</div>
   </div>
 
   <script>
@@ -138,8 +147,9 @@
       const form = document.getElementById('login-form');
       const roleBtns = document.querySelectorAll('.role-btn');
       const errorEl = document.getElementById('error-msg');
+      const loadingEl = document.getElementById('loading-msg');
       let selectedRole = null;
-
+  
       function showError(msg) {
         errorEl.textContent = msg;
         errorEl.style.display = 'block';
@@ -148,45 +158,57 @@
         errorEl.textContent = '';
         errorEl.style.display = 'none';
       }
-
+  
+      // Toggleable role buttons
       roleBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-          roleBtns.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          selectedRole = btn.dataset.role;
           clearError();
+          if (btn.classList.contains('active')) {
+            btn.classList.remove('active');
+            selectedRole = null;
+          } else {
+            roleBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedRole = btn.dataset.role;
+          }
         });
       });
-
+  
       form.addEventListener('submit', e => {
         e.preventDefault();
         clearError();
-
+  
         const idValue = document.getElementById('user-id').value.trim();
         const passValue = document.getElementById('password').value.trim();
-
+  
         if (!idValue) return showError('ID cannot be blank');
         if (!passValue) return showError('Password cannot be blank');
-        if (!selectedRole) return showError('Please select Student or Lecturer');
+  
+        // Admin shortcut ONLY if no role is selected
+        const isAdmin = idValue === 'AD001' && passValue === 'admin' && !selectedRole;
+        if (!isAdmin && !selectedRole) return showError('Please select Student or Lecturer');
+  
+        // Numeric ID validation for non-admin
+        if (!isAdmin && !/^[0-9]+$/.test(idValue))
+          return showError('ID must be numeric');
+  
+        if (!isAdmin && idValue.length !== 10)
+          return showError('ID must be exactly 10 digits long');
 
-        // Admin shortcut
-        if (idValue === 'admin' && passValue === 'admin') {
-          window.location.href = 'admin.html';
-          return;
-        }
-
-        // Numeric ID validation
-        if (!/^[0-9]+$/.test(idValue)) 
-        return showError('ID must be numeric');
-      
-        // Length check
-        if (idValue.length !== 10) 
-        return showError('ID must be exactly 10 digits long');
-
-        // Redirect based on role
-        window.location.href = selectedRole + '.html';
+        // Show loading message and disable form
+        loadingEl.style.display = 'block';
+        form.querySelectorAll('input, button').forEach(el => el.disabled = true);
+  
+        // Delay redirect by 2 seconds
+        setTimeout(() => {
+          if (isAdmin) {
+            window.location.href = 'admin.html';
+          } else {
+            window.location.href = selectedRole + '.html';
+          }
+        }, 2000);
       });
-
+  
       clearError();
     })();
   </script>

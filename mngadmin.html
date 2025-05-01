@@ -12,20 +12,24 @@
     h2 {
       color: #000;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       background-color: white;
     }
+
     th, td {
       border: 1px solid #ddd;
       padding: 12px;
       text-align: left;
     }
+
     thead {
       background-color: #333;
       color: white;
     }
+
     .action-button {
       background-color: #3b57c0;
       color: white;
@@ -35,26 +39,29 @@
       cursor: pointer;
       border-radius: 4px;
     }
+
     .action-button:hover {
       background-color: #2f45a0;
     }
+
     .add-button {
       margin-top: 20px;
       background-color: #28a745;
     }
+
     .add-button:hover {
       background-color: #218838;
     }
+
     .modal {
       display: none;
       position: fixed;
       z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
       background-color: rgba(0, 0, 0, 0.4);
     }
+
     .modal-content {
       background-color: #fff;
       margin: 10% auto;
@@ -63,12 +70,14 @@
       width: 400px;
       border-radius: 8px;
     }
+    
     .close {
       float: right;
       font-size: 20px;
       font-weight: bold;
       cursor: pointer;
     }
+
     input[type="text"], input[type="email"] {
       width: 100%;
       padding: 8px;
@@ -77,6 +86,7 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
+    
     .submit-btn {
       background-color: #3b57c0;
       color: white;
@@ -85,12 +95,30 @@
       cursor: pointer;
       border-radius: 4px;
     }
+
     .submit-btn:hover {
       background-color: #2f45a0;
+    }
+
+    #backBtn {
+      background-color: #00aaff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      }
+
+    #backBtn:hover {
+        background-color: #14214e;
     }
   </style>
 </head>
 <body>
+
+  <!-- Fixed Back button -->
+  <button id="backBtn">Go back to homepage</button>
 
   <h2>Manage Administrator</h2>
 
@@ -111,15 +139,18 @@
         <td>1</td>
         <td>AD001</td>
         <td>NG ZI RUI</td>
-        <td>ngzirui@gmail.com</td>
+        <td>ngzirui@staff.mmu.edu.my</td>
         <td>ng_123</td>
         <td>NULL</td>
+        <td>
+          <button class="action-button" onclick="editAdmin(this)">Edit</button>
+        </td>
       </tr>
       <tr>
         <td>2</td>
         <td>AD002</td>
         <td>LIEU ZHAN WEI</td>
-        <td>weiwei@gmail.com</td>
+        <td>weiwei@staff.mmu.edu.my</td>
         <td>wei_123</td>
         <td>AD001</td>
         <td>
@@ -142,36 +173,49 @@
         <input type="text" id="adminName" placeholder="Admin Name" required>
         <input type="email" id="adminEmail" placeholder="Admin Email" required>
         <input type="text" id="adminPassword" placeholder="Admin Password" required>
-        <input type="text" id="adminCreatedBy" placeholder="Created By" required>
+        <!-- locked to AD001 -->
+        <input type="text" id="adminCreatedBy" value="AD001" readonly>
         <button type="submit" class="submit-btn">Save</button>
       </form>
     </div>
   </div>
 
   <script>
+    // back button logic
+    document.getElementById('backBtn').addEventListener('click', () => {
+      if (confirm('Are you sure you want to go back to the homepage?')) {
+        window.location.href = 'admin.html';
+      }
+    });
+  
     let editTargetRow = null;
-
+  
     function openModal(edit = false) {
       document.getElementById("addModal").style.display = "block";
-      document.getElementById("modalTitle").textContent = edit ? "Edit Administrator" : "Add New Administrator";
+      document.getElementById("modalTitle").textContent = edit
+        ? "Edit Administrator"
+        : "Add New Administrator";
     }
-
+  
     function closeModal() {
       document.getElementById("addModal").style.display = "none";
       document.getElementById("adminForm").reset();
       editTargetRow = null;
     }
-
+  
     function submitAdmin(event) {
       event.preventDefault();
-      const id = document.getElementById("adminId").value;
-      const name = document.getElementById("adminName").value;
-      const email = document.getElementById("adminEmail").value;
+      const id       = document.getElementById("adminId").value;
+      const name     = document.getElementById("adminName").value;
+      const email    = document.getElementById("adminEmail").value;
       const password = document.getElementById("adminPassword").value;
-      const createdBy = document.getElementById("adminCreatedBy").value;
-
-      const table = document.getElementById("adminTable").getElementsByTagName("tbody")[0];
-
+      // if editing, keep whatever the row already has (NULL or AD001), otherwise default to AD001
+      const createdBy = editTargetRow
+        ? editTargetRow.cells[5].textContent
+        : 'AD001';
+  
+      const tbody = document.querySelector("#adminTable tbody");
+  
       if (editTargetRow) {
         editTargetRow.cells[1].textContent = id;
         editTargetRow.cells[2].textContent = name;
@@ -179,58 +223,52 @@
         editTargetRow.cells[4].textContent = password;
         editTargetRow.cells[5].textContent = createdBy;
       } else {
-        const newRow = table.insertRow();
-        const cells = [];
-        for (let i = 0; i < 7; i++) {
-          cells[i] = newRow.insertCell(i);
-        }
-
-        cells[1].textContent = id;
-        cells[2].textContent = name;
-        cells[3].textContent = email;
-        cells[4].textContent = password;
-        cells[5].textContent = createdBy;
-        cells[6].innerHTML = `
+        const newRow = tbody.insertRow();
+        newRow.insertCell(0).textContent = tbody.rows.length;
+        newRow.insertCell(1).textContent = id;
+        newRow.insertCell(2).textContent = name;
+        newRow.insertCell(3).textContent = email;
+        newRow.insertCell(4).textContent = password;
+        newRow.insertCell(5).textContent = createdBy;
+        newRow.insertCell(6).innerHTML = `
           <button class="action-button" onclick="editAdmin(this)">Edit</button>
           <button class="action-button" onclick="deleteRow(this)">Delete</button>
         `;
       }
-
+  
       renumberRows();
       closeModal();
     }
-
+  
     function editAdmin(button) {
       editTargetRow = button.closest("tr");
-
-      document.getElementById("adminId").value = editTargetRow.cells[1].textContent;
-      document.getElementById("adminName").value = editTargetRow.cells[2].textContent;
-      document.getElementById("adminEmail").value = editTargetRow.cells[3].textContent;
-      document.getElementById("adminPassword").value = editTargetRow.cells[4].textContent;
+  
+      document.getElementById("adminId").value        = editTargetRow.cells[1].textContent;
+      document.getElementById("adminName").value      = editTargetRow.cells[2].textContent;
+      document.getElementById("adminEmail").value     = editTargetRow.cells[3].textContent;
+      document.getElementById("adminPassword").value  = editTargetRow.cells[4].textContent;
+      // show exactly whatever the row has (NULL or AD001)
       document.getElementById("adminCreatedBy").value = editTargetRow.cells[5].textContent;
-
+  
       openModal(true);
     }
-
+  
     function deleteRow(button) {
-      const row = button.closest("tr");
-      row.remove();
+      button.closest("tr").remove();
       renumberRows();
     }
-
+  
     function renumberRows() {
-      const rows = document.querySelectorAll("#adminTable tbody tr");
-      rows.forEach((row, index) => {
-        row.cells[0].textContent = index + 1;
+      document.querySelectorAll("#adminTable tbody tr").forEach((row, i) => {
+        row.cells[0].textContent = i + 1;
       });
     }
-
-    window.onclick = function(event) {
-      if (event.target === document.getElementById("addModal")) {
-        closeModal();
-      }
+  
+    window.onclick = e => {
+      if (e.target === document.getElementById("addModal")) closeModal();
     }
   </script>
+  
 
 </body>
 </html>
