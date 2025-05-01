@@ -253,6 +253,7 @@ main { flex: 1; padding: 24px; }
                 <TH>NO.</TH>
                 <th>BOOKING ID </th>
                 <th>SUBJECT</th>
+                <th>Status</th>
                 <th>Date</th>
                 <th>Time</th>
                 <th></th>
@@ -263,6 +264,7 @@ main { flex: 1; padding: 24px; }
                 <td>1&#41;</td>
                 <td>BK0002</td>
                 <td>BOOKING ISSUES</td>
+                <td style="color: green;">Resolved</td>
                 <td>2/5/2025</td>
                 <td>4pm - 6pm</td>
                 <td><button style="padding: 7px;" onclick="window.open('viewinquirylect.html', '_blank')" >View</button></td>
@@ -383,6 +385,7 @@ document.getElementById('save-availability-btn').addEventListener('click', () =>
 
 // Only target buttons inside the appointment requests table
 const appointmentTable = document.querySelector('#appointment-requests table');
+const appointmentTbody = appointmentTable.querySelector('tbody');
 
 appointmentTable.querySelectorAll('button').forEach(button => {
   button.addEventListener('click', () => {
@@ -392,8 +395,14 @@ appointmentTable.querySelectorAll('button').forEach(button => {
     } else if (action === 'reject') {
       alert('Reject successful');
     }
+
+    // After action, clear all rows in tbody
+    appointmentTbody.innerHTML = `
+      <tr><td colspan="6" style="text-align:center; color: #888;">No appointment request currently</td></tr>
+    `;
   });
 });
+
 
 
     </script>

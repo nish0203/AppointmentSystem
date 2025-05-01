@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Student</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f6fafa;
+      padding: 20px;
+    }
+    h2 {
+      color: #000;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+    thead {
+      background-color: #333;
+      color: white;
+    }
+    .action-button {
+      background-color: #3b57c0;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      margin-right: 5px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .action-button:hover {
+      background-color: #2f45a0;
+    }
+    .add-button {
+      margin-top: 20px;
+      background-color: #28a745;
+    }
+    .add-button:hover {
+      background-color: #218838;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 400px;
+      border-radius: 8px;
+    }
+    .close {
+      float: right;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    input[type="text"], input[type="email"] {
+      width: 100%;
+      padding: 8px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .submit-btn {
+      background-color: #3b57c0;
+      color: white;
+      padding: 8px 14px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .submit-btn:hover {
+      background-color: #2f45a0;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Manage Student</h2>
+
+<table id="studentTable">
+  <thead>
+    <tr>
+      <th>No.</th>
+      <th>STUDENT_ID</th>
+      <th>STUDENT_NAME</th>
+      <th>STUDENT_EMAIL</th>
+      <th>STUDENT_PASSWORD</th>
+      <th>CREATED_BY</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>1231201369</td>
+      <td>MUHAMMAD DANISH BIN MOHD</td>
+      <td>1231201369@student.mmu.edu.my</td>
+      <td>nish_1369</td>
+      <td>AD001</td>
+      <td>
+        <button class="action-button" onclick="editStudent(this)">Edit</button>
+        <button class="action-button" onclick="deleteRow(this)">Delete</button>
+      </td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>1231200797</td>
+      <td>KEK WEN LONG</td>
+      <td>1231200797@student.mmu.edu.my</td>
+      <td>wlong_0797</td>
+      <td>AD001</td>
+      <td>
+        <button class="action-button" onclick="editStudent(this)">Edit</button>
+        <button class="action-button" onclick="deleteRow(this)">Delete</button>
+      </td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>1231203073</td>
+      <td>AW ZHING YEE</td>
+      <td>1231203073@student.mmu.edu.my</td>
+      <td>awzy_3073</td>
+      <td>AD002</td>
+      <td>
+        <button class="action-button" onclick="editStudent(this)">Edit</button>
+        <button class="action-button" onclick="deleteRow(this)">Delete</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<button class="action-button add-button" onclick="openModal()">Add Student</button>
+
+<!-- Modal -->
+<div id="addModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3 id="modalTitle">Add New Student</h3>
+    <form id="studentForm" onsubmit="submitStudent(event)">
+      <input type="text" id="studentId" placeholder="Student ID" required>
+      <input type="text" id="studentName" placeholder="Student Name" required>
+      <input type="email" id="studentEmail" placeholder="Student Email" required>
+      <input type="text" id="studentPassword" placeholder="Student Password" required>
+      <input type="text" id="studentCreatedBy" placeholder="Created By" required>
+      <button type="submit" class="submit-btn">Save</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  let editTargetRow = null;
+
+  function openModal(edit = false) {
+    document.getElementById("addModal").style.display = "block";
+    document.getElementById("modalTitle").textContent = edit ? "Edit Student" : "Add New Student";
+  }
+
+  function closeModal() {
+    document.getElementById("addModal").style.display = "none";
+    document.getElementById("studentForm").reset();
+    editTargetRow = null;
+  }
+
+  function submitStudent(event) {
+    event.preventDefault();
+    const id = document.getElementById("studentId").value;
+    const name = document.getElementById("studentName").value;
+    const email = document.getElementById("studentEmail").value;
+    const password = document.getElementById("studentPassword").value;
+    const createdBy = document.getElementById("studentCreatedBy").value;
+
+    const table = document.getElementById("studentTable").getElementsByTagName("tbody")[0];
+
+    if (editTargetRow) {
+      editTargetRow.cells[1].textContent = id;
+      editTargetRow.cells[2].textContent = name;
+      editTargetRow.cells[3].textContent = email;
+      editTargetRow.cells[4].textContent = password;
+      editTargetRow.cells[5].textContent = createdBy;
+    } else {
+      const newRow = table.insertRow();
+      const cells = [];
+      for (let i = 0; i < 7; i++) {
+        cells[i] = newRow.insertCell(i);
+      }
+
+      cells[1].textContent = id;
+      cells[2].textContent = name;
+      cells[3].textContent = email;
+      cells[4].textContent = password;
+      cells[5].textContent = createdBy;
+      cells[6].innerHTML = `
+        <button class="action-button" onclick="editStudent(this)">Edit</button>
+        <button class="action-button" onclick="deleteRow(this)">Delete</button>
+      `;
+    }
+
+    renumberRows();
+    closeModal();
+  }
+
+  function editStudent(button) {
+    editTargetRow = button.closest("tr");
+
+    document.getElementById("studentId").value = editTargetRow.cells[1].textContent;
+    document.getElementById("studentName").value = editTargetRow.cells[2].textContent;
+    document.getElementById("studentEmail").value = editTargetRow.cells[3].textContent;
+    document.getElementById("studentPassword").value = editTargetRow.cells[4].textContent;
+    document.getElementById("studentCreatedBy").value = editTargetRow.cells[5].textContent;
+
+    openModal(true);
+  }
+
+  function deleteRow(button) {
+    const row = button.closest("tr");
+    row.remove();
+    renumberRows();
+  }
+
+  function renumberRows() {
+    const rows = document.querySelectorAll("#studentTable tbody tr");
+    rows.forEach((row, index) => {
+      row.cells[0].textContent = index + 1;
+    });
+  }
+
+  window.onclick = function(event) {
+    if (event.target === document.getElementById("addModal")) {
+      closeModal();
+    }
+  }
+</script>
+
+</body>
+</html>
