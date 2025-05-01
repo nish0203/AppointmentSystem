@@ -203,7 +203,7 @@ function saveAnnouncement() {
   } else {
     const id = Date.now();
     const date = new Date().toLocaleString();
-    const adminId = 'Admin01';
+    const adminId = 'ADM001';
     announcements.push({ id, adminId, title, content, date });
     sendEmail(title, content);
   }
@@ -258,7 +258,7 @@ function loadFromLocal() {
     // Only add a sample if nothing is saved yet
     announcements = [{
       id: 1,
-      adminId: 'Admin01',
+      adminId: 'ADM01',
       title: 'System Update',
       content: 'The system will be under maintenance tonight.',
       date: new Date().toLocaleString()
