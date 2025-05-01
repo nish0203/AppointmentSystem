@@ -1,191 +1,401 @@
+<!-- File: lecturer.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Login – Uni Bookings</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lecturer Dashboard - Uni Bookings</title> <!-- Updated title -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <style>
-    /* Reset & Base styles */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+       
+/* == Reset & Base == */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background: #f9fafb; color: #333; }
+a { text-decoration: none; color: inherit; }
+ul { list-style: none; }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #333;
-    }
+/* == Login Page == */
+.login-page { display: flex; justify-content: center; align-items: center; height: 100vh; background: #eef2f5; }
+.login-card { background: #fff; border: 2px solid #333; padding: 32px; width: 300px; text-align: center; }
+.login-card h2 { margin-bottom: 24px; }
+.login-card label { display: block; text-align: left; margin-top: 16px; }
+.login-card input { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px; }
+.role-selection { margin-bottom: 16px; }
+.role-btn { margin: 0 8px; padding: 8px 16px; border: 2px solid #000; background: none; cursor: pointer; }
+.role-btn.active { background: #1E3A8A; color: #fff; }
+.submit-btn { margin-top: 24px; padding: 10px 20px; background: #10B981; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+.error-msg { display: none; color: #EF4444; margin-bottom: 12px; font-size: 0.9rem; }
 
-    .login-card {
-      background: #fff;
-      padding: 2rem 2.5rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-    }
+/* == Header & Layout == */
+header { background: #1E3A8A; color: #fff; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
+header .logo { font-size: 1.25rem; font-weight: bold; }
+header .top-nav a { color: #eef; }
 
-    .login-card h2 {
-      margin-bottom: 1rem;
-      color: #4a4a4a;
-      letter-spacing: 1px;
-    }
+.container { display: flex; min-height: calc(100vh - 64px); }
+.sidebar { width: 200px; background: #fff; border-right: 1px solid #ddd; padding: 24px; }
+.sidebar ul li { margin-bottom: 12px; }
+.sidebar ul li a { color: #1E3A8A; font-weight: 500; }
+.sidebar ul li input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95rem; }
+.sidebar ul li button { margin-top: 8px; padding: 8px 16px; background: #1E3A8A; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+.search-error { color: #EF4444; margin-top: 8px; font-size: 0.9rem; }
 
-    .role-selection {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
+main { flex: 1; padding: 24px; }
+.card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-    .role-btn {
-      flex: 1;
-      padding: 0.6rem 0;
-      border: 2px solid #667eea;
-      background: white;
-      color: #667eea;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
+/* == Responsive == */
+@media (max-width: 768px) {
+  .container { flex-direction: column; }
+  .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #ddd; }
+}
 
-    .role-btn.active,
-    .role-btn:hover {
-      background: #667eea;
-      color: white;
-    }
+/* == Collapsible Cards == */
+.collapsible h3 {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
 
-    label {
-      display: block;
-      text-align: left;
-      margin: 0.5rem 0 0.2rem;
-      font-size: 0.9rem;
-      color: #555;
-    }
+.arrow {
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+}
 
-    input {
-      width: 100%;
-      padding: 0.6rem;
-      border: 1.5px solid #ccc;
-      border-radius: 6px;
-      margin-bottom: 1rem;
-      transition: border-color 0.3s ease;
-    }
+.content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease, padding 0.5s ease;
+  padding: 0 0;
+}
 
-    input:focus {
-      border-color: #667eea;
-      outline: none;
-    }
+/* When expanded */
+.card.active .content {
+  max-height: 800px; /* Enough to show inside content */
+  padding: 10px 0;
+}
 
-    .submit-btn {
-      width: 100%;
-      padding: 0.75rem;
-      background: #667eea;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
+.card.active .arrow {
+  transform: rotate(180deg);
+}
 
-    .submit-btn:hover {
-      background: #5a67d8;
-    }
+.booking-dropdown {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
 
-    .error-msg {
-      background: #ffe0e0;
-      color: #b00020;
-      padding: 0.5rem;
-      border-radius: 6px;
-      margin-bottom: 1rem;
-      display: none;
-      font-size: 0.9rem;
-    }
+.calendar-box {
+  width: 200px;
+  height: auto;
+  flex-shrink: 0; /* prevent calendar from shrinking */
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 122.5px;
+}
+.calendar-input {
+  width: 100%;
+  font-size: 16px;
+}
+
+
+.time-slots {
+  flex: 1;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.time-slot {
+  margin-bottom: 12px;
+}
+
+.time-slot button {
+  margin-left: 8px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.time-book-btn {
+  border: 2px solid green;
+  color: green;
+  background: none;
+}
+
+.cancel-btn {
+  border: 2px solid #00f;
+  color: #00f;
+  background: none;
+  margin-left: 8px;
+}
+
+.appointment-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 200px; /* space between calendar and time slots */
+}
+
+
+
+
+
+.slot {
+  margin-bottom: 16px;
+}
+
+.book-btn, .cancel-btn {
+  margin-left: 8px;
+}
   </style>
 </head>
 <body>
-  <div class="login-card">
-    <h2>Uni Bookings Login</h2>
-    <form id="login-form">
-      <div id="error-msg" class="error-msg" aria-live="polite"></div>
-
-      <div class="role-selection">
-        <button type="button" class="role-btn" data-role="student">Student</button>
-        <button type="button" class="role-btn" data-role="lecturer">Lecturer</button>
-      </div>
-
-      <label for="user-id">ID</label>
-      <input type="text" id="user-id" placeholder="Enter your ID" />
-
-      <label for="password">Password</label>
-      <input type="password" id="password" placeholder="Enter your password" />
-
-      <button type="submit" class="submit-btn">Log In</button>
-    </form>
-  </div>
-
-  <script>
-    (function() {
-      const form = document.getElementById('login-form');
-      const roleBtns = document.querySelectorAll('.role-btn');
-      const errorEl = document.getElementById('error-msg');
-      let selectedRole = null;
-
-      function showError(msg) {
-        errorEl.textContent = msg;
-        errorEl.style.display = 'block';
-      }
-      function clearError() {
-        errorEl.textContent = '';
-        errorEl.style.display = 'none';
-      }
-
-      roleBtns.forEach(btn => {
+  <header>
+    <div class="logo">Uni Bookings</div>
+    <nav class="top-nav">
+      <a href="login.html">Logout</a>
+    </nav>
+  </header>
+  <div class="container">
+    <aside class="sidebar">
+      <ul>
+        <li><a href="upcoming.html" target="_blank">Upcoming Appointments</a></li>
+        <li><a href="inquirylect.html">Submit Inquiry</a></li>
+      </ul>
+    </aside>
+    <main>
+        <h2>Lecturer Dashboard</h2>
+    
+        <!-- 1. Set Appointment Slots -->
+        <div id="slot-management" class="card collapsible">
+          <h3>Set Appointment Slots <span class="arrow">&#9662;</span></h3>
+          <div class="content">
+            <p>Select date and add available time slots:</p>
+            <div class="calendar-box">
+              <input type="text" id="availability-date" class="calendar-input" placeholder="Select Date">
+            </div>
+            <div class="time-slots">
+                <h4>Available Time Slots</h4>
+                <div style="margin-bottom: 12px;">
+                  <input type="text" id="start-time-input" placeholder="Start time" style="padding:8px;width:120px;border:1px solid #ccc;border-radius:4px;">
+                  <input type="text" id="end-time-input" placeholder="End time" style="padding:8px;width:120px;border:1px solid #ccc;border-radius:4px;margin-left:8px;">
+                  <button id="add-slot-btn" style="padding:8px 12px;background:#1E3A8A;color:#fff;border:none;border-radius:4px;margin-left:8px;">Add Time Slot</button>
+                </div>
+                
+                <ul id="slots-list" style="margin-top:12px;"></ul>
+                <button id="save-availability-btn" style="margin-top:16px;padding:8px 16px;background:#10B981;color:#fff;border:none;border-radius:4px;">Save Availability</button>
+              </div>
+            </div>
+        </div>
+    
+        <!-- 2. Manage Appointment Requests -->
+        <div id="appointment-requests" class="card collapsible">
+          <h3>Manage Appointment Requests <span class="arrow">&#9662;</span></h3>
+          <div class="content">
+            <table border="0" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+              <thead style="text-align: left;">
+                <tr><th>No.</th><th>Student</th><th>Date</th><th>Time</th><th>Notes</th><th>Action</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td><td>Danish</td><td>2/5/2025</td><td>4pm – 6pm</td><td>Project discussion</td>
+                  <td>
+                    <button style="color:green;border:1px solid green;padding:4px;">Accept</button>
+                    <button style="color:red;border:1px solid red;padding:4px;">Reject</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+    
+        <!-- 3. View Appointment Feedback -->
+        <div id="feedback" class="card collapsible">
+          <h3>View Appointment Feedback <span class="arrow">&#9662;</span></h3>
+          <div class="content">
+            <table border="0" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+              <thead style="text-align: left;">
+                <tr><th>No.</th><th>Student</th><th>Date</th><th>Time</th><th>Feedback</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>Danish</td><td>2/5/2025</td><td>4pm – 6pm</td><td>Great session, very helpful!</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+    
+        <!-- 4. View Appointment History -->
+        <div id="history" class="card collapsible">
+          <h3>View Appointment History <span class="arrow">&#9662;</span></h3>
+          <div class="content">
+            <table border="0" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+              <thead style="text-align: left;">
+                <tr><th>No.</th><th>Student</th><th>Date</th><th>Time</th><th>Status</th><th>Notes</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>Danish</td><td>2/5/2025</td><td>4pm - 6pm</td><td>Completed</td><td>Project discussion</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div id="history" class="card collapsible">
+          <h3>Inquiry History <span class="arrow">&#9662;</span></h3>
+          <div class="content">
+            <table border="0" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+            <thead style="text-align: left;">
+              <tr>
+                <TH>NO.</TH>
+                <th>BOOKING ID </th>
+                <th>SUBJECT</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1&#41;</td>
+                <td>BK0002</td>
+                <td>BOOKING ISSUES</td>
+                <td>2/5/2025</td>
+                <td>4pm - 6pm</td>
+                <td><button style="padding: 7px;" onclick="window.open('viewinquirylect.html', '_blank')" >View</button></td>
+              </tr>
+            </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+    
+    <script>
+      document.querySelectorAll('.collapsible h3').forEach(h3 => {
+        h3.addEventListener('click', function() {
+          const card = this.parentElement;
+          card.classList.toggle('active');
+        });
+      });
+    
+      flatpickr("#availability-date", { inline: true, minDate: "today", dateFormat: "Y-m-d" });
+    
+      const addBtns = document.querySelectorAll('.time-book-btn');
+      const removeBtns = document.querySelectorAll('.cancel-btn');
+    
+      addBtns.forEach((btn, index) => {
         btn.addEventListener('click', () => {
-          roleBtns.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          selectedRole = btn.dataset.role;
-          clearError();
+          btn.style.display = 'none';
+          removeBtns[index].style.display = 'inline-block';
+        });
+      });
+    
+      removeBtns.forEach((btn, index) => {
+        btn.addEventListener('click', () => {
+          btn.style.display = 'none';
+          addBtns[index].style.display = 'inline-block';
         });
       });
 
-      form.addEventListener('submit', e => {
-        e.preventDefault();
-        clearError();
+      flatpickr("#start-time-input", { enableTime: true, noCalendar: true, dateFormat: "h:i K", time_24hr: false });
+flatpickr("#end-time-input", { enableTime: true, noCalendar: true, dateFormat: "h:i K", time_24hr: false });
 
-        const idValue = document.getElementById('user-id').value.trim();
-        const passValue = document.getElementById('password').value.trim();
+const slotsList = document.getElementById('slots-list');
+const addSlotBtn = document.getElementById('add-slot-btn');
+const startTimeInput = document.getElementById('start-time-input');
+const endTimeInput = document.getElementById('end-time-input');
 
-        if (!idValue) return showError('ID cannot be blank');
-        if (!passValue) return showError('Password cannot be blank');
-        if (!selectedRole) return showError('Please select Student or Lecturer');
+function createSlotElement(start, end) {
+  const li = document.createElement('li');
+  li.style.marginBottom = '8px';
 
-        // Admin shortcut
-        if (idValue === 'admin' && passValue === 'admin') {
-          window.location.href = 'admin.html';
-          return;
-        }
+  const timeText = document.createElement('span');
+  timeText.textContent = `${start} – ${end}`;
 
-        // Numeric ID validation
-        if (!/^[0-9]+$/.test(idValue)) return showError('ID must be numeric');
-        // Exact format check
-        if (idValue !== '1231201369') return showError('ID must be exactly 1231201369');
+  const removeBtn = document.createElement('button');
+  removeBtn.textContent = 'Remove';
+  removeBtn.style = "margin-left:12px;padding:4px 8px;border:1px solid red;color:red;background:none;border-radius:4px;";
 
-        // Redirect based on role
-        window.location.href = selectedRole + '.html';
-      });
+  const editBtn = document.createElement('button');
+  editBtn.textContent = 'Edit';
+  editBtn.style = "margin-left:8px;padding:4px 8px;border:1px solid orange;color:orange;background:none;border-radius:4px;";
 
-      clearError();
-    })();
-  </script>
+  // Remove button
+  removeBtn.addEventListener('click', () => li.remove());
+
+  // Edit button
+  editBtn.addEventListener('click', () => {
+    const [currentStart, currentEnd] = timeText.textContent.split(' – ');
+    startTimeInput._flatpickr.setDate(currentStart, true, "h:i K");
+    endTimeInput._flatpickr.setDate(currentEnd, true, "h:i K");
+
+    li.remove();
+  });
+
+  li.appendChild(timeText);
+  li.appendChild(removeBtn);
+  li.appendChild(editBtn);
+  return li;
+}
+
+addSlotBtn.addEventListener('click', () => {
+  const startTime = startTimeInput.value.trim();
+  const endTime = endTimeInput.value.trim();
+
+  if (!startTime || !endTime) {
+    alert("Please select both start and end times.");
+    return;
+  }
+
+  // Optional: Validate that end time is after start time
+  const start = flatpickr.parseDate(startTime, "h:i K");
+  const end = flatpickr.parseDate(endTime, "h:i K");
+  if (start >= end) {
+    alert("End time must be after start time.");
+    return;
+  }
+
+  const li = createSlotElement(startTime, endTime);
+  slotsList.appendChild(li);
+
+  // Clear inputs
+  startTimeInput.value = "";
+  endTimeInput.value = "";
+});
+
+document.getElementById('save-availability-btn').addEventListener('click', () => {
+  const selectedDate = document.getElementById('availability-date').value;
+  const timeSlots = Array.from(slotsList.querySelectorAll('span')).map(span => span.textContent);
+  if (!selectedDate || timeSlots.length === 0) {
+    alert('Please select a date and add at least one time slot.');
+    return;
+  }
+
+  console.log('Selected date:', selectedDate);
+  console.log('Available slots:', timeSlots);
+  alert(`Saved availability on ${selectedDate} with slots:\n${timeSlots.join('\n')}`);
+});
+
+
+// Only target buttons inside the appointment requests table
+const appointmentTable = document.querySelector('#appointment-requests table');
+
+appointmentTable.querySelectorAll('button').forEach(button => {
+  button.addEventListener('click', () => {
+    const action = button.textContent.trim().toLowerCase();
+    if (action === 'accept') {
+      alert('Accept successful');
+    } else if (action === 'reject') {
+      alert('Reject successful');
+    }
+  });
+});
+
+
+    </script>
 </body>
 </html>

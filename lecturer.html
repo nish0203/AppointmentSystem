@@ -182,9 +182,11 @@ main { flex: 1; padding: 24px; }
             <div class="time-slots">
                 <h4>Available Time Slots</h4>
                 <div style="margin-bottom: 12px;">
-                  <input type="text" id="time-slot-input" placeholder="Select time range" style="padding:8px;width:200px;border:1px solid #ccc;border-radius:4px;">
+                  <input type="text" id="start-time-input" placeholder="Start time" style="padding:8px;width:120px;border:1px solid #ccc;border-radius:4px;">
+                  <input type="text" id="end-time-input" placeholder="End time" style="padding:8px;width:120px;border:1px solid #ccc;border-radius:4px;margin-left:8px;">
                   <button id="add-slot-btn" style="padding:8px 12px;background:#1E3A8A;color:#fff;border:none;border-radius:4px;margin-left:8px;">Add Time Slot</button>
                 </div>
+                
                 <ul id="slots-list" style="margin-top:12px;"></ul>
                 <button id="save-availability-btn" style="margin-top:16px;padding:8px 16px;background:#10B981;color:#fff;border:none;border-radius:4px;">Save Availability</button>
               </div>
@@ -241,7 +243,34 @@ main { flex: 1; padding: 24px; }
             </table>
           </div>
         </div>
-    
+        
+        <div id="history" class="card collapsible">
+          <h3>Inquiry History <span class="arrow">&#9662;</span></h3>
+          <div class="content">
+            <table border="0" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+            <thead style="text-align: left;">
+              <tr>
+                <TH>NO.</TH>
+                <th>BOOKING ID </th>
+                <th>SUBJECT</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1&#41;</td>
+                <td>BK0002</td>
+                <td>BOOKING ISSUES</td>
+                <td>2/5/2025</td>
+                <td>4pm - 6pm</td>
+                <td><button style="padding: 7px;" onclick="window.open('viewinquirylect.html', '_blank')" >View</button></td>
+              </tr>
+            </tbody>
+            </table>
+          </div>
+        </div>
       </main>
     </div>
     
@@ -272,46 +301,72 @@ main { flex: 1; padding: 24px; }
         });
       });
 
-      flatpickr("#availability-date", { inline: true, minDate: "today", dateFormat: "Y-m-d" });
-      flatpickr("#time-slot-input", { 
-  enableTime: true, 
-  noCalendar: true, 
-  dateFormat: "h:i K", // h for 12-hour format, K for AM/PM
-  time_24hr: false,   // Use 12-hour format (AM/PM)
-});
-
+      flatpickr("#start-time-input", { enableTime: true, noCalendar: true, dateFormat: "h:i K", time_24hr: false });
+flatpickr("#end-time-input", { enableTime: true, noCalendar: true, dateFormat: "h:i K", time_24hr: false });
 
 const slotsList = document.getElementById('slots-list');
 const addSlotBtn = document.getElementById('add-slot-btn');
-const timeSlotInput = document.getElementById('time-slot-input');
+const startTimeInput = document.getElementById('start-time-input');
+const endTimeInput = document.getElementById('end-time-input');
 
-addSlotBtn.addEventListener('click', () => {
-  const timeValue = timeSlotInput.value.trim();
-  console.log(timeValue); // Debugging the selected time
-  if (!timeValue) {
-    alert("Please select a time range.");
-    return;
-  }
-
-  // Create slot item
+function createSlotElement(start, end) {
   const li = document.createElement('li');
   li.style.marginBottom = '8px';
-  li.innerHTML = `
-    <span>${timeValue}</span> 
-    <button style="margin-left:12px;padding:4px 8px;border:1px solid red;color:red;background:none;border-radius:4px;">Remove</button>
-  `;
 
-  // Remove button handler
-  li.querySelector('button').addEventListener('click', () => {
+  const timeText = document.createElement('span');
+  timeText.textContent = `${start} – ${end}`;
+
+  const removeBtn = document.createElement('button');
+  removeBtn.textContent = 'Remove';
+  removeBtn.style = "margin-left:12px;padding:4px 8px;border:1px solid red;color:red;background:none;border-radius:4px;";
+
+  const editBtn = document.createElement('button');
+  editBtn.textContent = 'Edit';
+  editBtn.style = "margin-left:8px;padding:4px 8px;border:1px solid orange;color:orange;background:none;border-radius:4px;";
+
+  // Remove button
+  removeBtn.addEventListener('click', () => li.remove());
+
+  // Edit button
+  editBtn.addEventListener('click', () => {
+    const [currentStart, currentEnd] = timeText.textContent.split(' – ');
+    startTimeInput._flatpickr.setDate(currentStart, true, "h:i K");
+    endTimeInput._flatpickr.setDate(currentEnd, true, "h:i K");
+
     li.remove();
   });
 
+  li.appendChild(timeText);
+  li.appendChild(removeBtn);
+  li.appendChild(editBtn);
+  return li;
+}
+
+addSlotBtn.addEventListener('click', () => {
+  const startTime = startTimeInput.value.trim();
+  const endTime = endTimeInput.value.trim();
+
+  if (!startTime || !endTime) {
+    alert("Please select both start and end times.");
+    return;
+  }
+
+  // Optional: Validate that end time is after start time
+  const start = flatpickr.parseDate(startTime, "h:i K");
+  const end = flatpickr.parseDate(endTime, "h:i K");
+  if (start >= end) {
+    alert("End time must be after start time.");
+    return;
+  }
+
+  const li = createSlotElement(startTime, endTime);
   slotsList.appendChild(li);
-  timeSlotInput.value = ""; // clear input
+
+  // Clear inputs
+  startTimeInput.value = "";
+  endTimeInput.value = "";
 });
 
-
-// For demo: Save button just logs current slots
 document.getElementById('save-availability-btn').addEventListener('click', () => {
   const selectedDate = document.getElementById('availability-date').value;
   const timeSlots = Array.from(slotsList.querySelectorAll('span')).map(span => span.textContent);
@@ -324,6 +379,7 @@ document.getElementById('save-availability-btn').addEventListener('click', () =>
   console.log('Available slots:', timeSlots);
   alert(`Saved availability on ${selectedDate} with slots:\n${timeSlots.join('\n')}`);
 });
+
 
 // Only target buttons inside the appointment requests table
 const appointmentTable = document.querySelector('#appointment-requests table');
