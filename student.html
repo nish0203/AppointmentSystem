@@ -8,14 +8,135 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <style>
-    
+<style>
 /* == Reset & Base == */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: Arial, sans-serif; background: #f9fafb; color: #333; }
 a { text-decoration: none; color: inherit; }
 ul { list-style: none; }
-
+:root {
+      --primary: #1e40af;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --background: #f9fafb;
+      --text: #1f2937;
+    }
+    
+    body { background-color: var(--background); color: var(--text)}
+    h2 { margin-bottom: 20px; }
+    .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s; }
+    .card h3 { display: flex; justify-content: space-between; align-items: center; font-size: 1.25rem; cursor: pointer; }
+    .card .content { margin-top: 16px; display: none; }
+    .card.active .content { display: block; }
+    .lecturer-container { padding: 10px 0; border-bottom: 1px solid #e5e7eb; }
+    .lecturer-line { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+    }
+    .booking-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .booking-item {
+      display: grid;
+      grid-template-columns: 30px 120px 100px 100px 1fr 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .grey-text {
+      color: grey;
+      word-wrap: break-word;
+    }
+    .edit-btn {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      justify-self: end;
+    }
+    .edit-btn:hover {
+      background: #059669;
+    }
+    input[type="file"] {
+      width: 100%;
+      max-width: 250px; /* Increase max width */
+      margin-left: 10px; /* Move the document file more to the right */
+    }
+    textarea {
+      resize: none;
+      width: 100%;
+      height: 30px; /* Make the note field even shorter */
+      max-width: 250px;
+    }
+    .book-btn { 
+      background-color: var(--success); 
+      color: white; 
+      border: none; 
+      padding: 8px 14px; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      transition: background-color 0.3s; 
+    }
+    .book-btn:hover { background-color: #059669; }
+    .booking-options { 
+      margin-top: 10px;
+      display: none;
+      width: 100%;
+    }
+    .booking-sections {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .calendar-box { 
+      flex: 0 0 auto;
+      max-width: 300px;
+    }
+    .time-section {
+      flex: 1;
+      min-width: 200px;
+    }
+    .time-header {
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: none;
+    }
+    .waiting-header {
+      color: var(--warning);
+      display: none;
+    }
+    .time-slots-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .time-slot { 
+      cursor: pointer; 
+      padding: 8px 12px; 
+      background: var(--primary); 
+      color: white; 
+      border-radius: 6px; 
+      display: inline-block;
+      min-width: 100px;
+      text-align: center;
+    }
+    .time-slot:hover { background: #3749bb; }
+    .waiting-slot {
+      background: var(--warning);
+      cursor: default;
+    }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 999; }
+    .modal-content { background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 500px; position: relative; }
+    .modal-content h3 { margin-bottom: 20px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { font-weight: 600; display: block; margin-bottom: 5px; }
+    .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 8px; }
+    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 20px; cursor: pointer; }
 /* == Login Page == */
 .login-page { display: flex; justify-content: center; align-items: center; height: 100vh; background: #eef2f5; }
 .login-card { background: #fff; border: 2px solid #333; padding: 32px; width: 300px; text-align: center; }
@@ -87,31 +208,9 @@ main { flex: 1; padding: 24px; }
   margin-top: 16px;
 }
 
-.calendar-box {
-  width: 200px;
-  height: auto;
-  flex-shrink: 0; /* prevent calendar from shrinking */
-  padding: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-left: 122.5px;
-}
 .calendar-input {
   width: 100%;
   font-size: 16px;
-}
-
-.time-slots {
-  display: none;
-}
-
-.time-slots {
-  flex: 1;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
 }
 
 .time-slot {
@@ -144,7 +243,6 @@ main { flex: 1; padding: 24px; }
   gap: 200px; /* space between calendar and time slots */
 }
 
-
 .slot {
   margin-bottom: 16px;
 }
@@ -154,7 +252,6 @@ main { flex: 1; padding: 24px; }
 }
 
 </style>
-
 </head>
 <body>
   <header>
@@ -178,123 +275,81 @@ main { flex: 1; padding: 24px; }
     </aside>
     <main>
       <h2>Student Dashboard</h2>
-    
       
-    
       <div class="card collapsible">
         <h3>Available Appointment Slots <span class="arrow">&#9662;</span></h3>
         <div class="content">
-          <br>
-          <h4 style="font-weight: bold;">Lecturer</h4>
-          <br>
-          <!-- Nurasma -->
-<!-- Nurasma -->
-<div class="asmabook">
-  <p>1&#41; Nurasma &nbsp;&nbsp;<button class="book-main-btn">Book</button></p>
-  <div class="booking-dropdown" style="display: none;">
-    <div class="appointment-section">
-      <!-- Calendar Section -->
-      <div class="calendar-box">
-        <input type="text" id="appointment-date-nurasma" class="calendar-input" data-lecturer="nurasma" placeholder="Select Date">
-      </div>
-      
-      <!-- Time Slots Section -->
-      <div class="time-slots" id="time-slots-nurasma" style="display: none;">
-        <h3 style="color: red;">Time available</h3>
-        <div style="margin-bottom: 10px;">
-          8am - 10am
-          <button onclick="bookTime('8am-10am', 'nurasma')" style="margin-left: 10px;">Book</button>
-          <button id="cancel-8am-10am" onclick="cancelTime('8am-10am')" style="margin-left: 5px; display: none;">Cancel</button>
-        </div>
-        <div style="margin-bottom: 10px;">
-          10am - 12pm
-          <button onclick="bookTime('10am-12pm', 'nurasma')" style="margin-left: 10px;">Book</button>
-          <button id="cancel-10am-12pm" onclick="cancelTime('10am-12pm')" style="margin-left: 5px; display: none;">Cancel</button>
-        </div>
-        <div style="margin-bottom: 10px;">
-          4pm - 6pm
-          <button onclick="bookTime('4pm-6pm', 'nurasma')" style="margin-left: 10px;">Book</button>
-          <button id="cancel-4pm-6pm" onclick="cancelTime('4pm-6pm')" style="margin-left: 5px; display: none;">Cancel</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<br>
-<!-- Rubiah -->
-<div class="asmabook">
-  <p>2&#41; Rubiah &nbsp;&nbsp;<button class="book-main-btn">Book</button></p>
-  <div class="booking-dropdown" style="display: none;">
-    <div class="appointment-section">
-      <!-- Calendar Section -->
-      <div class="calendar-box">
-        <input type="text" id="appointment-date-rubiah" class="calendar-input" data-lecturer="rubiah" placeholder="Select Date">
-      </div>
-
-      <!-- Time Slots Section -->
-      <div class="time-slots" id="time-slots-rubiah" style="display: none;">
-        <h3 style="color: red;">Time available</h3>
-        <div style="margin-bottom: 10px;">
-          12pm - 2pm
-          <button onclick="bookTime('rubiah-12pm-2pm', 'rubiah')" style="margin-left: 10px;">Book</button>
-          <button id="cancel-rubiah-12pm-2pm" onclick="cancelTime('rubiah-12pm-2pm')" style="margin-left: 5px; display: none;">Cancel</button>
-        </div>
-        <div style="margin-bottom: 10px;">
-          3pm - 5pm
-          <button onclick="bookTime('rubiah-3pm-5pm', 'rubiah')" style="margin-left: 10px;">Book</button>
-          <button id="cancel-rubiah-3pm-5pm" onclick="cancelTime('rubiah-3pm-5pm')" style="margin-left: 5px; display: none;">Cancel</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-          
-        </div>
-      </div>
-      
-    
-      <div class="card collapsible">
-        <h3>Booked Appointments <span class="arrow">&#9662;</span></h3>
-        <div class="content">
-          <br>
-          <h4 style="font-weight: bold;">Lecturer</h4>
-          <br>
-          <div class="asmabook">
-            <table border-width="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-              <tbody>
-                <tr>
-                  <td>1&#41;</td>
-                  <td>Nurasma</td>
-                  <td>2/5/2025</td>
-                  <td>4pm – 6pm</td>
-                  <td><input type="file"></td>
-                  <td><input type="text" id="note" name="note" placeholder="Note.."></td>
-                </tr>
-              </tbody>
-            </table>
-            
-            <br>
-            <br>
-            <br>
-            <br>
-            <div style="position: relative; height: 100px;">
-              <!-- Other content -->
-              <button style="padding: 10px; position: absolute; bottom: 10px; right: 10px;">APPLY</button>
+          <h4>Lecturer</h4>
+          <div class="lecturer-container" id="lecturer-nurasma">
+            <div class="lecturer-line">
+              <span>Nurasma</span>
+              <button class="book-btn" onclick="startBooking('nurasma')">Book</button>
             </div>
-            
-            <div class="booking-dropdown" style="display: none;">
-              <div class="appointment-section">
-  
-                
+            <div id="booking-nurasma" class="booking-options">
+              <div class="booking-sections">
+                <div class="calendar-box" id="calendar-nurasma-box"></div>
+                <div class="time-section">
+                  <div class="time-header" id="available-header-nurasma">Available Times:</div>
+                  <div class="time-slots-container" id="time-options-nurasma"></div>
+                </div>
+                <div class="time-section">
+                  <div class="waiting-header" id="waiting-header-nurasma">Waiting to be approved:</div>
+                  <div class="time-slots-container" id="waiting-nurasma"></div>
+                </div>
               </div>
             </div>
           </div>
-          <br>
-          
+          <div class="lecturer-container" id="lecturer-rubiah">
+            <div class="lecturer-line">
+              <span>Rubiah</span>
+              <button class="book-btn" onclick="startBooking('rubiah')">Book</button>
+            </div>
+            <div id="booking-rubiah" class="booking-options">
+              <div class="booking-sections">
+                <div class="calendar-box" id="calendar-rubiah-box"></div>
+                <div class="time-section">
+                  <div class="time-header" id="available-header-rubiah">Available Times:</div>
+                  <div class="time-slots-container" id="time-options-rubiah"></div>
+                </div>
+                <div class="time-section">
+                  <div class="waiting-header" id="waiting-header-rubiah">Waiting to be approved:</div>
+                  <div class="time-slots-container" id="waiting-rubiah"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     
+      <div class="modal" id="booking-modal">
+        <div class="modal-content">
+          <span class="close-btn" onclick="closeModal()">&times;</span>
+          <h3>Booking Form</h3>
+          <div class="form-group"><label>Lecturer:</label><div id="modal-lecturer"></div></div>
+          <div class="form-group"><label>Date:</label><div id="modal-date"></div></div>
+          <div class="form-group"><label>Time:</label><div id="modal-time"></div></div>
+          <div class="form-group"><label>Document:</label><input type="file" id="booking-document" /></div>
+          <div class="form-group"><label>Note:</label><textarea rows="3" id="booking-note"></textarea></div>
+          <button class="book-btn" onclick="submitBooking()">Submit</button>
+        </div>
+      </div>
+
+      <div class="card collapsible">
+        <h3>Booked Appointments <span class="arrow">&#9662;</span></h3>
+        <div class="content">
+          <div class="booking-title">Lecturer</div>
+          <div class="booking-item">
+            <span>1)</span>
+            <span style="justify-self: start;">Nurasma</span>
+            <span>2/5/2025</span>
+            <span>2 pm - 5 pm</span>
+            <span class="grey-text" data-field="document">No document uploaded</span>
+            <span class="grey-text" data-field="note">No note added</span>
+            <button class="edit-btn" onclick="editFields(event, this)">Edit</button>
+          </div>
+        </div>
+      </div>
+
       <div class="card collapsible">
         <h3>Booking History <span class="arrow">&#9662;</span></h3>
         <div class="content">
@@ -315,7 +370,6 @@ main { flex: 1; padding: 24px; }
               </tbody>
             </table> 
               
-            
             <!-- Feedback Modal -->
             <div id="feedbackModal" style="display: none; position: fixed; top: 0; left: 0; 
             width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center;">
@@ -333,7 +387,6 @@ main { flex: 1; padding: 24px; }
     
           <!-- Textbox -->
           <textarea id="feedbackText" rows="4" placeholder="Leave your feedback here..." style="width: 100%; padding: 8px;"></textarea>
-    
           <!-- Buttons -->
           <div style="margin-top: 15px;">
             <button onclick="submitFeedback()">Submit</button>
@@ -341,22 +394,14 @@ main { flex: 1; padding: 24px; }
           </div>
           </div>
           </div>
-            
             <br>
             <br>
-            <br>
-            <br>
-            
-            
             <div class="booking-dropdown" style="display: none;">
-              <div class="appointment-section">
-  
-                
+              <div class="appointment-section"> 
               </div>
             </div>
           </div>
           <br>
-          
         </div>
       </div>
     
@@ -387,13 +432,165 @@ main { flex: 1; padding: 24px; }
               </tr>
             </tbody>
           </table>
-          
+
         </div>
       </div>
-    
+
     </main>
-    
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    const timeSlots = ['8am-10am', '10am-12pm', '2pm-4pm', '4pm-6pm'];
+    let selectedLecturer = '', selectedDate = '', selectedTime = '';
+    const bookings = {
+      nurasma: {},
+      rubiah: {}
+    };
+
+    function toggleCard(el) { el.parentElement.classList.toggle('active'); }
+
+    function startBooking(name) {
+      // Hide all booking options first
+      document.querySelectorAll('.booking-options').forEach(el => el.style.display = 'none');
+      
+      // Show booking options for the selected lecturer
+      const bookingOptions = document.getElementById(`booking-${name}`);
+      bookingOptions.style.display = 'block';
+      
+      // Hide time headers and clear slots
+      document.getElementById(`available-header-${name}`).style.display = 'none';
+      document.getElementById(`waiting-header-${name}`).style.display = 'none';
+      document.getElementById(`time-options-${name}`).innerHTML = '';
+      document.getElementById(`waiting-${name}`).innerHTML = '';
+      
+      // Initialize calendar if not already initialized
+      if (!bookingOptions.dataset.initialized) {
+        flatpickr(`#calendar-${name}-box`, {
+          inline: true,
+          minDate: 'today',
+          dateFormat: 'Y-m-d',
+          onChange: function(selectedDates, dateStr, instance) {
+            selectedDate = dateStr;
+            showAvailableTimes(name);
+          }
+        });
+        bookingOptions.dataset.initialized = true;
+      }
+    }
+    function toggleCard(card) {
+      card.classList.toggle('active');
+    }
+
+    function editFields(event, btn) {
+      event.stopPropagation(); // stop card toggle
+
+      const bookingItem = btn.parentElement;
+      const docSpan = bookingItem.querySelector('[data-field="document"]');
+      const noteSpan = bookingItem.querySelector('[data-field="note"]');
+
+      if (btn.textContent === 'Edit') {
+        const docInput = document.createElement('input');
+        docInput.type = 'file';
+        docInput.setAttribute('data-field', 'document');
+
+        const noteInput = document.createElement('textarea');
+        noteInput.value = noteSpan.textContent === 'No note added' ? '' : noteSpan.textContent;
+        noteInput.setAttribute('data-field', 'note');
+
+        bookingItem.replaceChild(docInput, docSpan);
+        bookingItem.replaceChild(noteInput, noteSpan);
+
+        btn.textContent = 'Save';
+      } else {
+        const docInput = bookingItem.querySelector('input[data-field="document"]');
+        const noteInput = bookingItem.querySelector('textarea[data-field="note"]');
+
+        const newDocSpan = document.createElement('span');
+        newDocSpan.setAttribute('data-field', 'document');
+        newDocSpan.classList.add('grey-text');
+        newDocSpan.textContent = docInput.files.length > 0 ? docInput.files[0].name : 'No document uploaded';
+
+        const newNoteSpan = document.createElement('span');
+        newNoteSpan.setAttribute('data-field', 'note');
+        newNoteSpan.classList.add('grey-text');
+        newNoteSpan.textContent = noteInput.value.trim() !== '' ? noteInput.value : 'No note added';
+
+        bookingItem.replaceChild(newDocSpan, docInput);
+        bookingItem.replaceChild(newNoteSpan, noteInput);
+
+        btn.textContent = 'Edit';
+      }
+    }
+    function showAvailableTimes(name) {
+      const availableHeader = document.getElementById(`available-header-${name}`);
+      const availableContainer = document.getElementById(`time-options-${name}`);
+      
+      // Show available times header
+      availableHeader.style.display = 'block';
+      
+      // Clear previous time slots
+      availableContainer.innerHTML = '';
+      
+      // Get booked times for this date
+      const bookedTimes = bookings[name][selectedDate] || [];
+      
+      // Show available times
+      timeSlots.forEach(t => {
+        if (!bookedTimes.includes(t)) {
+          availableContainer.innerHTML += 
+            `<div class="time-slot" onclick="selectTime('${name}', '${t}')">${t}</div>`;
+        }
+      });
+
+      // Show waiting section if there are any bookings
+      if (bookedTimes.length > 0) {
+        updateWaitingSection(name);
+      }
+    }
+
+    function updateWaitingSection(name) {
+      const waitingHeader = document.getElementById(`waiting-header-${name}`);
+      const waitingContainer = document.getElementById(`waiting-${name}`);
+      const bookedTimes = bookings[name][selectedDate] || [];
+      
+      waitingHeader.style.display = 'block';
+      waitingContainer.innerHTML = bookedTimes.map(t => 
+        `<div class="time-slot waiting-slot">${t}</div>`
+      ).join('');
+    }
+
+    function selectTime(lecturer, time) {
+      selectedLecturer = lecturer;
+      selectedTime = time;
+      document.getElementById('modal-lecturer').innerText = selectedLecturer.charAt(0).toUpperCase() + selectedLecturer.slice(1);
+      const [year, month, day] = selectedDate.split('-');
+      document.getElementById('modal-date').innerText = `${day}/${month}/${year}`;
+      document.getElementById('modal-time').innerText = selectedTime;
+      document.getElementById('booking-modal').style.display = 'flex';
+    }
+
+    function closeModal() { 
+      document.getElementById('booking-modal').style.display = 'none';
+      // Clear form
+      document.getElementById('booking-document').value = '';
+      document.getElementById('booking-note').value = '';
+    }
+
+    function submitBooking() {
+      // Add to bookings
+      if (!bookings[selectedLecturer][selectedDate]) {
+        bookings[selectedLecturer][selectedDate] = [];
+      }
+      bookings[selectedLecturer][selectedDate].push(selectedTime);
+      
+      // Update display
+      showAvailableTimes(selectedLecturer);
+      updateWaitingSection(selectedLecturer);
+      
+      alert('Booking submitted for ' + selectedLecturer + ' on ' + selectedDate + ' at ' + selectedTime);
+      closeModal();
+    }
+  </script>
   <script>
     document.getElementById('search-btn').addEventListener('click', function() {
       const keyword = document.getElementById('search-lecturer').value.trim().toLowerCase();
@@ -405,9 +602,7 @@ main { flex: 1; padding: 24px; }
         errorDiv.textContent = 'Lecturer not found';
       }
     });
-    
   // Your existing search lecturer script...
-
   // Collapsible functionality
   document.querySelectorAll('.collapsible h3').forEach(h3 => {
     h3.addEventListener('click', function() {
@@ -415,17 +610,6 @@ main { flex: 1; padding: 24px; }
       card.classList.toggle('active');
     });
   });
-
-  
-  // Toggle the dropdown
-  // Toggle the dropdowns individually
-document.querySelectorAll('.book-main-btn').forEach(button => {
-  button.addEventListener('click', function () {
-    const dropdown = this.parentElement.nextElementSibling;
-    dropdown.style.display = dropdown.style.display === 'none' ? 'flex' : 'none';
-  });
-});
-
 
   // Manage booking and cancel buttons
   const bookButtons = document.querySelectorAll('.time-book-btn');
@@ -474,31 +658,6 @@ function cancelTime(slot) {
 
 <!-- Initialize Flatpickr -->
 <script>
-document.querySelectorAll('.calendar-input').forEach(function(input) {
-  flatpickr(input, {
-    inline: true,
-    minDate: "today",  // Disable past dates
-    dateFormat: "Y-m-d", // Date format
-
-    onChange: function(selectedDates, dateStr, instance) {
-      // Get the selected lecturer from the data-lecturer attribute
-      const lecturer = instance.input.getAttribute('data-lecturer');
-      
-      // Hide all time slots initially
-      document.querySelectorAll('.time-slots').forEach(function(slots) {
-        slots.style.display = 'none';
-      });
-      
-      // Show the time slots for the selected lecturer
-      const timeSlots = document.getElementById('time-slots-' + lecturer);
-      if (timeSlots) {
-        timeSlots.style.display = 'block';
-      }
-    }
-  });
-});
-
-
 
 let currentRating = 0;
 
@@ -524,7 +683,6 @@ let currentRating = 0;
     closeFeedback();
   }
 
-  
-  </script>
+</script>
 </body>
 </html>
