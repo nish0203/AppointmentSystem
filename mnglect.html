@@ -87,10 +87,26 @@
     .submit-btn:hover {
       background-color: #2f45a0;
     }
+
+    /* back-to-home button */
+    #backBtn {
+      background-color: #00aaff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      }
+
+    #backBtn:hover {
+        background-color: #14214e;
+    }
+
   </style>
 </head>
 <body>
-
+<button id="backBtn">Go back to homepage</button>
 <h2>Manage Lecturer</h2>
 
 <table id="lecturerTable">
@@ -109,9 +125,9 @@
   <tbody>
     <tr>
       <td>1</td>
-      <td></td>
-      <td>Nurasma' Binti Shamsuddin</td>
-      <td>nurasma.shamsuddin@example.com</td>
+      <td>2424244444</td>
+      <td>NURASMA' BINTI SHAMSUDDIN</td>
+      <td>nurasma.shamsuddin@mmu.edu.my</td>
       <td>asma_520</td>
       <td>03-83125840</td>
       <td>AD001</td>
@@ -122,9 +138,9 @@
     </tr>
     <tr>
       <td>2</td>
-      <td></td>
-      <td>Rubiah</td>
-      <td>rubiah@example.com</td>
+      <td>5151511111</td>
+      <td>RUBIAH BINTI MOHD YUNUS</td>
+      <td>rubiah.yunus@mmu.edu.my</td>
       <td>ruby_789</td>
       <td>03-12344566</td>
       <td>AD001</td>
@@ -135,9 +151,9 @@
     </tr>
     <tr>
       <td>3</td>
-      <td></td>
-      <td>Ruzanna</td>
-      <td>ruzanna@example.com</td>
+      <td>6767688888</td>
+      <td>RUZANNA BINTI ABDULLAH</td>
+      <td>ruzanna.abdullah@mmu.edu.my</td>
       <td>zanna_20</td>
       <td>03-22658072</td>
       <td>AD001</td>
@@ -162,7 +178,7 @@
       <input type="email" id="lecturerEmail" placeholder="Lecturer Email" required>
       <input type="text" id="lecturerPassword" placeholder="Lecturer Password" required>
       <input type="text" id="lecturerContact" placeholder="Lecturer Contact" required>
-      <input type="text" id="createdBy" placeholder="Created By " required>
+      <input type="text" id="createdBy" value="ADM001" readonly>
       <button type="submit" class="submit-btn">Save</button>
     </form>
   </div>
@@ -183,25 +199,26 @@
   }
 
   function submitLecturer(event) {
-    event.preventDefault();
-    const id = document.getElementById("lecturerId").value;
-    const name = document.getElementById("lecturerName").value;
-    const email = document.getElementById("lecturerEmail").value;
-    const password = document.getElementById("lecturerPassword").value;
-    const contact = document.getElementById("lecturerContact").value;
-    const createdBy = document.getElementById("createdBy").value;
+  event.preventDefault();
+  const id       = document.getElementById("lecturerId").value;
+  const name     = document.getElementById("lecturerName").value;
+  const email    = document.getElementById("lecturerEmail").value;
+  const password = document.getElementById("lecturerPassword").value;
+  const contact  = document.getElementById("lecturerContact").value;
+  // force AD001 every time:
+  const createdBy = 'AD001';
 
-    const table = document.getElementById("lecturerTable").getElementsByTagName("tbody")[0];
+  const table = document.getElementById("lecturerTable").getElementsByTagName("tbody")[0];
 
-    if (editTargetRow) {
-      editTargetRow.cells[1].textContent = id;
-      editTargetRow.cells[2].textContent = name;
-      editTargetRow.cells[3].textContent = email;
-      editTargetRow.cells[4].textContent = password;
-      editTargetRow.cells[5].textContent = contact;
-      editTargetRow.cells[6].textContent = createdBy;
-    } else {
-      const newRow = table.insertRow();
+  if (editTargetRow) {
+    editTargetRow.cells[1].textContent = id;
+    editTargetRow.cells[2].textContent = name;
+    editTargetRow.cells[3].textContent = email;
+    editTargetRow.cells[4].textContent = password;
+    editTargetRow.cells[5].textContent = contact;
+    editTargetRow.cells[6].textContent = createdBy;
+  } else {
+    const newRow = table.insertRow();
       const cells = [];
       for (let i = 0; i < 8; i++) {
         cells[i] = newRow.insertCell(i);
@@ -252,6 +269,14 @@
       closeModal();
     }
   }
+
+  document.getElementById('backBtn')
+    .addEventListener('click', () => {
+      if (confirm('Are you sure you want to go back to the homepage?')) {
+        window.location.href = 'admin.html';  // or whatever your homepage filename is
+      }
+    });
+
 </script>
 
 </body>

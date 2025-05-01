@@ -185,7 +185,7 @@
         if (!passValue) return showError('Password cannot be blank');
   
         // Admin shortcut ONLY if no role is selected
-        const isAdmin = idValue === 'ADM001' && passValue === 'admin' && !selectedRole;
+        const isAdmin = idValue === 'AD001' && passValue === 'admin' && !selectedRole;
         if (!isAdmin && !selectedRole) return showError('Please select Student or Lecturer');
   
         // Numeric ID validation for non-admin

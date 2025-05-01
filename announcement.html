@@ -9,12 +9,31 @@
       padding: 20px;
       background: #f9f9f9;
     }
+
+    /* back-to-home button */
+    #backBtn {
+      background-color: #00aaff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      }
+
+    #backBtn:hover {
+        background-color: #14214e;
+    }
+
     h1 {
       margin-bottom: 20px;
+      /* push below back button */
     }
+
     #announcement-list {
       max-width: 100%;
       margin: 0 auto;
+      margin-top: 20px;
     }
     .announcement-box {
       background: white;
@@ -49,7 +68,7 @@
       white-space: pre-wrap;
       line-height: 1.5;
       color: #333;
-      text-align: left; /* Ensure content is aligned left */
+      text-align: left;
     }
     .actions {
       position: absolute;
@@ -100,7 +119,6 @@
       word-wrap: break-word;
       overflow-wrap: break-word;
     }
-
     #detailContent {
       word-wrap: break-word;
       overflow-wrap: break-word;
@@ -130,148 +148,150 @@
 </head>
 <body>
 
-<h1>Announcements</h1>
-<div id="announcement-list">
-  <!-- Announcements will be added here -->
-</div>
+  <!-- Fixed Back button -->
+  <button id="backBtn">Go back to homepage</button>
 
-<button class="add-btn" onclick="openAddModal()">Add Announcement</button>
-
-<!-- Announcement Detail Modal -->
-<div id="detailModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeModal('detailModal')">&times;</span>
-    <h3 id="detailTitle" style="text-align: left;"></h3> <!-- Title aligned to left -->
-    <p id="detailContent"></p>
-    <small id="detailMeta"></small>
+  <h2>Announcements</h2>
+  <div id="announcement-list">
+    <!-- Announcements will be added here -->
   </div>
-</div>
 
-<!-- Add/Edit Modal -->
-<div id="addEditModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeModal('addEditModal')">&times;</span>
-    <input type="text" id="titleInput" placeholder="Title">
-    <textarea id="contentInput" placeholder="Content"></textarea>
-    <button onclick="saveAnnouncement()">Save</button>
+  <button class="add-btn" onclick="openAddModal()">Add Announcement</button>
+
+  <!-- Announcement Detail Modal -->
+  <div id="detailModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('detailModal')">&times;</span>
+      <h3 id="detailTitle" style="text-align: left;"></h3>
+      <p id="detailContent"></p>
+      <small id="detailMeta"></small>
+    </div>
   </div>
-</div>
 
-<script>
-let announcements = [];
-let editingId = null;
+  <!-- Add/Edit Modal -->
+  <div id="addEditModal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal('addEditModal')">&times;</span>
+      <input type="text" id="titleInput" placeholder="Title">
+      <textarea id="contentInput" placeholder="Content"></textarea>
+      <button onclick="saveAnnouncement()">Save</button>
+    </div>
+  </div>
 
-function renderAnnouncements() {
-  const list = document.getElementById('announcement-list');
-  list.innerHTML = '';
-  announcements.forEach(a => {
-    const box = document.createElement('div');
-    box.className = 'announcement-box';
-    box.innerHTML = `
-      <strong>${a.title}</strong> <br>
-      <small>${a.date} by ${a.adminId}</small>
-      <div class="actions">
-        <button onclick="editAnnouncement(${a.id}, event)">Edit</button>
-        <button onclick="deleteAnnouncement(${a.id}, event)">Delete</button>
-      </div>
-    `;
-    box.onclick = () => viewAnnouncement(a.id);
-    list.appendChild(box);
-  });
-}
+  <script>
+    // back button logic
+    document.getElementById('backBtn').addEventListener('click', () => {
+      if (confirm('Are you sure you want to go back to the homepage?')) {
+        window.location.href = 'admin.html'; // adjust as needed
+      }
+    });
 
-function openAddModal() {
-  editingId = null;
-  document.getElementById('titleInput').value = '';
-  document.getElementById('contentInput').value = '';
-  document.getElementById('addEditModal').style.display = 'flex';
-}
+    let announcements = [];
+    let editingId = null;
 
-function saveAnnouncement() {
-  const title = document.getElementById('titleInput').value.trim();
-  const content = document.getElementById('contentInput').value.trim();
-  if (!title || !content) {
-    alert('Please enter both title and content.');
-    return;
-  }
+    function renderAnnouncements() {
+      const list = document.getElementById('announcement-list');
+      list.innerHTML = '';
+      announcements.forEach(a => {
+        const box = document.createElement('div');
+        box.className = 'announcement-box';
+        box.innerHTML = `
+          <strong>${a.title}</strong><br>
+          <small>${a.date} by ${a.adminId}</small>
+          <div class="actions">
+            <button onclick="editAnnouncement(${a.id}, event)">Edit</button>
+            <button onclick="deleteAnnouncement(${a.id}, event)">Delete</button>
+          </div>
+        `;
+        box.onclick = () => viewAnnouncement(a.id);
+        list.appendChild(box);
+      });
+    }
 
-  if (editingId !== null) {
-    const a = announcements.find(a => a.id === editingId);
-    a.title = title;
-    a.content = content;
-    // 🚫 Do not change a.date → we keep the original post time
-  } else {
-    const id = Date.now();
-    const date = new Date().toLocaleString();
-    const adminId = 'ADM001';
-    announcements.push({ id, adminId, title, content, date });
-    sendEmail(title, content);
-  }
-  saveToLocal();
-  renderAnnouncements();
-  closeModal('addEditModal');
-}
+    function openAddModal() {
+      editingId = null;
+      document.getElementById('titleInput').value = '';
+      document.getElementById('contentInput').value = '';
+      document.getElementById('addEditModal').style.display = 'flex';
+    }
 
-function editAnnouncement(id, event) {
-  event.stopPropagation();
-  const a = announcements.find(a => a.id === id);
-  editingId = id;
-  document.getElementById('titleInput').value = a.title;
-  document.getElementById('contentInput').value = a.content;
-  document.getElementById('addEditModal').style.display = 'flex';
-}
+    function saveAnnouncement() {
+      const title   = document.getElementById('titleInput').value.trim();
+      const content = document.getElementById('contentInput').value.trim();
+      if (!title || !content) {
+        alert('Please enter both title and content.');
+        return;
+      }
 
-function deleteAnnouncement(id, event) {
-  event.stopPropagation();
-  announcements = announcements.filter(a => a.id !== id);
-  saveToLocal();
-  renderAnnouncements();
-}
+      if (editingId !== null) {
+        const a = announcements.find(a => a.id === editingId);
+        a.title   = title;
+        a.content = content;
+        // keep original date/adminId
+      } else {
+        const id      = Date.now();
+        const date    = new Date().toLocaleString();
+        const adminId = 'AD001';
+        announcements.push({ id, adminId, title, content, date });
+        // sendEmail(title, content);
+      }
+      saveToLocal();
+      renderAnnouncements();
+      closeModal('addEditModal');
+    }
 
-function viewAnnouncement(id) {
-  const a = announcements.find(a => a.id === id);
-  document.getElementById('detailTitle').innerText = a.title;
-  document.getElementById('detailContent').innerText = a.content;
-  document.getElementById('detailMeta').innerText = `${a.date} by ${a.adminId}`;
-  document.getElementById('detailModal').style.display = 'flex';
-}
+    function editAnnouncement(id, evt) {
+      evt.stopPropagation();
+      const a = announcements.find(a => a.id === id);
+      editingId = id;
+      document.getElementById('titleInput').value   = a.title;
+      document.getElementById('contentInput').value = a.content;
+      document.getElementById('addEditModal').style.display = 'flex';
+    }
 
-function closeModal(modalId) {
-  document.getElementById(modalId).style.display = 'none';
-}
+    function deleteAnnouncement(id, evt) {
+      evt.stopPropagation();
+      announcements = announcements.filter(a => a.id !== id);
+      saveToLocal();
+      renderAnnouncements();
+    }
 
-function sendEmail(title, content) {
-  console.log(`Email sent to all users: ${title} - ${content}`);
-}
+    function viewAnnouncement(id) {
+      const a = announcements.find(a => a.id === id);
+      document.getElementById('detailTitle').innerText   = a.title;
+      document.getElementById('detailContent').innerText = a.content;
+      document.getElementById('detailMeta').innerText    = `${a.date} by ${a.adminId}`;
+      document.getElementById('detailModal').style.display = 'flex';
+    }
 
-// ✅ Save to localStorage
-function saveToLocal() {
-  localStorage.setItem('announcements', JSON.stringify(announcements));
-}
+    function closeModal(mid) {
+      document.getElementById(mid).style.display = 'none';
+    }
 
-// ✅ Load from localStorage (do NOT push sample every time)
-function loadFromLocal() {
-  const data = localStorage.getItem('announcements');
-  if (data) {
-    announcements = JSON.parse(data);
-  } else {
-    // Only add a sample if nothing is saved yet
-    announcements = [{
-      id: 1,
-      adminId: 'ADM01',
-      title: 'System Update',
-      content: 'The system will be under maintenance tonight.',
-      date: new Date().toLocaleString()
-    }];
-    saveToLocal();
-  }
-}
+    // Persist to localStorage
+    function saveToLocal() {
+      localStorage.setItem('announcements', JSON.stringify(announcements));
+    }
+    function loadFromLocal() {
+      const data = localStorage.getItem('announcements');
+      if (data) {
+        announcements = JSON.parse(data);
+      } else {
+        announcements = [{
+          id: 1,
+          adminId: 'AD001',
+          title: 'System Update',
+          content: 'The system will be under maintenance tonight.',
+          date: new Date().toLocaleString()
+        }];
+        saveToLocal();
+      }
+    }
 
-// Initialize on page load
-loadFromLocal();
-renderAnnouncements();
-
-</script>
+    // Initialize
+    loadFromLocal();
+    renderAnnouncements();
+  </script>
 
 </body>
 </html>

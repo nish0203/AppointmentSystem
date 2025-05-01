@@ -12,6 +12,8 @@
     h2 {
       color: #000;
     }
+    /* back-to-home button */
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -86,165 +88,183 @@
     .submit-btn:hover {
       background-color: #2f45a0;
     }
+
+    #backBtn {
+      background-color: #00aaff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      }
+
+    #backBtn:hover {
+        background-color: #14214e;
+    }
   </style>
 </head>
 <body>
 
-<h2>Manage Student</h2>
+  <!-- Fixed Back button -->
+  <button id="backBtn">Go back to homepage</button>
+  <h2>Manage Student</h2>
 
-<table id="studentTable">
-  <thead>
-    <tr>
-      <th>No.</th>
-      <th>STUDENT_ID</th>
-      <th>STUDENT_NAME</th>
-      <th>STUDENT_EMAIL</th>
-      <th>STUDENT_PASSWORD</th>
-      <th>CREATED_BY</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>1</td>
-      <td>1231201369</td>
-      <td>MUHAMMAD DANISH BIN MOHD</td>
-      <td>1231201369@student.mmu.edu.my</td>
-      <td>nish_1369</td>
-      <td>AD001</td>
-      <td>
-        <button class="action-button" onclick="editStudent(this)">Edit</button>
-        <button class="action-button" onclick="deleteRow(this)">Delete</button>
-      </td>
-    </tr>
-    <tr>
-      <td>2</td>
-      <td>1231200797</td>
-      <td>KEK WEN LONG</td>
-      <td>1231200797@student.mmu.edu.my</td>
-      <td>wlong_0797</td>
-      <td>AD001</td>
-      <td>
-        <button class="action-button" onclick="editStudent(this)">Edit</button>
-        <button class="action-button" onclick="deleteRow(this)">Delete</button>
-      </td>
-    </tr>
-    <tr>
-      <td>3</td>
-      <td>1231203073</td>
-      <td>AW ZHING YEE</td>
-      <td>1231203073@student.mmu.edu.my</td>
-      <td>awzy_3073</td>
-      <td>AD002</td>
-      <td>
-        <button class="action-button" onclick="editStudent(this)">Edit</button>
-        <button class="action-button" onclick="deleteRow(this)">Delete</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+  <table id="studentTable">
+    <thead>
+      <tr>
+        <th>No.</th>
+        <th>STUDENT_ID</th>
+        <th>STUDENT_NAME</th>
+        <th>STUDENT_EMAIL</th>
+        <th>STUDENT_PASSWORD</th>
+        <th>CREATED_BY</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>1231201369</td>
+        <td>MUHAMMAD DANISH BIN MOHD</td>
+        <td>1231201369@student.mmu.edu.my</td>
+        <td>nish_1369</td>
+        <td>AD001</td>
+        <td>
+          <button class="action-button" onclick="editStudent(this)">Edit</button>
+          <button class="action-button" onclick="deleteRow(this)">Delete</button>
+        </td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>1231200797</td>
+        <td>KEK WEN LONG</td>
+        <td>1231200797@student.mmu.edu.my</td>
+        <td>wlong_0797</td>
+        <td>AD001</td>
+        <td>
+          <button class="action-button" onclick="editStudent(this)">Edit</button>
+          <button class="action-button" onclick="deleteRow(this)">Delete</button>
+        </td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>1231203073</td>
+        <td>AW ZHING YEE</td>
+        <td>1231203073@student.mmu.edu.my</td>
+        <td>awzy_3073</td>
+        <td>AD001</td>
+        <td>
+          <button class="action-button" onclick="editStudent(this)">Edit</button>
+          <button class="action-button" onclick="deleteRow(this)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 
-<button class="action-button add-button" onclick="openModal()">Add Student</button>
+  <button class="action-button add-button" onclick="openModal()">Add Student</button>
 
-<!-- Modal -->
-<div id="addModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal()">&times;</span>
-    <h3 id="modalTitle">Add New Student</h3>
-    <form id="studentForm" onsubmit="submitStudent(event)">
-      <input type="text" id="studentId" placeholder="Student ID" required>
-      <input type="text" id="studentName" placeholder="Student Name" required>
-      <input type="email" id="studentEmail" placeholder="Student Email" required>
-      <input type="text" id="studentPassword" placeholder="Student Password" required>
-      <input type="text" id="studentCreatedBy" placeholder="Created By" required>
-      <button type="submit" class="submit-btn">Save</button>
-    </form>
+  <!-- Modal -->
+  <div id="addModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h3 id="modalTitle">Add New Student</h3>
+      <form id="studentForm" onsubmit="submitStudent(event)">
+        <input type="text" id="studentId" placeholder="Student ID" required>
+        <input type="text" id="studentName" placeholder="Student Name" required>
+        <input type="email" id="studentEmail" placeholder="Student Email" required>
+        <input type="text" id="studentPassword" placeholder="Student Password" required>
+        <!-- locked to AD001 -->
+        <input type="text" id="studentCreatedBy" value="AD001" readonly>
+        <button type="submit" class="submit-btn">Save</button>
+      </form>
+    </div>
   </div>
-</div>
 
-<script>
-  let editTargetRow = null;
+  <script>
+    // back button logic
+    document.getElementById('backBtn').addEventListener('click', () => {
+      if (confirm('Are you sure you want to go back to the homepage?')) {
+        window.location.href = 'admin.html'; // adjust to your actual homepage filename
+      }
+    });
 
-  function openModal(edit = false) {
-    document.getElementById("addModal").style.display = "block";
-    document.getElementById("modalTitle").textContent = edit ? "Edit Student" : "Add New Student";
-  }
+    let editTargetRow = null;
 
-  function closeModal() {
-    document.getElementById("addModal").style.display = "none";
-    document.getElementById("studentForm").reset();
-    editTargetRow = null;
-  }
+    function openModal(edit = false) {
+      document.getElementById("addModal").style.display = "block";
+      document.getElementById("modalTitle").textContent = edit ? "Edit Student" : "Add New Student";
+    }
 
-  function submitStudent(event) {
-    event.preventDefault();
-    const id = document.getElementById("studentId").value;
-    const name = document.getElementById("studentName").value;
-    const email = document.getElementById("studentEmail").value;
-    const password = document.getElementById("studentPassword").value;
-    const createdBy = document.getElementById("studentCreatedBy").value;
+    function closeModal() {
+      document.getElementById("addModal").style.display = "none";
+      document.getElementById("studentForm").reset();
+      editTargetRow = null;
+    }
 
-    const table = document.getElementById("studentTable").getElementsByTagName("tbody")[0];
+    function submitStudent(event) {
+      event.preventDefault();
+      const id        = document.getElementById("studentId").value;
+      const name      = document.getElementById("studentName").value;
+      const email     = document.getElementById("studentEmail").value;
+      const password  = document.getElementById("studentPassword").value;
+      // force AD001 every time
+      const createdBy = 'AD001';
 
-    if (editTargetRow) {
-      editTargetRow.cells[1].textContent = id;
-      editTargetRow.cells[2].textContent = name;
-      editTargetRow.cells[3].textContent = email;
-      editTargetRow.cells[4].textContent = password;
-      editTargetRow.cells[5].textContent = createdBy;
-    } else {
-      const newRow = table.insertRow();
-      const cells = [];
-      for (let i = 0; i < 7; i++) {
-        cells[i] = newRow.insertCell(i);
+      const tbody = document.querySelector("#studentTable tbody");
+
+      if (editTargetRow) {
+        editTargetRow.cells[1].textContent = id;
+        editTargetRow.cells[2].textContent = name;
+        editTargetRow.cells[3].textContent = email;
+        editTargetRow.cells[4].textContent = password;
+        editTargetRow.cells[5].textContent = createdBy;
+      } else {
+        const newRow = tbody.insertRow();
+        newRow.insertCell(0).textContent = tbody.rows.length;
+        newRow.insertCell(1).textContent = id;
+        newRow.insertCell(2).textContent = name;
+        newRow.insertCell(3).textContent = email;
+        newRow.insertCell(4).textContent = password;
+        newRow.insertCell(5).textContent = createdBy;
+        newRow.insertCell(6).innerHTML = `
+          <button class="action-button" onclick="editStudent(this)">Edit</button>
+          <button class="action-button" onclick="deleteRow(this)">Delete</button>
+        `;
       }
 
-      cells[1].textContent = id;
-      cells[2].textContent = name;
-      cells[3].textContent = email;
-      cells[4].textContent = password;
-      cells[5].textContent = createdBy;
-      cells[6].innerHTML = `
-        <button class="action-button" onclick="editStudent(this)">Edit</button>
-        <button class="action-button" onclick="deleteRow(this)">Delete</button>
-      `;
-    }
-
-    renumberRows();
-    closeModal();
-  }
-
-  function editStudent(button) {
-    editTargetRow = button.closest("tr");
-
-    document.getElementById("studentId").value = editTargetRow.cells[1].textContent;
-    document.getElementById("studentName").value = editTargetRow.cells[2].textContent;
-    document.getElementById("studentEmail").value = editTargetRow.cells[3].textContent;
-    document.getElementById("studentPassword").value = editTargetRow.cells[4].textContent;
-    document.getElementById("studentCreatedBy").value = editTargetRow.cells[5].textContent;
-
-    openModal(true);
-  }
-
-  function deleteRow(button) {
-    const row = button.closest("tr");
-    row.remove();
-    renumberRows();
-  }
-
-  function renumberRows() {
-    const rows = document.querySelectorAll("#studentTable tbody tr");
-    rows.forEach((row, index) => {
-      row.cells[0].textContent = index + 1;
-    });
-  }
-
-  window.onclick = function(event) {
-    if (event.target === document.getElementById("addModal")) {
+      renumberRows();
       closeModal();
     }
-  }
-</script>
+
+    function editStudent(button) {
+      editTargetRow = button.closest("tr");
+
+      document.getElementById("studentId").value        = editTargetRow.cells[1].textContent;
+      document.getElementById("studentName").value      = editTargetRow.cells[2].textContent;
+      document.getElementById("studentEmail").value     = editTargetRow.cells[3].textContent;
+      document.getElementById("studentPassword").value  = editTargetRow.cells[4].textContent;
+      // always keep AD001
+      document.getElementById("studentCreatedBy").value = 'AD001';
+
+      openModal(true);
+    }
+
+    function deleteRow(button) {
+      button.closest("tr").remove();
+      renumberRows();
+    }
+
+    function renumberRows() {
+      document.querySelectorAll("#studentTable tbody tr").forEach((row, i) => {
+        row.cells[0].textContent = i + 1;
+      });
+    }
+
+    window.onclick = e => {
+      if (e.target === document.getElementById("addModal")) closeModal();
+    }
+  </script>
 
 </body>
 </html>
