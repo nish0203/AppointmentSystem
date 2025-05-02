@@ -251,6 +251,22 @@ main { flex: 1; padding: 24px; }
   margin-left: 8px;
 }
 
+.cancel-pending-btn {
+  margin-left: 8px;
+  background: red;
+  border: 1px solid #dc2626;
+  color: white;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.cancel-pending-btn:hover {
+  background: #dc2626;
+  color: #fff;
+}
+
+
 </style>
 </head>
 <body>
@@ -440,7 +456,7 @@ main { flex: 1; padding: 24px; }
   </div>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script>
-    const timeSlots = ['8am-10am', '10am-12pm', '2pm-4pm', '4pm-6pm'];
+    const timeSlots = ['10am - 12pm', '2pm - 4pm', '4pm - 6pm'];
     let selectedLecturer = '', selectedDate = '', selectedTime = '';
     const bookings = {
       nurasma: {},
@@ -549,15 +565,31 @@ main { flex: 1; padding: 24px; }
     }
 
     function updateWaitingSection(name) {
-      const waitingHeader = document.getElementById(`waiting-header-${name}`);
-      const waitingContainer = document.getElementById(`waiting-${name}`);
-      const bookedTimes = bookings[name][selectedDate] || [];
-      
-      waitingHeader.style.display = 'block';
-      waitingContainer.innerHTML = bookedTimes.map(t => 
-        `<div class="time-slot waiting-slot">${t}</div>`
-      ).join('');
-    }
+  const waitingHeader    = document.getElementById(`waiting-header-${name}`);
+  const waitingContainer = document.getElementById(`waiting-${name}`);
+  const bookedTimes      = bookings[name][selectedDate] || [];
+
+  // If no pending bookings, hide everything and exit
+  if (bookedTimes.length === 0) {
+    waitingHeader.style.display = 'none';
+    waitingContainer.innerHTML  = '';
+    return;
+  }
+
+  // Otherwise render them as before
+  waitingHeader.style.display = 'block';
+  waitingContainer.innerHTML = bookedTimes.map(t => `
+    <div class="time-slot waiting-slot">
+      ${t}
+      <button
+        class="cancel-pending-btn"
+        onclick="cancelPending('${name}', '${t}')"
+      >Cancel</button>
+    </div>
+  `).join('');
+}
+
+
 
     function selectTime(lecturer, time) {
       selectedLecturer = lecturer;
@@ -682,6 +714,19 @@ let currentRating = 0;
     alert(`Thank you!\nRating: ${currentRating} star(s)\nFeedback: ${text}`);
     closeFeedback();
   }
+
+  function cancelPending(lecturer, time) {
+  if (!confirm(`Cancel your pending slot on ${time}?`)) return;
+
+  // remove from your bookings data
+  const date = selectedDate;
+  bookings[lecturer][date] = bookings[lecturer][date].filter(t => t !== time);
+
+  // refresh both the waiting list and the available-times list
+  updateWaitingSection(lecturer);
+  showAvailableTimes(lecturer);
+}
+
 
 </script>
 </body>
