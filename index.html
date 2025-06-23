@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>eBwise Portal</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f3f6fc;
+    }
+
+    /* Top Navbar */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 2rem;
+      background-color: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .navbar-left img {
+      height: 60px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      font-size: 16px;
+    }
+
+    .nav-links a:hover {
+      color: #0056b3;
+    }
+
+    .login-btn {
+      padding: 0.4rem 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    .login-btn:hover {
+      background-color: #0056b3;
+    }
+
+    /* Main content */
+    .main-container {
+      padding: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .announcement-img {
+      width: 100%;
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .site-announcements {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .site-announcements h2 {
+      margin-bottom: 1rem;
+      color: #333;
+      font-size: 20px;
+    }
+
+    .announcement-item {
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background-color: #f9f9f9;
+    }
+
+    .announcement-item h3 {
+      font-size: 16px;
+      margin-bottom: 0.25rem;
+    }
+
+    .announcement-item p {
+      margin-top: 0.25rem;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .announcement-meta {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+
+    .announcement-item em {
+      color: #0056b3;
+      font-style: normal;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .navbar-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .login-btn {
+        align-self: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <img src="eBbook2.png" alt="eBbook Logo">
+      <div class="nav-links">
+        <a href="#">eBbook Guide</a> &nbsp;&nbsp;
+        <a href="https://online.mmu.edu.my/home">Online Portal</a>
+      </div>
+    </div>
+    <button class="login-btn" onclick="window.location.href='login.html'">Log In</button>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-container">
+    <!-- Banner image -->
+    <img src="Screenshot 2025-06-13 182214.png" alt="Main Announcement" class="announcement-img">
+
+    <!-- Site Announcements -->
+    <div class="site-announcements">
+      <h2>Site announcements</h2>
+      <div class="announcement-item">
+        <h3>
+          <em>Invitation to Keysight in Campus – Career Opportunities & On-site Interviews (24 April 2025)</em>
+        </h3>
+        <div class="announcement-meta">
+          by Ms. Nurjehan Binti Abdul Rahman – Wednesday, 16 April 2025, 4:37 PM
+        </div>
+        <p>
+          Shape What’s Next with Keysight!<br><br>
+          Ready to shape the future of tech? Join us for an exciting session with Keysight Technologies – explore career opportunities and even interview on-site! 🎉✨
+        </p>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

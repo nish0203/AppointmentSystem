@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login – Uni Bookings</title>
   <style>
-    /* Reset & Base styles */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -22,13 +21,34 @@
       color: #333;
     }
 
-    .login-card {
-      background: #fff;
-      padding: 2rem 2.5rem;
+    .main-wrapper {
+      background: white;
       border-radius: 12px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      display: flex;
+      max-width: 900px;
       width: 100%;
-      max-width: 400px;
+      overflow: hidden;
+    }
+
+    .logo-section {
+      background: white;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      border-right: 1px solid #ddd;
+    }
+
+    .logo-section img {
+      max-width: 220px;
+      height: auto;
+    }
+
+    .login-card {
+      flex: 1;
+      padding: 2rem 2.5rem;
       text-align: center;
     }
 
@@ -111,35 +131,52 @@
       font-size: 0.9rem;
     }
 
-    /* Loading message */
     .loading-msg {
       display: none;
       margin-top: 1rem;
       font-weight: bold;
       color: #667eea;
     }
+
+    @media (max-width: 768px) {
+      .main-wrapper {
+        flex-direction: column;
+      }
+
+      .logo-section {
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="login-card">
-    <h2>Uni Bookings Login</h2>
-    <form id="login-form">
-      <div id="error-msg" class="error-msg" aria-live="polite"></div>
+  <div class="main-wrapper">
+    <!-- Left side: eBwise logo -->
+    <div class="logo-section">
+      <img src="eBbook.png" alt="eBbook Logo" />
+    </div>
 
-      <div class="role-selection">
-        <button type="button" class="role-btn" data-role="student">Student</button>
-        <button type="button" class="role-btn" data-role="lecturer">Lecturer</button>
-      </div>
+    <!-- Right side: your login form -->
+    <div class="login-card">
+      <form id="login-form">
+        <div id="error-msg" class="error-msg" aria-live="polite"></div>
 
-      <label for="user-id">ID</label>
-      <input type="text" id="user-id" placeholder="Enter your ID" />
+        <div class="role-selection">
+          <button type="button" class="role-btn" data-role="student">Student</button>
+          <button type="button" class="role-btn" data-role="lecturer">Lecturer</button>
+        </div>
 
-      <label for="password">Password</label>
-      <input type="password" id="password" placeholder="Enter your password" />
+        <label for="user-id">ID</label>
+        <input type="text" id="user-id" placeholder="Enter your ID" />
 
-      <button type="submit" class="submit-btn">Log In</button>
-    </form>
-    <div id="loading-msg" class="loading-msg">Logging in... Please wait.</div>
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" />
+
+        <button type="submit" class="submit-btn">Log In</button>
+      </form>
+      <div id="loading-msg" class="loading-msg">Logging in... Please wait.</div>
+    </div>
   </div>
 
   <script>
@@ -149,7 +186,7 @@
       const errorEl = document.getElementById('error-msg');
       const loadingEl = document.getElementById('loading-msg');
       let selectedRole = null;
-  
+
       function showError(msg) {
         errorEl.textContent = msg;
         errorEl.style.display = 'block';
@@ -158,8 +195,7 @@
         errorEl.textContent = '';
         errorEl.style.display = 'none';
       }
-  
-      // Toggleable role buttons
+
       roleBtns.forEach(btn => {
         btn.addEventListener('click', () => {
           clearError();
@@ -173,33 +209,29 @@
           }
         });
       });
-  
+
       form.addEventListener('submit', e => {
         e.preventDefault();
         clearError();
-  
+
         const idValue = document.getElementById('user-id').value.trim();
         const passValue = document.getElementById('password').value.trim();
-  
+
         if (!idValue) return showError('ID cannot be blank');
         if (!passValue) return showError('Password cannot be blank');
-  
-        // Admin shortcut ONLY if no role is selected
+
         const isAdmin = idValue === 'AD001' && passValue === 'admin' && !selectedRole;
         if (!isAdmin && !selectedRole) return showError('Please select Student or Lecturer');
-  
-        // Numeric ID validation for non-admin
+
         if (!isAdmin && !/^[0-9]+$/.test(idValue))
           return showError('ID must be numeric');
-  
+
         if (!isAdmin && idValue.length !== 10)
           return showError('ID must be exactly 10 digits long');
 
-        // Show loading message and disable form
         loadingEl.style.display = 'block';
         form.querySelectorAll('input, button').forEach(el => el.disabled = true);
-  
-        // Delay redirect by 2 seconds
+
         setTimeout(() => {
           if (isAdmin) {
             window.location.href = 'admin.html';
@@ -208,7 +240,7 @@
           }
         }, 2000);
       });
-  
+
       clearError();
     })();
   </script>
