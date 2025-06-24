@@ -291,17 +291,7 @@
     });
   </script>
 
- <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
-
-    // Firebase config
-    const app = initializeApp({
-      apiKey:    "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
-      authDomain:"appointment-management-c2531.firebaseapp.com",
-      projectId: "appointment-management-c2531"
-    });
-    const db = getFirestore(app);
+  <script type="module">
 
     (async () => {
       const params       = new URLSearchParams(window.location.search);
@@ -335,6 +325,6 @@
       logoutLink.addEventListener('click', () => sessionStorage.clear());
     })();
   </script>
-  
+
 </body>
 </html>
