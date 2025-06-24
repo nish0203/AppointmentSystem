@@ -159,12 +159,12 @@
     </div>
     <div class="login-card">
       <div id="error-msg" class="error-msg" aria-live="polite"></div>
-      <form id="login-form">
+      <form id="login-form" autocomplete="off">
         <label for="user-email">Email</label>
         <input type="email" id="user-email" placeholder="Enter your registered email" required />
 
         <label for="otp" class="hidden" id="otp-label">Enter OTP (check your email)</label>
-        <input type="text" id="otp" class="hidden" placeholder="Enter 6-digit code" maxlength="6" />
+        <input type="text" id="otp" class="hidden" placeholder="Enter 6-digit code" maxlength="6" pattern="\\d{6}" />
 
         <button type="submit" class="submit-btn" id="submit-btn">Send OTP</button>
       </form>
@@ -176,6 +176,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-functions.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+    import { getAuth, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 
     // --- Firebase init ---
     const firebaseConfig = {
@@ -185,7 +186,8 @@
     };
     const app  = initializeApp(firebaseConfig);
     const db   = getFirestore(app);
-    const functions = getFunctions(app);
+    const functions = getFunctions(app, "us-central1");
+    const auth = getAuth(app);
 
     // --- UI refs ---
     const form      = document.getElementById('login-form');
@@ -216,6 +218,9 @@
         email = emailIn.value.trim().toLowerCase();
         if (!email) return showError('Please enter your email');
 
+        // Debug: log the email being sent
+        console.log("Sending OTP for email:", email);
+
         // Check email in any collection
         const cols = ['admins','students','lecturers'];
         let found = false;
@@ -230,7 +235,9 @@
         emailIn.disabled = true;
         loadingEl.style.display = 'block';
         try {
-          await httpsCallable(functions, "sendEmailOtp")({ email });
+          const sendEmailOtp = httpsCallable(functions, "sendEmailOtp");
+          const { data } = await sendEmailOtp({ email });
+          console.log("sendEmailOtp called with data:", data, "typeof data:", typeof data, "keys:", Object.keys(data || {}));
           loadingEl.textContent = 'Check your inbox: OTP sent!';
           otpIn.classList.remove('hidden');
           otpLabel.classList.remove('hidden');
@@ -238,21 +245,21 @@
           otpIn.focus();
           step = 2;
         } catch (err) {
-          showError("Failed to send OTP: " + err.message);
+          showError("Failed to send OTP: " + (err.message || err));
           emailIn.disabled = false;
           submitBtn.disabled = false;
           loadingEl.style.display = 'none';
         }
       } else if (step === 2) {
         const otp = otpIn.value.trim();
-        if (!otp) return showError('Please enter the OTP code');
+        if (!otp || !/^\d{6}$/.test(otp)) return showError('Please enter the 6-digit OTP code');
         loadingEl.style.display = 'block';
         submitBtn.disabled = true;
         try {
           // Verify OTP
           const { data } = await httpsCallable(functions, "verifyEmailOtp")({ email, code: otp });
-          // Example: { role, profile, token }
-          // You can sign in user with the token using Firebase Auth if needed
+          // Sign in user with the token
+          await signInWithCustomToken(auth, data.token);
           // Redirect user based on role
           loadingEl.textContent = "Login successful! Redirecting…";
           let page = data.role + ".html";
