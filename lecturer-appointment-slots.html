@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manage Appointment Slots – Uni Bookings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: #f9fafb;
+      color: #222;
+      margin: 0;
+    }
+    .header {
+      background: #fff;
+      color: #222;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 70px;
+      border-bottom: 1px solid #e5e7eb;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    
+    .header .logo {
+      display: flex; align-items: center; gap: 18px;
+    }
+    .header .logo img {
+      height: 60px;
+      transition: height .2s;
+    }
+    .header nav {
+      display: flex; gap: 24px; align-items: center;
+    }
+    .header nav .nav-link {
+      color: #222;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.08rem;
+      transition: color .2s;
+      position: relative;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .header nav .nav-link:hover, .header nav .nav-link.active {
+      background: #f1f5f9;
+      color: #ef4444;
+    }
+    .header nav .dropdown {
+      position: relative;
+    }
+    .header nav .dropdown-content {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 110%;
+      background: #fff;
+      min-width: 220px;
+      box-shadow: 0 4px 16px #0002;
+      border-radius: 8px;
+      z-index: 100;
+      flex-direction: column;
+      padding: 8px 0;
+    }
+    .header nav .dropdown-content.show {
+      display: flex;
+    }
+    .header nav .dropdown-content a {
+      color: #222;
+      text-decoration: none;
+      padding: 12px 22px;
+      font-size: 1rem;
+      border: none;
+      background: none;
+      text-align: left;
+      transition: background .2s, color .2s;
+      border-radius: 0;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .header nav .dropdown-content a:hover {
+      background: #f1f5f9;
+      color: #ef4444;
+    }
+    .header .avatar-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: #eee;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      margin-left: 18px;
+      cursor: pointer;
+      position: relative;
+      outline: none;
+      border: none;
+      padding: 0;
+    }
+    .header .avatar-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+    .logout-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .logout-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background: #fff;
+      box-shadow: 0 8px 24px #0003;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      z-index: 200;
+      min-width: 160px;
+      padding: 8px 0;
+    }
+    .logout-dropdown button {
+      width: 100%;
+      background: none;
+      border: none;
+      color: #ef4444;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 12px 24px;
+      text-align: left;
+      border-radius: 0;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .logout-dropdown button:hover {
+      background: #f1f5f9;
+      color: #b91c1c;
+    }
+    .logout-dropdown.show {
+      display: block;
+    }
+    .main-container {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 16px;
+    }
+    .page-header {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #0001;
+      padding: 28px 24px;
+      margin-bottom: 32px;
+    }
+    .page-header h1 {
+      margin: 0 0 8px 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .page-header p {
+      margin: 0;
+      font-size: 1.05rem;
+      color: #666;
+    }
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 24px;
+    }
+    .form-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #0001;
+      padding: 24px;
+      height: fit-content;
+    }
+    .form-card h3 {
+      margin: 0 0 20px 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #374151;
+      font-size: 0.95rem;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #f9fafb;
+      transition: border .2s, box-shadow .2s;
+      box-sizing: border-box;
+    }
+    .form-group input:focus {
+      border: 1.5px solid #2563eb;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      background: #fff;
+    }
+    .time-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .btn {
+      padding: 12px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-primary {
+      background: #2563eb;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #1d4ed8;
+    }
+    .btn-success {
+      background: #10B981;
+      color: white;
+    }
+    .btn-success:hover {
+      background: #059669;
+    }
+    .slots-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #0001;
+      padding: 24px;
+    }
+    .slots-card h3 {
+      margin: 0 0 20px 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .slots-list {
+      max-height: 500px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    .slots-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .slots-list::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    .slots-list::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 3px;
+    }
+    .slots-list::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+    .slot-item {
+      background: #f8fafc;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border-left: 4px solid #10B981;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .slot-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px #0002;
+    }
+    .slot-item.editing {
+      border-left-color: #f59e0b;
+      background: #fffbeb;
+    }
+    .slot-item.booked {
+      border-left-color: #ef4444;
+      background: #fef2f2;
+    }
+    .slot-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .slot-date {
+      font-weight: 700;
+      color: #222;
+      font-size: 1.05rem;
+    }
+    .slot-status {
+      font-size: 0.85rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .slot-status.available {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .slot-status.booked {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .slot-times {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .slot-time {
+      font-weight: 600;
+      color: #374151;
+    }
+    .slot-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-edit {
+      background: #f59e0b;
+      color: white;
+    }
+    .btn-edit:hover {
+      background: #d97706;
+    }
+    .btn-delete {
+      background: #ef4444;
+      color: white;
+    }
+    .btn-delete:hover {
+      background: #dc2626;
+    }
+    .btn-save {
+      background: #10B981;
+      color: white;
+    }
+    .btn-save:hover {
+      background: #059669;
+    }
+    .btn-cancel {
+      background: #6b7280;
+      color: white;
+    }
+    .btn-cancel:hover {
+      background: #4b5563;
+    }
+    .edit-form {
+      display: none;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .edit-form.show {
+      display: flex;
+    }
+    .edit-form input {
+      padding: 8px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 0.9rem;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6b7280;
+    }
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      color: #d1d5db;
+    }
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6b7280;
+    }
+    .error-message {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      border: 1px solid #fca5a5;
+    }
+    .success-message {
+      background: #d1fae5;
+      color: #065f46;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      border: 1px solid #a7f3d0;
+    }
+    @media (max-width: 1000px) {
+      .content-grid { 
+        grid-template-columns: 1fr; 
+      }
+      .form-card {
+        order: 1;
+      }
+      .slots-card {
+        order: 2;
+      }
+    }
+    @media (max-width: 700px) {
+      .main-container { 
+        padding: 0 4vw; 
+      }
+      .time-inputs {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <img src="eBbook2.png" alt="Logo">
+    </div>
+    <nav>
+      <a href="lecturer.html" class="nav-link">Dashboard</a>
+      <div class="dropdown nav-link active" tabindex="0" id="slot-dropdown">
+        Slot Management <i class="fa fa-caret-down" style="margin-left:6px;"></i>
+        <div class="dropdown-content" id="slot-dropdown-content">
+          <a href="lecturer-appointment-slots.html">Set Appointment Slots</a>
+          <a href="#">Manage Booked Appointments</a>
+        </div>
+      </div>
+    </nav>
+    <div class="logout-wrapper">
+      <button class="avatar-btn" id="avatar-btn">
+        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Lecturer Profile" />
+      </button>
+      <div class="logout-dropdown" id="logout-dropdown">
+        <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="page-header">
+      <h1>Manage Appointment Slots</h1>
+      <p>Create, edit, and manage your available appointment time slots</p>
+    </div>
+
+    <div class="content-grid">
+      <div class="form-card">
+        <h3>Add New Slot</h3>
+        <div id="message-container"></div>
+        <form id="slot-form">
+          <div class="form-group">
+            <label for="slot-date">Date</label>
+            <input type="text" id="slot-date" placeholder="Select date" readonly>
+          </div>
+          <div class="time-inputs">
+            <div class="form-group">
+              <label for="start-time">Start Time</label>
+              <input type="text" id="start-time" placeholder="Start time" readonly>
+            </div>
+            <div class="form-group">
+              <label for="end-time">End Time</label>
+              <input type="text" id="end-time" placeholder="End time" readonly>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">
+            <i class="fa fa-plus"></i> Add Slot
+          </button>
+        </form>
+      </div>
+
+      <div class="slots-card">
+        <h3>Your Appointment Slots</h3>
+        <div id="slots-container">
+          <div class="loading">
+            <i class="fa fa-spinner fa-spin"></i>
+            <p>Loading slots...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import {
+      getFirestore, collection, doc, setDoc, getDocs, deleteDoc, updateDoc, query, where
+    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain: "appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531",
+      storageBucket: "appointment-management-c2531.appspot.com",
+      messagingSenderId: "428786083628",
+      appId: "1:428786083628:web:d9d9576b12581cc697ee89",
+      measurementId: "G-9FM8F1WJMF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Initialize Flatpickr
+    const datePicker = flatpickr("#slot-date", {
+      inline: false,
+      minDate: "today",
+      dateFormat: "Y-m-d",
+      theme: "material_blue"
+    });
+
+    const startTimePicker = flatpickr("#start-time", {
+      enableTime: true,
+      noCalendar: true,
+      dateFormat: "H:i",
+      time_24hr: true,
+      minuteIncrement: 30
+    });
+
+    const endTimePicker = flatpickr("#end-time", {
+      enableTime: true,
+      noCalendar: true,
+      dateFormat: "H:i",
+      time_24hr: true,
+      minuteIncrement: 30
+    });
+
+    // Global variables
+    let currentUserEmail = sessionStorage.getItem('userEmail');
+    let slots = [];
+    let editingSlotId = null;
+
+    // Initialize
+    if (!currentUserEmail) {
+      const params = new URLSearchParams(location.search);
+      currentUserEmail = params.get('email');
+      if (currentUserEmail) {
+        sessionStorage.setItem('userEmail', currentUserEmail);
+      }
+    }
+
+    if (!currentUserEmail) {
+      window.location.href = 'login.html';
+    }
+
+    // Avatar dropdown functionality
+    const avatarBtn = document.getElementById('avatar-btn');
+    const logoutDropdown = document.getElementById('logout-dropdown');
+    avatarBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      logoutDropdown.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!avatarBtn.contains(e.target) && !logoutDropdown.contains(e.target)) {
+        logoutDropdown.classList.remove('show');
+      }
+    });
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      sessionStorage.clear();
+      window.location.href = 'login.html';
+    });
+
+    // Slot Management dropdown
+    const slotDropdown = document.getElementById('slot-dropdown');
+    const slotDropdownContent = document.getElementById('slot-dropdown-content');
+    slotDropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+      slotDropdownContent.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!slotDropdown.contains(e.target)) {
+        slotDropdownContent.classList.remove('show');
+      }
+    });
+
+    // Utility functions
+    function showMessage(message, type = 'error') {
+      const container = document.getElementById('message-container');
+      container.innerHTML = `<div class="${type}-message">${message}</div>`;
+      setTimeout(() => container.innerHTML = '', 5000);
+    }
+
+    function formatTime(timeStr) {
+      const [hours, minutes] = timeStr.split(':');
+      const hour = parseInt(hours);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const displayHour = hour % 12 || 12;
+      return `${displayHour}:${minutes} ${ampm}`;
+    }
+
+    function parseTime(timeStr) {
+      const [time, ampm] = timeStr.split(' ');
+      const [hours, minutes] = time.split(':');
+      let hour = parseInt(hours);
+      if (ampm === 'PM' && hour !== 12) hour += 12;
+      if (ampm === 'AM' && hour === 12) hour = 0;
+      return `${hour.toString().padStart(2, '0')}:${minutes}`;
+    }
+
+    // Check for time conflicts
+    function hasTimeConflict(date, startTime, endTime, excludeSlotId = null) {
+      return slots.some(slot => {
+        if (excludeSlotId && slot.id === excludeSlotId) return false;
+        if (slot.date !== date) return false;
+        
+        const newStart = new Date(`2000-01-01T${startTime}`);
+        const newEnd = new Date(`2000-01-01T${endTime}`);
+        const existingStart = new Date(`2000-01-01T${slot.startTime}`);
+        const existingEnd = new Date(`2000-01-01T${slot.endTime}`);
+        
+        return (newStart < existingEnd && newEnd > existingStart);
+      });
+    }
+
+    // Check if slot is booked
+    async function isSlotBooked(slotId) {
+      try {
+        const bookingsQuery = query(
+          collection(db, 'appointments'), 
+          where('slotId', '==', slotId)
+        );
+        const bookingsSnapshot = await getDocs(bookingsQuery);
+        return !bookingsSnapshot.empty;
+      } catch (error) {
+        console.error('Error checking slot bookings:', error);
+        return false;
+      }
+    }
+
+    // Load slots from Firestore
+    async function loadSlots() {
+      try {
+        const slotsQuery = query(
+          collection(db, 'appointment_slots'),
+          where('lecturerEmail', '==', currentUserEmail)
+        );
+        const snapshot = await getDocs(slotsQuery);
+        
+        slots = [];
+        for (const docSnapshot of snapshot.docs) {
+          const slotData = { id: docSnapshot.id, ...docSnapshot.data() };
+          slotData.isBooked = await isSlotBooked(docSnapshot.id);
+          slots.push(slotData);
+        }
+        
+        // Sort slots by date and time
+        slots.sort((a, b) => {
+          const dateCompare = new Date(a.date) - new Date(b.date);
+          if (dateCompare !== 0) return dateCompare;
+          return new Date(`2000-01-01T${a.startTime}`) - new Date(`2000-01-01T${b.startTime}`);
+        });
+        
+        renderSlots();
+      } catch (error) {
+        console.error('Error loading slots:', error);
+        showMessage('Failed to load appointment slots');
+      }
+    }
+
+    // Render slots
+    function renderSlots() {
+      const container = document.getElementById('slots-container');
+      
+      if (slots.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fa fa-calendar-plus"></i>
+            <h3>No appointment slots yet</h3>
+            <p>Create your first appointment slot using the form on the left</p>
+          </div>
+        `;
+        return;
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      // Filter out past slots
+      const validSlots = slots.filter(slot => {
+        const slotDate = new Date(slot.date);
+        slotDate.setHours(0, 0, 0, 0);
+        return slotDate >= today;
+      });
+
+      container.innerHTML = `
+        <div class="slots-list">
+          ${validSlots.map(slot => `
+            <div class="slot-item ${slot.isBooked ? 'booked' : ''}" data-slot-id="${slot.id}">
+              <div class="slot-header">
+                <div class="slot-date">${new Date(slot.date).toLocaleDateString('en-US', { 
+                  weekday: 'short', 
+                  year: 'numeric', 
+                  month: 'short', 
+                  day: 'numeric' 
+                })}</div>
+                <div class="slot-status ${slot.isBooked ? 'booked' : 'available'}">
+                  ${slot.isBooked ? 'Booked' : 'Available'}
+                </div>
+              </div>
+              <div class="slot-times">
+                <span class="slot-time">${formatTime(slot.startTime)}</span>
+                <span>–</span>
+                <span class="slot-time">${formatTime(slot.endTime)}</span>
+              </div>
+              <div class="slot-actions">
+                ${!slot.isBooked ? `
+                  <button class="btn-small btn-edit" onclick="editSlot('${slot.id}')">
+                    <i class="fa fa-edit"></i> Edit
+                  </button>
+                ` : ''}
+                <button class="btn-small btn-delete" onclick="deleteSlot('${slot.id}')">
+                  <i class="fa fa-trash"></i> Delete
+                </button>
+              </div>
+              <div class="edit-form" id="edit-form-${slot.id}">
+                <input type="text" id="edit-date-${slot.id}" value="${slot.date}" readonly>
+                <input type="text" id="edit-start-${slot.id}" value="${slot.startTime}" readonly>
+                <input type="text" id="edit-end-${slot.id}" value="${slot.endTime}" readonly>
+                <button class="btn-small btn-save" onclick="saveEdit('${slot.id}')">
+                  <i class="fa fa-check"></i> Save
+                </button>
+                <button class="btn-small btn-cancel" onclick="cancelEdit('${slot.id}')">
+                  <i class="fa fa-times"></i> Cancel
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // Add new slot
+    document.getElementById('slot-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const date = document.getElementById('slot-date').value;
+      const startTime = document.getElementById('start-time').value;
+      const endTime = document.getElementById('end-time').value;
+      
+      if (!date || !startTime || !endTime) {
+        showMessage('Please fill in all fields');
+        return;
+      }
+      
+      // Validate times
+      const start = new Date(`2000-01-01T${startTime}`);
+      const end = new Date(`2000-01-01T${endTime}`);
+      
+      if (start >= end) {
+        showMessage('End time must be after start time');
+        return;
+      }
+      
+      // Check for past dates
+      const slotDate = new Date(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      slotDate.setHours(0, 0, 0, 0);
+      
+      if (slotDate < today) {
+        showMessage('Cannot create slots for past dates');
+        return;
+      }
+      
+      // Check for conflicts
+      if (hasTimeConflict(date, startTime, endTime)) {
+        showMessage('This time slot conflicts with an existing slot');
+        return;
+      }
+      
+      try {
+        const slotData = {
+          lecturerEmail: currentUserEmail,
+          date: date,
+          startTime: startTime,
+          endTime: endTime,
+          createdAt: new Date().toISOString(),
+          isBooked: false
+        };
+        
+        const docRef = doc(collection(db, 'appointment_slots'));
+        await setDoc(docRef, slotData);
+        
+        showMessage('Appointment slot created successfully!', 'success');
+        
+        // Clear form
+        document.getElementById('slot-form').reset();
+        datePicker.clear();
+        startTimePicker.clear();
+        endTimePicker.clear();
+        
+        // Reload slots
+        await loadSlots();
+        
+      } catch (error) {
+        console.error('Error creating slot:', error);
+        showMessage('Failed to create appointment slot');
+      }
+    });
+
+    // Edit slot functions
+    window.editSlot = function(slotId) {
+      const slot = slots.find(s => s.id === slotId);
+      if (!slot || slot.isBooked) return;
+      
+      // Cancel any other editing
+      if (editingSlotId && editingSlotId !== slotId) {
+        cancelEdit(editingSlotId);
+      }
+      
+      editingSlotId = slotId;
+      
+      const slotElement = document.querySelector(`[data-slot-id="${slotId}"]`);
+      const editForm = document.getElementById(`edit-form-${slotId}`);
+      
+      slotElement.classList.add('editing');
+      editForm.classList.add('show');
+      
+      // Initialize edit form pickers
+      flatpickr(`#edit-date-${slotId}`, {
+        minDate: "today",
+        dateFormat: "Y-m-d",
+        defaultDate: slot.date
+      });
+      
+      flatpickr(`#edit-start-${slotId}`, {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true,
+        minuteIncrement: 30,
+        defaultDate: slot.startTime
+      });
+      
+      flatpickr(`#edit-end-${slotId}`, {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true,
+        minuteIncrement: 30,
+        defaultDate: slot.endTime
+      });
+    };
+
+    window.cancelEdit = function(slotId) {
+      const slotElement = document.querySelector(`[data-slot-id="${slotId}"]`);
+      const editForm = document.getElementById(`edit-form-${slotId}`);
+      
+      slotElement.classList.remove('editing');
+      editForm.classList.remove('show');
+      editingSlotId = null;
+    };
+
+    window.saveEdit = async function(slotId) {
+      const date = document.getElementById(`edit-date-${slotId}`).value;
+      const startTime = document.getElementById(`edit-start-${slotId}`).value;
+      const endTime = document.getElementById(`edit-end-${slotId}`).value;
+      
+      if (!date || !startTime || !endTime) {
+        showMessage('Please fill in all fields');
+        return;
+      }
+      
+      // Validate times
+      const start = new Date(`2000-01-01T${startTime}`);
+      const end = new Date(`2000-01-01T${endTime}`);
+      
+      if (start >= end) {
+        showMessage('End time must be after start time');
+        return;
+      }
+      
+      // Check for past dates
+      const slotDate = new Date(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      slotDate.setHours(0, 0, 0, 0);
+      
+      if (slotDate < today) {
+        showMessage('Cannot set slots for past dates');
+        return;
+      }
+      
+      // Check for conflicts (excluding current slot)
+      if (hasTimeConflict(date, startTime, endTime, slotId)) {
+        showMessage('This time slot conflicts with another existing slot');
+        return;
+      }
+      
+      try {
+        await updateDoc(doc(db, 'appointment_slots', slotId), {
+          date: date,
+          startTime: startTime,
+          endTime: endTime,
+          updatedAt: new Date().toISOString()
+        });
+        
+        showMessage('Slot updated successfully!', 'success');
+        cancelEdit(slotId);
+        await loadSlots();
+        
+      } catch (error) {
+        console.error('Error updating slot:', error);
+        showMessage('Failed to update slot');
+      }
+    };
+
+    // Delete slot
+    window.deleteSlot = async function(slotId) {
+      const slot = slots.find(s => s.id === slotId);
+      
+      if (slot.isBooked) {
+        if (!confirm('This slot is booked by a student. Deleting it will cancel the appointment. Are you sure?')) {
+          return;
+        }
+      } else {
+        if (!confirm('Are you sure you want to delete this appointment slot?')) {
+          return;
+        }
+      }
+      
+      try {
+        // If slot is booked, also need to handle the appointment
+        if (slot.isBooked) {
+          const bookingsQuery = query(
+            collection(db, 'appointments'), 
+            where('slotId', '==', slotId)
+          );
+          const bookingsSnapshot = await getDocs(bookingsQuery);
+          
+          // Delete associated appointments
+          for (const bookingDoc of bookingsSnapshot.docs) {
+            await deleteDoc(doc(db, 'appointments', bookingDoc.id));
+          }
+        }
+        
+        await deleteDoc(doc(db, 'appointment_slots', slotId));
+        showMessage('Slot deleted successfully!', 'success');
+        await loadSlots();
+        
+      } catch (error) {
+        console.error('Error deleting slot:', error);
+        showMessage('Failed to delete slot');
+      }
+    };
+
+    // Auto-remove expired slots
+    async function removeExpiredSlots() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const expiredSlots = slots.filter(slot => {
+        const slotDate = new Date(slot.date);
+        slotDate.setHours(0, 0, 0, 0);
+        return slotDate < today;
+      });
+      
+      for (const slot of expiredSlots) {
+        try {
+          await deleteDoc(doc(db, 'appointment_slots', slot.id));
+        } catch (error) {
+          console.error('Error removing expired slot:', error);
+        }
+      }
+      
+      if (expiredSlots.length > 0) {
+        await loadSlots();
+      }
+    }
+
+    // Initialize the page
+    await loadSlots();
+    await removeExpiredSlots();
+  </script>
+</body>
+</html> 
