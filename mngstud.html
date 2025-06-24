@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Manage Student (Firestore with Load/Edit/Delete)</title>
+  <title>Manage Student (with Confirmation & Duplication Check)</title>
   <style>
     /* existing CSS unchanged */
     body { font-family: Arial; background: #f6fafa; padding: 20px; }
     .header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:10px; }
     .header h2 { color:#000; margin:0; }
-    #searchInput { padding:8px 12px; width:250px; border-radius:20px; border:1px solid #ccc; transition:0.3s; }
+    #searchInput { padding:8px 12px; width:300px; border-radius:20px; border:1px solid #ccc; transition:0.3s; }
     #searchInput:focus { outline:none; border-color:#1E3A8A; box-shadow:0 0 5px rgba(30,58,138,0.5); }
     table { width:100%; border-collapse:collapse; background:#fff; }
     th, td { border:1px solid #ddd; padding:12px; text-align:left; }
@@ -18,11 +18,11 @@
     .add-button { margin-top:20px; background:#28a745; }
     .add-button:hover { background:#218838; }
     .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.4); }
-    .modal-content { background:#fff; margin:10% auto; padding:20px; width:400px; border-radius:8px; position:relative; }
-    .close { position:absolute; top:10px; right:15px; font-size:20px; cursor:pointer; }
-    .modal-content input { width:100%; padding:8px; margin:10px 0; border:1px solid #ccc; border-radius:4px; }
+    .modal-content { background:#fff; margin:8% auto; padding:20px; width:420px; border-radius:8px; position:relative; }
+    .modal-content input { width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px; }
     .submit-btn { background:#3b57c0; color:#fff; padding:8px 14px; border:none; cursor:pointer; border-radius:4px; }
     .submit-btn:hover { background:#2f45a0; }
+    .close { position:absolute; top:10px; right:15px; font-size:20px; cursor:pointer; }
     #backBtn { background:#00aaff; color:#fff; border:none; padding:10px 20px; border-radius:4px; margin-bottom:10px; cursor:pointer; }
     #backBtn:hover { background:#14214e; }
   </style>
@@ -37,7 +37,16 @@
 
   <table id="studentTable">
     <thead>
-      <tr><th>No.</th><th>STUDENT_ID</th><th>STUDENT_NAME</th><th>STUDENT_EMAIL</th><th>CREATED_BY</th><th>Action</th></tr>
+      <tr>
+        <th>No.</th>
+        <th>STUDENT_ID</th>
+        <th>STUDENT_NAME</th>
+        <th>STUDENT_EMAIL</th>
+        <th>FACULTY</th>
+        <th>COURSE</th>
+        <th>CREATED_BY</th>
+        <th>Action</th>
+      </tr>
     </thead>
     <tbody></tbody>
   </table>
@@ -52,18 +61,21 @@
         <input type="text" id="studentId" placeholder="Student ID" required>
         <input type="text" id="studentName" placeholder="Student Name" required>
         <input type="email" id="studentEmail" placeholder="Student Email" required>
+        <input type="text" id="studentFaculty" placeholder="Faculty" required>
+        <input type="text" id="studentCourse" placeholder="Course" required>
         <input type="text" id="studentCreatedBy" value="AD001" readonly>
         <button type="submit" class="submit-btn">Save</button>
       </form>
     </div>
   </div>
 
-  <!-- Firebase + App Logic -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getFirestore, collection, doc, getDocs, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+    import {
+      getFirestore, collection, doc, getDocs, getDoc,
+      setDoc, updateDoc, deleteDoc
+    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
       authDomain: "appointment-management-c2531.firebaseapp.com",
@@ -73,8 +85,6 @@
       appId: "1:428786083628:web:d9d9576b12581cc697ee89",
       measurementId: "G-9FM8F1WJMF"
     };
-
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db  = getFirestore(app);
 
@@ -87,35 +97,35 @@
     const backBtn     = document.getElementById('backBtn');
     const searchInput = document.getElementById('searchInput');
 
-    // Load students on page load
     async function loadStudents() {
       const snapshot = await getDocs(collection(db, 'students'));
       snapshot.forEach(docSnap => {
-        const { id, name, email, createdBy } = docSnap.data();
-        addStudentRow(id, name, email, createdBy);
+        const d = docSnap.data();
+        addStudentRow(d.id, d.name, d.email, d.faculty, d.course, d.createdBy);
       });
       renumberRows();
     }
 
-    // UI functions
-    function addStudentRow(id,name,email,createdBy) {
+    function addStudentRow(id, name, email, faculty, course, createdBy) {
       const row = tableBody.insertRow();
       row.dataset.email = email;
       row.insertCell().textContent = tableBody.rows.length;
       row.insertCell().textContent = id;
       row.insertCell().textContent = name;
       row.insertCell().textContent = email;
+      row.insertCell().textContent = faculty;
+      row.insertCell().textContent = course;
       row.insertCell().textContent = createdBy;
-      const actions = row.insertCell();
-      actions.innerHTML = `<button class="action-button" data-action="edit">Edit</button>` +
-                          `<button class="action-button" data-action="delete">Delete</button>`;
+      row.insertCell().innerHTML =
+        `<button class="action-button" data-action="edit">Edit</button>` +
+        `<button class="action-button" data-action="delete">Delete</button>`;
     }
 
     function renumberRows() {
       [...tableBody.rows].forEach((r,i) => r.cells[0].textContent = i+1);
     }
 
-    function openModal(edit=false) {
+    function openModal(edit = false) {
       modal.style.display = 'block';
       document.getElementById('modalTitle').textContent = edit ? 'Edit Student' : 'Add New Student';
     }
@@ -133,43 +143,61 @@
       });
     }
 
-    // Event handlers
-    addBtn.onclick = () => openModal(false);
-    closeBtn.onclick = closeModal;
-    backBtn.onclick = () => { if(confirm('Go back to homepage?')) window.location='admin.html'; };
+    addBtn.onclick    = () => openModal(false);
+    closeBtn.onclick  = closeModal;
+    backBtn.onclick   = () => { if(confirm('Go back to homepage?')) window.location='admin.html'; };
     searchInput.oninput = searchStudents;
-    window.onclick = e => { if(e.target === modal) closeModal(); };
+    window.onclick     = e => { if(e.target === modal) closeModal(); };
 
     form.onsubmit = async e => {
       e.preventDefault();
       const id        = document.getElementById('studentId').value.trim();
       const name      = document.getElementById('studentName').value.trim();
       const email     = document.getElementById('studentEmail').value.trim();
+      const faculty   = document.getElementById('studentFaculty').value.trim();
+      const course    = document.getElementById('studentCourse').value.trim();
       const createdBy = document.getElementById('studentCreatedBy').value;
-      const data      = { id, name, email, createdBy, role: 'student' };
 
+      // Duplicate check
+      const allSnap = await getDocs(collection(db, 'students'));
+      const duplicate = allSnap.docs.some(d => {
+        const data = d.data();
+        return (data.email === email || data.id === id) && d.id !== editingDocId;
+      });
+      if(duplicate) {
+        alert('Duplicate student ID or email detected. Cannot add/update.');
+        return;
+      }
+
+      const confirmMsg = editingDocId ?
+        'Are you sure you want to update this student?' :
+        'Are you sure you want to add this student?';
+      if(!confirm(confirmMsg)) return;
+
+      const data = { id, name, email, faculty, course, createdBy, role: 'student' };
       try {
         if(editingDocId) {
           await updateDoc(doc(db, 'students', editingDocId), data);
-          // update row
           [...tableBody.rows].forEach(r => {
             if(r.dataset.email === editingDocId) {
               r.cells[1].textContent = id;
               r.cells[2].textContent = name;
               r.cells[3].textContent = email;
-              r.cells[4].textContent = createdBy;
+              r.cells[4].textContent = faculty;
+              r.cells[5].textContent = course;
+              r.cells[6].textContent = createdBy;
               r.dataset.email = email;
-              editingDocId = email; // update to new email if changed
+              editingDocId = email;
             }
           });
         } else {
           await setDoc(doc(db, 'students', email), data);
-          addStudentRow(id,name,email,createdBy);
+          addStudentRow(id, name, email, faculty, course, createdBy);
         }
         renumberRows();
         closeModal();
         alert(`Student ${name} ${editingDocId ? 'updated' : 'added'} successfully.`);
-      } catch(err) {
+      } catch (err) {
         console.error(err);
         alert('Error writing to Firestore: ' + err.message);
       }
@@ -177,35 +205,36 @@
 
     tableBody.onclick = async e => {
       const action = e.target.dataset.action;
-      if(!action) return;
-      const row = e.target.closest('tr');
+      if (!action) return;
+      const row   = e.target.closest('tr');
       const email = row.dataset.email;
 
-      if(action === 'edit') {
+      if (action === 'edit') {
         editingDocId = email;
-        document.getElementById('studentId').value = row.cells[1].textContent;
-        document.getElementById('studentName').value = row.cells[2].textContent;
-        document.getElementById('studentEmail').value = row.cells[3].textContent;
-        document.getElementById('studentCreatedBy').value = row.cells[4].textContent;
+        document.getElementById('studentId').value      = row.cells[1].textContent;
+        document.getElementById('studentName').value    = row.cells[2].textContent;
+        document.getElementById('studentEmail').value   = row.cells[3].textContent;
+        document.getElementById('studentFaculty').value = row.cells[4].textContent;
+        document.getElementById('studentCourse').value  = row.cells[5].textContent;
+        document.getElementById('studentCreatedBy').value = row.cells[6].textContent;
         openModal(true);
       }
 
-      if(action === 'delete') {
-        if(!confirm('Delete this student?')) return;
+      if (action === 'delete') {
+        if (!confirm('Delete this student?')) return;
         try {
           await deleteDoc(doc(db, 'students', email));
           row.remove();
           renumberRows();
           alert('Student deleted.');
-        } catch(err) {
+        } catch (err) {
           console.error(err);
           alert('Error deleting: ' + err.message);
         }
       }
     };
 
-    // Kick off initial load
-    await loadStudents();
+    loadStudents();
   </script>
 </body>
 </html>
