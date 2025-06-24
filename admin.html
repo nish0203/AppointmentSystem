@@ -5,6 +5,60 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - Uni Bookings</title>
 
+  <!-- Firebase SDKs -->
+  <script type="module">
+  // 1) Firebase core
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+  // 2) Firebase Auth + Firestore
+  import { getAuth }          from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+  import { getFirestore }     from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+  // (Optional) Analytics
+  import { getAnalytics }     from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+    authDomain: "appointment-management-c2531.firebaseapp.com",
+    projectId: "appointment-management-c2531",
+    storageBucket: "appointment-management-c2531.firebasestorage.app",
+    messagingSenderId: "428786083628",
+    appId: "1:428786083628:web:d9d9576b12581cc697ee89",
+    measurementId: "G-9FM8F1WJMF"
+  };
+
+  // Initialize Firebase
+  const app       = initializeApp(firebaseConfig);
+  const auth      = getAuth(app);
+  const db        = getFirestore(app);
+  const analytics = getAnalytics(app);
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('add-user-form');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name     = form.name.value.trim();
+        const email    = form.email.value.trim();
+        const password = form.password.value;
+        const id       = form.userId.value.trim();
+        const faculty  = form.faculty.value.trim();
+        const role     = form.role.value;
+        try {
+          // 1) create Auth user
+          const cred = await createUserWithEmailAndPassword(auth, email, password);
+          const uid  = cred.user.uid;
+          // 2) store profile in Firestore
+          await setDoc(doc(db, 'users', uid), { name, email, id, faculty, role });
+          alert(`Created ${role}: ${name} (${email})`);
+          form.reset();
+        } catch (err) {
+          console.error(err);
+          alert('Error: ' + err.message);
+        }
+      });
+    });
+  </script>
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Arial, sans-serif; background: #f9fafb; color: #333; }

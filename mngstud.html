@@ -2,308 +2,210 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Manage Student</title>
+  <title>Manage Student (Firestore with Load/Edit/Delete)</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f6fafa;
-      padding: 20px;
-    }
-
-    /* header with title + search */
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-    }
-    .header h2 {
-      margin: 0;
-      color: #000;
-    }
-    #searchInput {
-      padding: 8px 12px;
-      width: 250px;
-      border-radius: 20px;
-      border: 1px solid #ccc;
-      transition: 0.3s;
-      margin: 0;
-    }
-    #searchInput:focus {
-      outline: none;
-      border-color: #1E3A8A;
-      box-shadow: 0 0 5px rgba(30, 58, 138, 0.5);
-    }
-
-    /* table */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: white;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 12px;
-      text-align: left;
-    }
-    thead {
-      background-color: #333;
-      color: white;
-    }
-
-    /* buttons */
-    .action-button {
-      background-color: #3b57c0;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      margin-right: 5px;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-    .action-button:hover {
-      background-color: #2f45a0;
-    }
-    .add-button {
-      margin-top: 20px;
-      background-color: #28a745;
-    }
-    .add-button:hover {
-      background-color: #218838;
-    }
-
-    /* modal backdrop */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0; top: 0;
-      width: 100%; height: 100%;
-      background-color: rgba(0, 0, 0, 0.4);
-    }
-
-    /* modal content */
-    .modal-content {
-      background-color: #fff;
-      margin: 10% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 400px;
-      border-radius: 8px;
-    }
-    .modal-content input[type="text"],
-    .modal-content input[type="email"] {
-      width: 100%;
-      padding: 8px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    .close {
-      float: right;
-      font-size: 20px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .submit-btn {
-      background-color: #3b57c0;
-      color: white;
-      padding: 8px 14px;
-      border: none;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-    .submit-btn:hover {
-      background-color: #2f45a0;
-    }
-
-    /* back-to-home button */
-    #backBtn {
-      background-color: #00aaff;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 1rem;
-      cursor: pointer;
-      border-radius: 4px;
-      margin-bottom: 10px;
-    }
-    #backBtn:hover {
-      background-color: #14214e;
-    }
+    /* existing CSS unchanged */
+    body { font-family: Arial; background: #f6fafa; padding: 20px; }
+    .header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:10px; }
+    .header h2 { color:#000; margin:0; }
+    #searchInput { padding:8px 12px; width:250px; border-radius:20px; border:1px solid #ccc; transition:0.3s; }
+    #searchInput:focus { outline:none; border-color:#1E3A8A; box-shadow:0 0 5px rgba(30,58,138,0.5); }
+    table { width:100%; border-collapse:collapse; background:#fff; }
+    th, td { border:1px solid #ddd; padding:12px; text-align:left; }
+    thead { background:#333; color:#fff; }
+    .action-button { background:#3b57c0; color:#fff; border:none; padding:6px 12px; margin-right:5px; cursor:pointer; border-radius:4px; }
+    .action-button:hover { background:#2f45a0; }
+    .add-button { margin-top:20px; background:#28a745; }
+    .add-button:hover { background:#218838; }
+    .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.4); }
+    .modal-content { background:#fff; margin:10% auto; padding:20px; width:400px; border-radius:8px; position:relative; }
+    .close { position:absolute; top:10px; right:15px; font-size:20px; cursor:pointer; }
+    .modal-content input { width:100%; padding:8px; margin:10px 0; border:1px solid #ccc; border-radius:4px; }
+    .submit-btn { background:#3b57c0; color:#fff; padding:8px 14px; border:none; cursor:pointer; border-radius:4px; }
+    .submit-btn:hover { background:#2f45a0; }
+    #backBtn { background:#00aaff; color:#fff; border:none; padding:10px 20px; border-radius:4px; margin-bottom:10px; cursor:pointer; }
+    #backBtn:hover { background:#14214e; }
   </style>
 </head>
 <body>
-
-  <!-- Fixed Back button -->
   <button id="backBtn">Go back to homepage</button>
 
   <div class="header">
     <h2>Manage Student</h2>
-    <input type="text" id="searchInput" placeholder="Search name..." oninput="searchStudents()">
+    <input type="text" id="searchInput" placeholder="Search name...">
   </div>
 
   <table id="studentTable">
     <thead>
-      <tr>
-        <th>No.</th>
-        <th>STUDENT_ID</th>
-        <th>STUDENT_NAME</th>
-        <th>STUDENT_EMAIL</th>
-        <th>STUDENT_PASSWORD</th>
-        <th>CREATED_BY</th>
-        <th>Action</th>
-      </tr>
+      <tr><th>No.</th><th>STUDENT_ID</th><th>STUDENT_NAME</th><th>STUDENT_EMAIL</th><th>CREATED_BY</th><th>Action</th></tr>
     </thead>
-    <tbody>
-      <tr>
-        <td>1</td>
-        <td>1231201369</td>
-        <td>MUHAMMAD DANISH BIN MOHD HARIS GOH</td>
-        <td>1231201369@student.mmu.edu.my</td>
-        <td>nish_1369</td>
-        <td>AD001</td>
-        <td>
-          <button class="action-button" onclick="editStudent(this)">Edit</button>
-          <button class="action-button" onclick="deleteRow(this)">Delete</button>
-        </td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>1231200797</td>
-        <td>KEK WEN LONG</td>
-        <td>1231200797@student.mmu.edu.my</td>
-        <td>wlong_0797</td>
-        <td>AD001</td>
-        <td>
-          <button class="action-button" onclick="editStudent(this)">Edit</button>
-          <button class="action-button" onclick="deleteRow(this)">Delete</button>
-        </td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td>1231203073</td>
-        <td>AW ZHING YEE</td>
-        <td>1231203073@student.mmu.edu.my</td>
-        <td>awzy_3073</td>
-        <td>AD001</td>
-        <td>
-          <button class="action-button" onclick="editStudent(this)">Edit</button>
-          <button class="action-button" onclick="deleteRow(this)">Delete</button>
-        </td>
-      </tr>
-    </tbody>
+    <tbody></tbody>
   </table>
 
-  <button class="action-button add-button" onclick="openModal()">Add Student</button>
+  <button class="action-button add-button" id="addBtn">Add Student</button>
 
-  <!-- Modal -->
   <div id="addModal" class="modal">
     <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
+      <span class="close" id="modalClose">&times;</span>
       <h3 id="modalTitle">Add New Student</h3>
-      <form id="studentForm" onsubmit="submitStudent(event)">
+      <form id="studentForm">
         <input type="text" id="studentId" placeholder="Student ID" required>
         <input type="text" id="studentName" placeholder="Student Name" required>
         <input type="email" id="studentEmail" placeholder="Student Email" required>
-        <input type="text" id="studentPassword" placeholder="Student Password" required>
         <input type="text" id="studentCreatedBy" value="AD001" readonly>
         <button type="submit" class="submit-btn">Save</button>
       </form>
     </div>
   </div>
 
-  <script>
-    // back button logic
-    document.getElementById('backBtn').addEventListener('click', () => {
-      if (confirm('Are you sure you want to go back to the homepage?')) {
-        window.location.href = 'admin.html';
-      }
-    });
+  <!-- Firebase + App Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getFirestore, collection, doc, getDocs, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-    let editTargetRow = null;
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain: "appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531",
+      storageBucket: "appointment-management-c2531.appspot.com",
+      messagingSenderId: "428786083628",
+      appId: "1:428786083628:web:d9d9576b12581cc697ee89",
+      measurementId: "G-9FM8F1WJMF"
+    };
 
-    function openModal(edit = false) {
-      document.getElementById("addModal").style.display = "block";
-      document.getElementById("modalTitle").textContent = edit ? "Edit Student" : "Add New Student";
-    }
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
 
-    function closeModal() {
-      document.getElementById("addModal").style.display = "none";
-      document.getElementById("studentForm").reset();
-      editTargetRow = null;
-    }
+    let editingDocId = null;
+    const tableBody   = document.querySelector('#studentTable tbody');
+    const addBtn      = document.getElementById('addBtn');
+    const modal       = document.getElementById('addModal');
+    const closeBtn    = document.getElementById('modalClose');
+    const form        = document.getElementById('studentForm');
+    const backBtn     = document.getElementById('backBtn');
+    const searchInput = document.getElementById('searchInput');
 
-    function submitStudent(event) {
-      event.preventDefault();
-      const id       = document.getElementById("studentId").value;
-      const name     = document.getElementById("studentName").value;
-      const email    = document.getElementById("studentEmail").value;
-      const password = document.getElementById("studentPassword").value;
-      const createdBy = 'AD001';
-
-      const tbody = document.querySelector("#studentTable tbody");
-
-      if (editTargetRow) {
-        editTargetRow.cells[1].textContent = id;
-        editTargetRow.cells[2].textContent = name;
-        editTargetRow.cells[3].textContent = email;
-        editTargetRow.cells[4].textContent = password;
-        editTargetRow.cells[5].textContent = createdBy;
-      } else {
-        const newRow = tbody.insertRow();
-        newRow.insertCell(0).textContent = tbody.rows.length;
-        newRow.insertCell(1).textContent = id;
-        newRow.insertCell(2).textContent = name;
-        newRow.insertCell(3).textContent = email;
-        newRow.insertCell(4).textContent = password;
-        newRow.insertCell(5).textContent = createdBy;
-        newRow.insertCell(6).innerHTML = `
-          <button class="action-button" onclick="editStudent(this)">Edit</button>
-          <button class="action-button" onclick="deleteRow(this)">Delete</button>
-        `;
-      }
-
+    // Load students on page load
+    async function loadStudents() {
+      const snapshot = await getDocs(collection(db, 'students'));
+      snapshot.forEach(docSnap => {
+        const { id, name, email, createdBy } = docSnap.data();
+        addStudentRow(id, name, email, createdBy);
+      });
       renumberRows();
-      closeModal();
     }
 
-    function editStudent(button) {
-      editTargetRow = button.closest("tr");
-      document.getElementById("studentId").value       = editTargetRow.cells[1].textContent;
-      document.getElementById("studentName").value     = editTargetRow.cells[2].textContent;
-      document.getElementById("studentEmail").value    = editTargetRow.cells[3].textContent;
-      document.getElementById("studentPassword").value = editTargetRow.cells[4].textContent;
-      document.getElementById("studentCreatedBy").value= 'AD001';
-      openModal(true);
-    }
-
-    function deleteRow(button) {
-      button.closest("tr").remove();
-      renumberRows();
+    // UI functions
+    function addStudentRow(id,name,email,createdBy) {
+      const row = tableBody.insertRow();
+      row.dataset.email = email;
+      row.insertCell().textContent = tableBody.rows.length;
+      row.insertCell().textContent = id;
+      row.insertCell().textContent = name;
+      row.insertCell().textContent = email;
+      row.insertCell().textContent = createdBy;
+      const actions = row.insertCell();
+      actions.innerHTML = `<button class="action-button" data-action="edit">Edit</button>` +
+                          `<button class="action-button" data-action="delete">Delete</button>`;
     }
 
     function renumberRows() {
-      document.querySelectorAll("#studentTable tbody tr").forEach((row, i) => {
-        row.cells[0].textContent = i + 1;
-      });
+      [...tableBody.rows].forEach((r,i) => r.cells[0].textContent = i+1);
     }
 
-    // live search by student name
+    function openModal(edit=false) {
+      modal.style.display = 'block';
+      document.getElementById('modalTitle').textContent = edit ? 'Edit Student' : 'Add New Student';
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+      form.reset();
+      editingDocId = null;
+    }
+
     function searchStudents() {
-      const filter = document.getElementById('searchInput').value.toLowerCase();
-      document.querySelectorAll('#studentTable tbody tr').forEach(row => {
-        const name = row.cells[2].textContent.toLowerCase();
-        row.style.display = name.includes(filter) ? '' : 'none';
+      const filter = searchInput.value.toLowerCase();
+      [...tableBody.rows].forEach(r => {
+        r.style.display = r.cells[2].textContent.toLowerCase().includes(filter) ? '' : 'none';
       });
     }
 
-    window.onclick = e => {
-      if (e.target === document.getElementById("addModal")) closeModal();
-    }
-  </script>
+    // Event handlers
+    addBtn.onclick = () => openModal(false);
+    closeBtn.onclick = closeModal;
+    backBtn.onclick = () => { if(confirm('Go back to homepage?')) window.location='admin.html'; };
+    searchInput.oninput = searchStudents;
+    window.onclick = e => { if(e.target === modal) closeModal(); };
 
+    form.onsubmit = async e => {
+      e.preventDefault();
+      const id        = document.getElementById('studentId').value.trim();
+      const name      = document.getElementById('studentName').value.trim();
+      const email     = document.getElementById('studentEmail').value.trim();
+      const createdBy = document.getElementById('studentCreatedBy').value;
+      const data      = { id, name, email, createdBy, role: 'student' };
+
+      try {
+        if(editingDocId) {
+          await updateDoc(doc(db, 'students', editingDocId), data);
+          // update row
+          [...tableBody.rows].forEach(r => {
+            if(r.dataset.email === editingDocId) {
+              r.cells[1].textContent = id;
+              r.cells[2].textContent = name;
+              r.cells[3].textContent = email;
+              r.cells[4].textContent = createdBy;
+              r.dataset.email = email;
+              editingDocId = email; // update to new email if changed
+            }
+          });
+        } else {
+          await setDoc(doc(db, 'students', email), data);
+          addStudentRow(id,name,email,createdBy);
+        }
+        renumberRows();
+        closeModal();
+        alert(`Student ${name} ${editingDocId ? 'updated' : 'added'} successfully.`);
+      } catch(err) {
+        console.error(err);
+        alert('Error writing to Firestore: ' + err.message);
+      }
+    };
+
+    tableBody.onclick = async e => {
+      const action = e.target.dataset.action;
+      if(!action) return;
+      const row = e.target.closest('tr');
+      const email = row.dataset.email;
+
+      if(action === 'edit') {
+        editingDocId = email;
+        document.getElementById('studentId').value = row.cells[1].textContent;
+        document.getElementById('studentName').value = row.cells[2].textContent;
+        document.getElementById('studentEmail').value = row.cells[3].textContent;
+        document.getElementById('studentCreatedBy').value = row.cells[4].textContent;
+        openModal(true);
+      }
+
+      if(action === 'delete') {
+        if(!confirm('Delete this student?')) return;
+        try {
+          await deleteDoc(doc(db, 'students', email));
+          row.remove();
+          renumberRows();
+          alert('Student deleted.');
+        } catch(err) {
+          console.error(err);
+          alert('Error deleting: ' + err.message);
+        }
+      }
+    };
+
+    // Kick off initial load
+    await loadStudents();
+  </script>
 </body>
 </html>
