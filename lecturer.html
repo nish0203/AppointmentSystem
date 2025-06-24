@@ -288,10 +288,17 @@
           <a href="#">Manage Booked Appointments</a>
         </div>
       </div>
+      <div class="dropdown nav-link" tabindex="0" id="inquiry-dropdown">
+        Inquiry <i class="fa fa-caret-down" style="margin-left:6px;"></i>
+        <div class="dropdown-content" id="inquiry-dropdown-content">
+          <a href="#" onclick="openInquiryModal()">Submit Inquiry</a>
+          <a href="#">Inquiry History</a>
+        </div>
+      </div>
     </nav>
     <div class="logout-wrapper">
       <button class="avatar-btn" id="avatar-btn">
-        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Lecturer Profile" />
+        <img src="https://via.placeholder.com/40x40/6B7280/FFFFFF?text=👤" alt="Lecturer Profile" />
       </button>
       <div class="logout-dropdown" id="logout-dropdown">
         <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
@@ -300,7 +307,7 @@
   </div>
   <div class="dashboard-container">
     <div class="welcome-card">
-      <img class="profile-pic" src="https://randomuser.me/api/portraits/men/32.jpg" alt="Lecturer Profile">
+      <img class="profile-pic" src="https://via.placeholder.com/120x120/6B7280/FFFFFF?text=👤" alt="Lecturer Profile">
       <div class="info">
         <h2 id="lecturer-name">Welcome!</h2>
         <p><b>E-mail:</b> <span id="lecturer-email">-</span></p>
@@ -358,10 +365,30 @@
       </div>
     </div>
   </div>
+
+  <!-- Inquiry Modal -->
+  <div id="inquiry-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 500px; position: relative;">
+      <span style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer;" onclick="closeInquiryModal()">&times;</span>
+      <h3 style="margin-bottom: 20px;">Submit Inquiry</h3>
+      <form id="inquiry-form">
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: 600;">Subject:</label>
+          <input type="text" id="inquiry-subject" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 8px;" required>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: 600;">Message:</label>
+          <textarea id="inquiry-message" rows="5" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 8px;" required></textarea>
+        </div>
+        <button type="submit" style="background: #10B981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Submit Inquiry</button>
+      </form>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
-      getFirestore, doc, getDoc
+      getFirestore, doc, getDoc, collection, getDocs, query, where, orderBy, updateDoc
     } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
     const firebaseConfig = {
       apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
@@ -393,13 +420,18 @@
     });
 
     // --- Existing dashboard logic ---
+    let currentLecturerEmail = '';
+    
     (async ()=>{
       const params    = new URLSearchParams(location.search);
       const email     = params.get('email')||sessionStorage.getItem('userEmail');
+      currentLecturerEmail = email;
+      
       const nameEl    = document.getElementById('lecturer-name');
       const emailEl   = document.getElementById('lecturer-email');
       const facultyEl = document.getElementById('lecturer-faculty');
       const officeEl  = document.getElementById('lecturer-office');
+      
       if (email) {
         const snap = await getDoc(doc(db,'lecturers',email));
         const profile = snap.exists()?snap.data():{};
@@ -412,6 +444,9 @@
         officeEl.textContent = office;
         sessionStorage.setItem('userEmail',email);
         sessionStorage.setItem('userName',name);
+        
+        // Load appointments
+        await loadAppointments(email);
       } else {
         nameEl.textContent = 'Welcome!';
         emailEl.textContent = '-';
@@ -419,6 +454,145 @@
         officeEl.textContent = '-';
       }
     })();
+
+    // Load appointments from Firestore
+    async function loadAppointments(lecturerEmail) {
+      try {
+        const appointmentsQuery = query(
+          collection(db, 'appointments'),
+          where('lecturerEmail', '==', lecturerEmail),
+          orderBy('bookedAt', 'desc')
+        );
+        const snapshot = await getDocs(appointmentsQuery);
+        
+        const appointments = [];
+        snapshot.docs.forEach(doc => {
+          appointments.push({ id: doc.id, ...doc.data() });
+        });
+        
+        renderAppointments(appointments);
+      } catch (error) {
+        console.error('Error loading appointments:', error);
+      }
+    }
+
+    // Render appointments in the dashboard
+    function renderAppointments(appointments) {
+      const upcomingList = document.getElementById('upcoming-list');
+      const pendingList = document.getElementById('pending-list');
+      
+      // Filter appointments
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const upcoming = appointments.filter(apt => {
+        const aptDate = new Date(apt.date);
+        aptDate.setHours(0, 0, 0, 0);
+        return apt.status === 'approved' && aptDate >= today;
+      });
+      
+      const pending = appointments.filter(apt => apt.status === 'pending');
+      
+      // Render upcoming appointments
+      if (upcoming.length === 0) {
+        upcomingList.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No upcoming appointments</p>';
+      } else {
+        upcomingList.innerHTML = upcoming.map(apt => `
+          <div class="consultation-item" data-date="${apt.date}" data-time="${apt.startTime}">
+            <div class="row"><span class="label">Booked Date:</span> <span class="value upcoming-date">${apt.date}</span></div>
+            <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">${apt.startTime}</span></div>
+            <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">${apt.endTime}</span></div>
+            <div class="booked-by">Booked by : <span class="student-name">${apt.studentName || 'Student'}</span></div>
+            <div class="days-left" style="font-size:0.97rem;color:#10B981;margin-top:4px;"></div>
+            ${apt.purpose ? `<div style="margin-top:8px;font-size:0.9rem;color:#666;"><strong>Purpose:</strong> ${apt.purpose}</div>` : ''}
+            ${apt.documents && apt.documents.length > 0 ? `
+              <div style="margin-top:8px;">
+                <strong style="font-size:0.9rem;color:#666;">Documents:</strong>
+                ${apt.documents.map(doc => `<a href="${doc.url}" target="_blank" style="display:block;color:#10B981;font-size:0.85rem;margin-top:2px;text-decoration:underline;">${doc.name}</a>`).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `).join('');
+      }
+      
+      // Render pending appointments
+      if (pending.length === 0) {
+        pendingList.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No pending appointments</p>';
+      } else {
+        pendingList.innerHTML = pending.map(apt => `
+          <div class="consultation-item" data-date="${apt.date}" data-time="${apt.startTime}">
+            <div class="row"><span class="label">Booked Date:</span> <span class="value">${apt.date}</span></div>
+            <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">${apt.startTime}</span></div>
+            <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">${apt.endTime}</span></div>
+            <div class="booked-by">Booked by : <span class="student-name">${apt.studentName || 'Student'}</span></div>
+            ${apt.purpose ? `<div style="margin-top:8px;font-size:0.9rem;color:#666;"><strong>Purpose:</strong> ${apt.purpose}</div>` : ''}
+            ${apt.notes ? `<div style="margin-top:4px;font-size:0.9rem;color:#666;"><strong>Notes:</strong> ${apt.notes}</div>` : ''}
+            ${apt.documents && apt.documents.length > 0 ? `
+              <div style="margin-top:8px;">
+                <strong style="font-size:0.9rem;color:#666;">Documents:</strong>
+                ${apt.documents.map(doc => `<a href="${doc.url}" target="_blank" style="display:block;color:#10B981;font-size:0.85rem;margin-top:2px;text-decoration:underline;">${doc.name}</a>`).join('')}
+              </div>
+            ` : ''}
+            <div style="margin-top:12px;display:flex;gap:8px;">
+              <button onclick="approveAppointment('${apt.id}')" style="background:#10B981;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:0.8rem;">Approve</button>
+              <button onclick="rejectAppointment('${apt.id}')" style="background:#ef4444;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:0.8rem;">Reject</button>
+            </div>
+          </div>
+        `).join('');
+      }
+      
+      // Update days left for upcoming appointments
+      updateDaysLeft();
+    }
+
+    // Approve appointment
+    async function approveAppointment(appointmentId) {
+      try {
+        await updateDoc(doc(db, 'appointments', appointmentId), {
+          status: 'approved'
+        });
+        
+        // Reload appointments
+        await loadAppointments(currentLecturerEmail);
+        alert('Appointment approved successfully!');
+      } catch (error) {
+        console.error('Error approving appointment:', error);
+        alert('Failed to approve appointment. Please try again.');
+      }
+    }
+
+    // Reject appointment
+    async function rejectAppointment(appointmentId) {
+      try {
+        const appointment = await getDoc(doc(db, 'appointments', appointmentId));
+        const appointmentData = appointment.data();
+        
+        // Update appointment status
+        await updateDoc(doc(db, 'appointments', appointmentId), {
+          status: 'rejected'
+        });
+        
+        // Make the slot available again
+        if (appointmentData.slotId) {
+          await updateDoc(doc(db, 'appointment_slots', appointmentData.slotId), {
+            isBooked: false,
+            bookedBy: null,
+            appointmentId: null
+          });
+        }
+        
+        // Reload appointments
+        await loadAppointments(currentLecturerEmail);
+        alert('Appointment rejected. Slot is now available again.');
+      } catch (error) {
+        console.error('Error rejecting appointment:', error);
+        alert('Failed to reject appointment. Please try again.');
+      }
+    }
+
+    // Make functions globally available
+    window.approveAppointment = approveAppointment;
+    window.rejectAppointment = rejectAppointment;
 
     // Show days left for upcoming appointments
     function updateDaysLeft() {
@@ -471,6 +645,46 @@
         slotDropdownContent.classList.remove('show');
       }
     });
-  </script>
-</body>
-</html>
+
+    // Inquiry dropdown
+    const inquiryDropdown = document.getElementById('inquiry-dropdown');
+    const inquiryDropdownContent = document.getElementById('inquiry-dropdown-content');
+    inquiryDropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+      inquiryDropdownContent.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!inquiryDropdown.contains(e.target)) {
+        inquiryDropdownContent.classList.remove('show');
+      }
+          });
+    </script>
+
+    <script>
+      // Inquiry modal functions
+      function openInquiryModal() {
+        document.getElementById('inquiry-modal').style.display = 'flex';
+      }
+
+      function closeInquiryModal() {
+        document.getElementById('inquiry-modal').style.display = 'none';
+        document.getElementById('inquiry-form').reset();
+      }
+
+      // Make functions global
+      window.openInquiryModal = openInquiryModal;
+      window.closeInquiryModal = closeInquiryModal;
+
+      // Handle inquiry form submission
+      document.getElementById('inquiry-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const subject = document.getElementById('inquiry-subject').value;
+        const message = document.getElementById('inquiry-message').value;
+        
+        // Here you would typically send to Firestore
+        alert('Inquiry submitted successfully!');
+        closeInquiryModal();
+      });
+    </script>
+  </body>
+  </html>

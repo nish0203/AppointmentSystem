@@ -1,910 +1,522 @@
-<!-- File: student.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Student Dashboard - Uni Bookings</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <link rel="stylesheet" href="styles.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<style>
-/* == Reset & Base == */
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: Arial, sans-serif; background: #f9fafb; color: #333; }
-a { text-decoration: none; color: inherit; }
-ul { list-style: none; }
-:root {
-      --primary: #1e40af;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --background: #f9fafb;
-      --text: #1f2937;
+  <title>Student Dashboard – Uni Bookings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: #f9fafb;
+      color: #222;
+      margin: 0;
+    }
+    .header {
+      background: #fff;
+      color: #222;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 70px;
+      border-bottom: 1px solid #e5e7eb;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
     
-    body { background-color: var(--background); color: var(--text)}
-    h2 { margin-bottom: 20px; }
-    .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: 0.3s; }
-    .card h3 { display: flex; justify-content: space-between; align-items: center; font-size: 1.25rem; cursor: pointer; }
-    .card .content { margin-top: 16px; display: none; }
-    .card.active .content { display: block; }
-    .lecturer-container { padding: 10px 0; border-bottom: 1px solid #e5e7eb; }
-    .lecturer-line { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center;
+    .header .logo {
+      display: flex; align-items: center; gap: 18px;
     }
-    .booking-title {
-      font-weight: bold;
-      margin-bottom: 10px;
+    .header .logo img {
+      height: 60px;
+      transition: height .2s;
     }
-    .booking-item {
-      display: grid;
-      grid-template-columns: 30px 120px 100px 100px 1fr 1fr auto;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px solid #e5e7eb;
+    .header nav {
+      display: flex; gap: 24px; align-items: center;
     }
-    .grey-text {
-      color: grey;
-      word-wrap: break-word;
-    }
-    .edit-btn {
-      background: #10b981;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 5px;
+    .header nav .nav-link {
+      color: #222;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.08rem;
+      transition: color .2s;
+      position: relative;
+      padding: 8px 14px;
+      border-radius: 6px;
       cursor: pointer;
-      justify-self: end;
     }
-    .edit-btn:hover {
-      background: #059669;
+    .header nav .nav-link:hover, .header nav .nav-link.active {
+      background: #f1f5f9;
+      color: #ef4444;
     }
-    input[type="file"] {
-      width: 100%;
-      max-width: 250px; /* Increase max width */
-      margin-left: 10px; /* Move the document file more to the right */
+    .header nav .dropdown {
+      position: relative;
     }
-    textarea {
-      resize: none;
-      width: 100%;
-      height: 30px; /* Make the note field even shorter */
-      max-width: 250px;
-    }
-    .book-btn { 
-      background-color: var(--success); 
-      color: white; 
-      border: none; 
-      padding: 8px 14px; 
-      border-radius: 8px; 
-      cursor: pointer; 
-      transition: background-color 0.3s; 
-    }
-    .book-btn:hover { background-color: #059669; }
-    .booking-options { 
-      margin-top: 10px;
+    .header nav .dropdown-content {
       display: none;
-      width: 100%;
+      position: absolute;
+      left: 0;
+      top: 110%;
+      background: #fff;
+      min-width: 220px;
+      box-shadow: 0 4px 16px #0002;
+      border-radius: 8px;
+      z-index: 100;
+      flex-direction: column;
+      padding: 8px 0;
     }
-    .booking-sections {
+    .header nav .dropdown-content.show {
       display: flex;
-      gap: 20px;
-      align-items: flex-start;
     }
-    .calendar-box { 
-      flex: 0 0 auto;
-      max-width: 300px;
+    .header nav .dropdown-content a {
+      color: #222;
+      text-decoration: none;
+      padding: 12px 22px;
+      font-size: 1rem;
+      border: none;
+      background: none;
+      text-align: left;
+      transition: background .2s, color .2s;
+      border-radius: 0;
+      cursor: pointer;
+      font-weight: 600;
     }
-    .time-section {
+    .header nav .dropdown-content a:hover {
+      background: #f1f5f9;
+      color: #ef4444;
+    }
+    .header .avatar-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: #eee;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      margin-left: 18px;
+      cursor: pointer;
+      position: relative;
+      outline: none;
+      border: none;
+      padding: 0;
+    }
+    .header .avatar-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+    .logout-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .logout-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background: #fff;
+      box-shadow: 0 8px 24px #0003;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      z-index: 200;
+      min-width: 160px;
+      padding: 8px 0;
+    }
+    .logout-dropdown button {
+      width: 100%;
+      background: none;
+      border: none;
+      color: #ef4444;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 12px 24px;
+      text-align: left;
+      border-radius: 0;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .logout-dropdown button:hover {
+      background: #f1f5f9;
+      color: #b91c1c;
+    }
+    .logout-dropdown.show {
+      display: block;
+    }
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 16px;
+    }
+    .welcome-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #0001;
+      padding: 28px 24px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+    .welcome-card .profile-pic {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 2px 8px #0002;
+    }
+    .welcome-card .info {
       flex: 1;
-      min-width: 200px;
     }
-    .time-header {
-      font-weight: bold;
-      margin-bottom: 10px;
-      display: none;
+    .welcome-card .info h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #222;
     }
-    .waiting-header {
-      color: var(--warning);
-      display: none;
+    .welcome-card .info p {
+      margin: 4px 0;
+      font-size: 1.05rem;
+      color: #444;
     }
-    .time-slots-container {
+    .consultation-sections {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+    }
+    .consultation-card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px #0001;
+      padding: 20px 18px 18px 18px;
+      margin-bottom: 18px;
+      min-width: 0;
+    }
+    .consultation-card h3 {
+      margin: 0 0 16px 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .consultation-list {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 8px;
     }
-    .time-slot { 
-      cursor: pointer; 
-      padding: 8px 12px; 
-      background: var(--primary); 
-      color: white; 
-      border-radius: 6px; 
-      display: inline-block;
-      min-width: 100px;
-      text-align: center;
+    .consultation-list::-webkit-scrollbar {
+      width: 6px;
     }
-    .time-slot:hover { background: #3749bb; }
-    .waiting-slot {
-      background: var(--warning);
-      cursor: default;
+    .consultation-list::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
     }
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 999; }
-    .modal-content { background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 500px; position: relative; }
-    .modal-content h3 { margin-bottom: 20px; }
-    .form-group { margin-bottom: 15px; }
-    .form-group label { font-weight: 600; display: block; margin-bottom: 5px; }
-    .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 8px; }
-    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 20px; cursor: pointer; }
-/* == Login Page == */
-.login-page { display: flex; justify-content: center; align-items: center; height: 100vh; background: #eef2f5; }
-.login-card { background: #fff; border: 2px solid #333; padding: 32px; width: 300px; text-align: center; }
-.login-card h2 { margin-bottom: 24px; }
-.login-card label { display: block; text-align: left; margin-top: 16px; }
-.login-card input { width: 100%; padding: 8px; margin-top: 4px; border: 1px solid #ccc; border-radius: 4px; }
-.role-selection { margin-bottom: 16px; }
-.role-btn { margin: 0 8px; padding: 8px 16px; border: 2px solid #000; background: none; cursor: pointer; }
-.role-btn.active { background: #1E3A8A; color: #fff; }
-.submit-btn { margin-top: 24px; padding: 10px 20px; background: #10B981; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-.error-msg { display: none; color: #EF4444; margin-bottom: 12px; font-size: 0.9rem; }
-
-/* == Header & Layout == */
-header { background: #1E3A8A; color: #fff; padding: 16px; display: flex; justify-content: space-between; align-items: center; }
-header .logo { font-size: 1.25rem; font-weight: bold; }
-header .top-nav a { color: #eef; }
-
-.container { display: flex; min-height: calc(100vh - 64px); }
-.sidebar { width: 200px; background: #fff; border-right: 1px solid #ddd; padding: 24px; }
-.sidebar ul li { margin-bottom: 12px; }
-.sidebar ul li a { color: #1E3A8A; font-weight: 500; }
-.sidebar ul li input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95rem; }
-.sidebar ul li button { margin-top: 8px; padding: 8px 16px; background: #1E3A8A; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
-.search-error { color: #EF4444; margin-top: 8px; font-size: 0.9rem; }
-
-main { flex: 1; padding: 24px; }
-.card { background: #fff; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-
-/* == Responsive == */
-@media (max-width: 768px) {
-  .container { flex-direction: column; }
-  .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #ddd; }
-}
-
-/* == Collapsible Cards == */
-.collapsible h3 {
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  user-select: none;
-}
-
-.arrow {
-  font-size: 1rem;
-  transition: transform 0.3s ease;
-}
-
-.content {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.5s ease, padding 0.5s ease;
-  padding: 0 0;
-}
-
-/* When expanded */
-.card.active .content {
-  max-height: 800px; /* Enough to show inside content */
-  padding: 10px 0;
-}
-
-.card.active .arrow {
-  transform: rotate(180deg);
-}
-
-.booking-dropdown {
-  display: flex;
-  gap: 16px;
-  margin-top: 16px;
-}
-
-.calendar-input {
-  width: 100%;
-  font-size: 16px;
-}
-
-.time-slot {
-  margin-bottom: 12px;
-}
-
-.time-slot button {
-  margin-left: 8px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.time-book-btn {
-  border: 2px solid green;
-  color: green;
-  background: none;
-}
-
-.cancel-btn {
-  border: 2px solid #00f;
-  color: #00f;
-  background: none;
-  margin-left: 8px;
-}
-
-.appointment-section {
-  display: flex;
-  align-items: flex-start;
-  gap: 200px; /* space between calendar and time slots */
-}
-
-.slot {
-  margin-bottom: 16px;
-}
-
-.book-btn, .cancel-btn {
-  margin-left: 8px;
-}
-
-.cancel-pending-btn {
-  margin-left: 8px;
-  background: red;
-  border: 1px solid #dc2626;
-  color: white;
-  border-radius: 4px;
-  padding: 2px 6px;
-  font-size: 0.9rem;
-  cursor: pointer;
-}
-.cancel-pending-btn:hover {
-  background: #dc2626;
-  color: #fff;
-}
-/* */
-header {
-  background: white;
-  color: black;
-  padding: 12px 32px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  border-bottom: 1px solid #ccc;
-}
-
-.left-header {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.logo {
-  font-size: 1.25rem;
-  font-weight: bold;
-}
-
-.menu-links {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.menu-links a {
-  color: black;
-  font-weight: 500;
-  font-size: 0.95rem;
-}
-
-
-.menu-links input {
-  padding: 6px;
-  border-radius: 4px;
-  border: none;
-  font-size: 0.9rem;
-}
-
-.menu-links button {
-  padding: 6px 12px;
-  background: none;
-  color: black;
-  border-style: ridge;
-  border-radius: 4px;
-  cursor: pointer;
-  border-color: white;
-}
-
-.menu-links button:hover {
-  border-color: #1E3A8A;
-}
-
-.top-nav a {
-  color: black;
-  font-weight: 500;
-}
-
-
-#search-lecturer {
-  background-color: white;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  color: #1E3A8A;
-  padding: 10px 14px;
-  font-size: 0.95rem;
-  outline: none;
-  transition: background-color 0.4s ease, color 0.4s ease, border 0.4s ease, box-shadow 0.4s ease;
-  box-shadow: 0 0 0 2px transparent;
-  pointer-events: auto;
-}
-
-
-/* Default placeholder: white on blue */
-#search-lecturer::placeholder {
-  color: #999;
-  transition: color 0.4s ease;
-  
-}
-
-/* Focused/Activated State */
-#search-lecturer.focus-transition {
-  background-color: #f0f0f0;
-  color: #1E3A8A;
-  border: 2px solid #1E3A8A;
-  box-shadow: 0 0 6px rgba(30, 58, 138, 0.3);
-}
-
-/* Placeholder when focused */
-#search-lecturer.focus-transition::placeholder {
-  color: #1E3A8A;
-}
-
-
-
-
-</style>
+    .consultation-list::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 3px;
+    }
+    .consultation-list::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+    .consultation-item {
+      background: #f1f5f9;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px #0001;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 1rem;
+    }
+    .consultation-item .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .consultation-item .label {
+      color: #888;
+      font-size: .97rem;
+    }
+    .consultation-item .value {
+      font-weight: 600;
+    }
+    .consultation-item .booked-by {
+      font-size: .97rem;
+      color: #222;
+      margin-top: 2px;
+    }
+    .consultation-item .lecturer-name {
+      font-weight: 600;
+      color: #10B981;
+    }
+    @media (max-width: 1000px) {
+      .consultation-sections { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 700px) {
+      .dashboard-container { padding: 0 4vw; }
+      .welcome-card { flex-direction: column; align-items: flex-start; gap: 18px; }
+      .consultation-sections { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-  <header>
-  <div class="left-header">
-    <div class="logo"><img src="eBbook2.png" style="height: 60px;"></div>
-    <nav class="menu-links">
-      <a href="inquirystud.html">Submit Inquiry</a>
-      <a href="#">Search Lecturer</a>
-      <input type="text" id="search-lecturer" placeholder="Enter lecturer name" readonly>
-
-      <button id="search-btn">Search</button>
-      <div id="search-error" class="search-error"></div>
+  <div class="header">
+    <div class="logo">
+      <img src="eBbook2.png" alt="Logo">
+    </div>
+    <nav>
+      <a href="#" class="nav-link active">Dashboard</a>
+      <a href="student-lecturer-list.html" class="nav-link">Lecturers</a>
+      <div class="dropdown nav-link" tabindex="0" id="inquiry-dropdown">
+        Inquiry <i class="fa fa-caret-down" style="margin-left:6px;"></i>
+        <div class="dropdown-content" id="inquiry-dropdown-content">
+          <a href="#" onclick="openInquiryModal()">Submit Inquiry</a>
+          <a href="#">Inquiry History</a>
+        </div>
+      </div>
     </nav>
+    <div class="logout-wrapper">
+      <button class="avatar-btn" id="avatar-btn">
+        <img src="https://via.placeholder.com/40x40/6B7280/FFFFFF?text=👤" alt="Student Profile" />
+      </button>
+      <div class="logout-dropdown" id="logout-dropdown">
+        <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </div>
   </div>
-  <nav class="top-nav">
-    <a href="login.html" style="color: #000;">Logout</a>
-  </nav>
-</header>
 
-
-
-  <div class="container">
-    
-    <main>
-
-        
-    <h1 style="font-size:2.5rem; font-weight:bold;">Hi, <span id="user-name">...</span>👋!</h1>
-    <br>
-    <h2>Student Dashboard</h2>
-      
-      <div class="card collapsible">
-        <h3>Available Appointment Slots <span class="arrow">&#9662;</span></h3>
-        <div class="content">
-          <h4>Lecturer</h4>
-          <div class="lecturer-container" id="lecturer-nurasma">
-            <div class="lecturer-line">
-              <span>Nurasma</span>
-              <button class="book-btn" onclick="startBooking('nurasma')">Book</button>
-            </div>
-            <div id="booking-nurasma" class="booking-options">
-              <div class="booking-sections">
-                <div class="calendar-box" id="calendar-nurasma-box"></div>
-                <div class="time-section">
-                  <div class="time-header" id="available-header-nurasma">Available Times:</div>
-                  <div class="time-slots-container" id="time-options-nurasma"></div>
-                </div>
-                <div class="time-section">
-                  <div class="waiting-header" id="waiting-header-nurasma">Waiting to be approved:</div>
-                  <div class="time-slots-container" id="waiting-nurasma"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="lecturer-container" id="lecturer-rubiah">
-            <div class="lecturer-line">
-              <span>Rubiah</span>
-              <button class="book-btn" onclick="startBooking('rubiah')">Book</button>
-            </div>
-            <div id="booking-rubiah" class="booking-options">
-              <div class="booking-sections">
-                <div class="calendar-box" id="calendar-rubiah-box"></div>
-                <div class="time-section">
-                  <div class="time-header" id="available-header-rubiah">Available Times:</div>
-                  <div class="time-slots-container" id="time-options-rubiah"></div>
-                </div>
-                <div class="time-section">
-                  <div class="waiting-header" id="waiting-header-rubiah">Waiting to be approved:</div>
-                  <div class="time-slots-container" id="waiting-rubiah"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+  <div class="dashboard-container">
+    <div class="welcome-card">
+      <img class="profile-pic" src="https://via.placeholder.com/120x120/6B7280/FFFFFF?text=👤" alt="Student Profile">
+      <div class="info">
+        <h2 id="student-name">Welcome!</h2>
+        <p><b>E-mail:</b> <span id="student-email">-</span></p>
+        <p><b>Faculty:</b> <span id="student-faculty">-</span></p>
+        <p><b>Student ID:</b> <span id="student-id">-</span></p>
       </div>
-    
-      <div class="modal" id="booking-modal">
-        <div class="modal-content">
-          <span class="close-btn" onclick="closeModal()">&times;</span>
-          <h3>Booking Form</h3>
-          <div class="form-group"><label>Lecturer:</label><div id="modal-lecturer"></div></div>
-          <div class="form-group"><label>Date:</label><div id="modal-date"></div></div>
-          <div class="form-group"><label>Time:</label><div id="modal-time"></div></div>
-          <div class="form-group"><label>Document:</label><input type="file" id="booking-document" /></div>
-          <div class="form-group"><label>Note:</label><textarea rows="3" id="booking-note"></textarea></div>
-          <button class="book-btn" onclick="submitBooking()">Submit</button>
-        </div>
-      </div>
+    </div>
 
-      <div class="card collapsible">
-        <h3>Booked Appointments <span class="arrow">&#9662;</span></h3>
-        <div class="content">
-          <div class="booking-title">Lecturer</div>
-          <div class="booking-item">
-            <span>1</span>
-            <span style="justify-self: start;">Nurasma</span>
-            <span>2/5/2025</span>
-            <span>2 pm - 5 pm</span>
-            <span class="grey-text" data-field="document">No document uploaded</span>
-            <span class="grey-text" data-field="note">No note added</span>
-            <button class="edit-btn" onclick="editFields(event, this)">Edit</button>
+    <div class="consultation-sections">
+      <div class="consultation-card" style="grid-column: 1/2;">
+        <h3>Upcoming Appointments</h3>
+        <div class="consultation-list" id="upcoming-list">
+          <div class="consultation-item" data-date="2024-07-06" data-time="10:00" data-lecturer="Dr. Smith">
+            <div class="row"><span class="label">Booked Date:</span> <span class="value upcoming-date">2024-07-06</span></div>
+            <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">10:00</span></div>
+            <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">11:00</span></div>
+            <div class="booked-by">Lecturer : <span class="lecturer-name">Dr. Smith</span></div>
+            <div class="days-left" style="font-size:0.97rem;color:#10B981;margin-top:4px;"></div>
+          </div>
+          <div class="consultation-item" data-date="2024-07-08" data-time="09:00" data-lecturer="Prof. Johnson">
+            <div class="row"><span class="label">Booked Date:</span> <span class="value upcoming-date">2024-07-08</span></div>
+            <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">09:00</span></div>
+            <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">10:00</span></div>
+            <div class="booked-by">Lecturer : <span class="lecturer-name">Prof. Johnson</span></div>
+            <div class="days-left" style="font-size:0.97rem;color:#10B981;margin-top:4px;"></div>
           </div>
         </div>
       </div>
 
-      <div class="card collapsible">
-        <h3>Booking History <span class="arrow">&#9662;</span></h3>
-        <div class="content">
-          <br>
-          <h4 style="font-weight: bold;">Lecturer</h4>
-          <br>
-          <div class="asmabook">
-            <table border-width="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-              <tbody>
-                <tr>
-                  <td>1&#41;</td>
-                  <td>Nurasma</td>
-                  <td>2/5/2025</td>
-                  <td>4pm – 6pm</td>
-                  <td><!-- Submit Feedback Button -->
-                    <button onclick="openFeedback()" style=" padding: 10px 20px;">Submit Feedback</button></td>
-                </tr>
-              </tbody>
-            </table> 
-              
-            <!-- Feedback Modal -->
-            <div id="feedbackModal" style="display: none; position: fixed; top: 0; left: 0; 
-            width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center;">
-            <div style="background: #fff; padding: 20px; border-radius: 10px; width: 300px; text-align: center;">
-            <h3>Rate Your Experience</h3>
-    
-            <!-- Star Rating -->
-            <div id="stars" style="margin: 10px 0; cursor:default;">
-              <span onclick="setRating(1)">⭐</span>
-              <span onclick="setRating(2)">⭐</span>
-              <span onclick="setRating(3)">⭐</span>
-              <span onclick="setRating(4)">⭐</span>
-              <span onclick="setRating(5)">⭐</span>
-            </div>
-    
-          <!-- Textbox -->
-          <textarea id="feedbackText" rows="4" placeholder="Leave your feedback here..." style="width: 100%; padding: 8px;"></textarea>
-          <!-- Buttons -->
-          <div style="margin-top: 15px;">
-            <button onclick="submitFeedback()">Submit</button>
-            <button onclick="closeFeedback()" style="margin-left: 10px;">Cancel</button>
+      <div class="consultation-card" style="grid-column: 2/3;">
+        <h3>Pending Appointments</h3>
+        <div class="consultation-list" id="pending-list">
+          <div class="consultation-item" data-date="2024-07-07" data-time="13:00" data-lecturer="Dr. Brown">
+            <div class="row"><span class="label">Booked Date:</span> <span class="value">2024-07-07</span></div>
+            <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">13:00</span></div>
+            <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">14:00</span></div>
+            <div class="booked-by">Lecturer : <span class="lecturer-name">Dr. Brown</span></div>
           </div>
+          <div class="consultation-item" data-date="2024-07-05" data-time="15:00" data-lecturer="Prof. Wilson">
+            <div class="row"><span class="label">Booked Date:</span> <span class="value">2024-07-05</span></div>
+            <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">15:00</span></div>
+            <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">16:00</span></div>
+            <div class="booked-by">Lecturer : <span class="lecturer-name">Prof. Wilson</span></div>
           </div>
-          </div>
-            <br>
-            <br>
-            <div class="booking-dropdown" style="display: none;">
-              <div class="appointment-section"> 
-              </div>
-            </div>
-          </div>
-          <br>
         </div>
       </div>
-    
-      <div class="card collapsible">
-        <h3>Inquiry History <span class="arrow">&#9662;</span></h3>
-        <div class="content">
-          <table border-width="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-            <thead style="text-align: left;">
-              <tr>
-                <TH>NO.</TH>
-                <th>BOOKING ID </th>
-                <th>SUBJECT</th>
-                <th>Status</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>1&#41;</td>
-                <td>BK0001</td>
-                <td>BOOKING ISSUES</td>
-                <td style="color: red;">Not Resolved</td>
-                <td>2/5/2025</td>
-                <td>4pm - 6pm</td>
-                <td><button style="padding: 7px;" onclick="window.open('viewinquirystud.html', '_blank')" >View</button></td>
-              </tr>
-            </tbody>
-          </table>
+    </div>
 
+    <div class="consultation-card" style="margin-top:32px;">
+      <h3>Appointment History</h3>
+      <div class="consultation-list">
+        <div class="consultation-item">
+          <div class="row"><span class="label">Booked Date:</span> <span class="value">2024-06-29</span></div>
+          <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">14:00</span></div>
+          <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">15:00</span></div>
+          <div class="booked-by">Lecturer : <span class="lecturer-name">Dr. Davis</span></div>
         </div>
       </div>
-
-    </main>
+    </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script>
-    const timeSlots = ['10am - 12pm', '2pm - 4pm', '4pm - 6pm'];
-    let selectedLecturer = '', selectedDate = '', selectedTime = '';
-    const bookings = {
-      nurasma: {},
-      rubiah: {}
+
+  <!-- Inquiry Modal -->
+  <div id="inquiry-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 500px; position: relative;">
+      <span style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer;" onclick="closeInquiryModal()">&times;</span>
+      <h3 style="margin-bottom: 20px;">Submit Inquiry</h3>
+      <form id="inquiry-form">
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: 600;">Subject:</label>
+          <input type="text" id="inquiry-subject" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 8px;" required>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: 600;">Message:</label>
+          <textarea id="inquiry-message" rows="5" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 8px;" required></textarea>
+        </div>
+        <button type="submit" style="background: #10B981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Submit Inquiry</button>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import {
+      getFirestore, doc, getDoc
+    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain: "appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531",
+      storageBucket: "appointment-management-c2531.appspot.com",
+      messagingSenderId: "428786083628",
+      appId: "1:428786083628:web:d9d9576b12581cc697ee89",
+      measurementId: "G-9FM8F1WJMF"
     };
 
-    function toggleCard(el) { el.parentElement.classList.toggle('active'); }
-
-    function startBooking(name) {
-      // Hide all booking options first
-      document.querySelectorAll('.booking-options').forEach(el => el.style.display = 'none');
-      
-      // Show booking options for the selected lecturer
-      const bookingOptions = document.getElementById(`booking-${name}`);
-      bookingOptions.style.display = 'block';
-      
-      // Hide time headers and clear slots
-      document.getElementById(`available-header-${name}`).style.display = 'none';
-      document.getElementById(`waiting-header-${name}`).style.display = 'none';
-      document.getElementById(`time-options-${name}`).innerHTML = '';
-      document.getElementById(`waiting-${name}`).innerHTML = '';
-      
-      // Initialize calendar if not already initialized
-      if (!bookingOptions.dataset.initialized) {
-        flatpickr(`#calendar-${name}-box`, {
-          inline: true,
-          minDate: 'today',
-          dateFormat: 'Y-m-d',
-          onChange: function(selectedDates, dateStr, instance) {
-            selectedDate = dateStr;
-            showAvailableTimes(name);
-          }
-        });
-        bookingOptions.dataset.initialized = true;
-      }
-    }
-    function toggleCard(card) {
-      card.classList.toggle('active');
-    }
-
-    function editFields(event, btn) {
-      event.stopPropagation(); // stop card toggle
-
-      const bookingItem = btn.parentElement;
-      const docSpan = bookingItem.querySelector('[data-field="document"]');
-      const noteSpan = bookingItem.querySelector('[data-field="note"]');
-
-      if (btn.textContent === 'Edit') {
-        const docInput = document.createElement('input');
-        docInput.type = 'file';
-        docInput.setAttribute('data-field', 'document');
-
-        const noteInput = document.createElement('textarea');
-        noteInput.value = noteSpan.textContent === 'No note added' ? '' : noteSpan.textContent;
-        noteInput.setAttribute('data-field', 'note');
-
-        bookingItem.replaceChild(docInput, docSpan);
-        bookingItem.replaceChild(noteInput, noteSpan);
-
-        btn.textContent = 'Save';
-      } else {
-        const docInput = bookingItem.querySelector('input[data-field="document"]');
-        const noteInput = bookingItem.querySelector('textarea[data-field="note"]');
-
-        const newDocSpan = document.createElement('span');
-        newDocSpan.setAttribute('data-field', 'document');
-        newDocSpan.classList.add('grey-text');
-        newDocSpan.textContent = docInput.files.length > 0 ? docInput.files[0].name : 'No document uploaded';
-
-        const newNoteSpan = document.createElement('span');
-        newNoteSpan.setAttribute('data-field', 'note');
-        newNoteSpan.classList.add('grey-text');
-        newNoteSpan.textContent = noteInput.value.trim() !== '' ? noteInput.value : 'No note added';
-
-        bookingItem.replaceChild(newDocSpan, docInput);
-        bookingItem.replaceChild(newNoteSpan, noteInput);
-
-        btn.textContent = 'Edit';
-      }
-    }
-    function showAvailableTimes(name) {
-      const availableHeader = document.getElementById(`available-header-${name}`);
-      const availableContainer = document.getElementById(`time-options-${name}`);
-      
-      // Show available times header
-      availableHeader.style.display = 'block';
-      
-      // Clear previous time slots
-      availableContainer.innerHTML = '';
-      
-      // Get booked times for this date
-      const bookedTimes = bookings[name][selectedDate] || [];
-      
-      // Show available times
-      timeSlots.forEach(t => {
-        if (!bookedTimes.includes(t)) {
-          availableContainer.innerHTML += 
-            `<div class="time-slot" onclick="selectTime('${name}', '${t}')">${t}</div>`;
-        }
-      });
-
-      // Show waiting section if there are any bookings
-      if (bookedTimes.length > 0) {
-        updateWaitingSection(name);
-      }
-    }
-
-    function updateWaitingSection(name) {
-  const waitingHeader    = document.getElementById(`waiting-header-${name}`);
-  const waitingContainer = document.getElementById(`waiting-${name}`);
-  const bookedTimes      = bookings[name][selectedDate] || [];
-
-  // If no pending bookings, hide everything and exit
-  if (bookedTimes.length === 0) {
-    waitingHeader.style.display = 'none';
-    waitingContainer.innerHTML  = '';
-    return;
-  }
-
-  // Otherwise render them as before
-  waitingHeader.style.display = 'block';
-  waitingContainer.innerHTML = bookedTimes.map(t => `
-    <div class="time-slot waiting-slot">
-      ${t}
-      <button
-        class="cancel-pending-btn"
-        onclick="cancelPending('${name}', '${t}')"
-      >Cancel</button>
-    </div>
-  `).join('');
-}
-
-
-
-    function selectTime(lecturer, time) {
-      selectedLecturer = lecturer;
-      selectedTime = time;
-      document.getElementById('modal-lecturer').innerText = selectedLecturer.charAt(0).toUpperCase() + selectedLecturer.slice(1);
-      const [year, month, day] = selectedDate.split('-');
-      document.getElementById('modal-date').innerText = `${day}/${month}/${year}`;
-      document.getElementById('modal-time').innerText = selectedTime;
-      document.getElementById('booking-modal').style.display = 'flex';
-    }
-
-    function closeModal() { 
-      document.getElementById('booking-modal').style.display = 'none';
-      // Clear form
-      document.getElementById('booking-document').value = '';
-      document.getElementById('booking-note').value = '';
-    }
-
-    function submitBooking() {
-      // Add to bookings
-      if (!bookings[selectedLecturer][selectedDate]) {
-        bookings[selectedLecturer][selectedDate] = [];
-      }
-      bookings[selectedLecturer][selectedDate].push(selectedTime);
-      
-      // Update display
-      showAvailableTimes(selectedLecturer);
-      updateWaitingSection(selectedLecturer);
-      
-      alert('Booking submitted for ' + selectedLecturer + ' on ' + selectedDate + ' at ' + selectedTime);
-      closeModal();
-    }
-  </script>
-  <script>
-    document.getElementById('search-btn').addEventListener('click', function() {
-      const keyword = document.getElementById('search-lecturer').value.trim().toLowerCase();
-      const errorDiv = document.getElementById('search-error');
-      errorDiv.textContent = '';
-      if (keyword.includes('asma')) {
-        window.location.href = 'lecturer-profile.html';
-      } else {
-        errorDiv.textContent = 'Lecturer not found';
-      }
-    });
-  // Your existing search lecturer script...
-  // Collapsible functionality
-  document.querySelectorAll('.collapsible h3').forEach(h3 => {
-    h3.addEventListener('click', function() {
-      const card = this.parentElement;
-      card.classList.toggle('active');
-    });
-  });
-
-  // Manage booking and cancel buttons
-  const bookButtons = document.querySelectorAll('.time-book-btn');
-  const cancelButtons = document.querySelectorAll('.cancel-btn');
-
-  bookButtons.forEach((btn, index) => {
-    btn.addEventListener('click', () => {
-      // Hide all cancel buttons first
-      cancelButtons.forEach(c => c.style.display = 'none');
-
-      // Show only the corresponding cancel button
-      cancelButtons[index].style.display = 'inline-block';
-    });
-  });
-
-  cancelButtons.forEach((cancelBtn, index) => {
-    cancelBtn.addEventListener('click', () => {
-      // Hide this cancel button
-      cancelBtn.style.display = 'none';
-    });
-  });
-  
-  function bookTime(slot) {
-  // First hide all cancel buttons
-  document.getElementById('cancel-8am-10am').style.display = 'none';
-      document.getElementById('cancel-10am-12pm').style.display = 'none';
-      document.getElementById('cancel-4pm-6pm').style.display = 'none';
-
-  // Then show only the selected cancel button
-  var cancelButton = document.getElementById('cancel-' + slot);
-  if (cancelButton) {
-    cancelButton.style.display = 'inline-block';
-  } else {
-    console.log('Cancel button not found for slot:', slot);
-  }
-}
-
-function cancelTime(slot) {
-  // Hide the cancel button for that slot
-  var cancelButton = document.getElementById('cancel-' + slot);
-  if (cancelButton) {
-    cancelButton.style.display = 'none';
-  }
-}
-</script>
-
-<!-- Initialize Flatpickr -->
-<script>
-
-let currentRating = 0;
-
-  function openFeedback() {
-    document.getElementById('feedbackModal').style.display = 'flex';
-  }
-
-  function closeFeedback() {
-    document.getElementById('feedbackModal').style.display = 'none';
-  }
-
-  function setRating(rating) {
-    currentRating = rating;
-    const stars = document.querySelectorAll('#stars span');
-    stars.forEach((star, index) => {
-      star.textContent = index < rating ? '⭐' : '☆';
-    });
-  }
-
-  function submitFeedback() {
-    const text = document.getElementById('feedbackText').value;
-    alert(`Thank you!\nRating: ${currentRating} star(s)\nFeedback: ${text}`);
-    closeFeedback();
-  }
-
-  function cancelPending(lecturer, time) {
-  if (!confirm(`Cancel your pending slot on ${time}?`)) return;
-
-  // remove from your bookings data
-  const date = selectedDate;
-  bookings[lecturer][date] = bookings[lecturer][date].filter(t => t !== time);
-
-  // refresh both the waiting list and the available-times list
-  updateWaitingSection(lecturer);
-  showAvailableTimes(lecturer);
-}
-
-
-</script>
-<script>
-  const input = document.getElementById('search-lecturer');
-
-  input.addEventListener('click', function () {
-    if (input.classList.contains('focus-transition')) return;
-
-    input.classList.add('focus-transition');
-
-    // Enable typing
-    setTimeout(() => {
-      input.removeAttribute('readonly');
-      input.focus();
-    }, 500);
-  });
-
-  input.addEventListener('blur', function () {
-    // Restore state when losing focus
-    input.classList.remove('focus-transition');
-    input.setAttribute('readonly', true);
-  });
-</script>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
-
-    // Initialize Firebase
-    const app = initializeApp({
-      apiKey:    "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
-      authDomain:"appointment-management-c2531.firebaseapp.com",
-      projectId: "appointment-management-c2531"
-    });
+    const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    // Avatar dropdown functionality
+    const avatarBtn = document.getElementById('avatar-btn');
+    const logoutDropdown = document.getElementById('logout-dropdown');
+    avatarBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      logoutDropdown.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!avatarBtn.contains(e.target) && !logoutDropdown.contains(e.target)) {
+        logoutDropdown.classList.remove('show');
+      }
+    });
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      sessionStorage.clear();
+      window.location.href = 'login.html';
+    });
+
+    // Inquiry dropdown
+    const inquiryDropdown = document.getElementById('inquiry-dropdown');
+    const inquiryDropdownContent = document.getElementById('inquiry-dropdown-content');
+    inquiryDropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+      inquiryDropdownContent.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!inquiryDropdown.contains(e.target)) {
+        inquiryDropdownContent.classList.remove('show');
+      }
+    });
+
+    // Load student profile
     (async () => {
-      const params = new URLSearchParams(window.location.search);
-      // Try URL param first, then sessionStorage
-      const paramEmail = params.get('email');
-      const storedEmail = sessionStorage.getItem('userEmail');
-      const email = paramEmail || storedEmail;
-      if (!email) {
-        document.getElementById('user-name').textContent = 'Student';
-        return;
-      }
+      const params = new URLSearchParams(location.search);
+      const email = params.get('email') || sessionStorage.getItem('userEmail');
+      const nameEl = document.getElementById('student-name');
+      const emailEl = document.getElementById('student-email');
+      const facultyEl = document.getElementById('student-faculty');
+      const idEl = document.getElementById('student-id');
 
-      // If coming via login (URL param), fetch profile
-      if (paramEmail) {
+      if (email) {
         const snap = await getDoc(doc(db, 'students', email));
-        if (snap.exists()) {
-          const profile = snap.data();
-          // Persist for subsequent visits
-          sessionStorage.setItem('userEmail', email);
-          sessionStorage.setItem('userName', profile.name);
-          document.getElementById('user-name').textContent = profile.name;
-        } else {
-          document.getElementById('user-name').textContent = 'Student';
-        }
-      } else {
-        // No param: use stored name
-        const name = sessionStorage.getItem('userName') || 'Student';
-        document.getElementById('user-name').textContent = name;
-      }
+        const profile = snap.exists() ? snap.data() : {};
+        const name = profile.name || 'Student';
+        const faculty = profile.faculty || '-';
+        const studentId = profile.studentId || '-';
 
-      // Ensure logout carries session clear
-      document.getElementById('logout-link').addEventListener('click', () => {
-        sessionStorage.clear();
-      });
+        nameEl.textContent = `Welcome, ${name}!`;
+        emailEl.textContent = email;
+        facultyEl.textContent = faculty;
+        idEl.textContent = studentId;
+
+        sessionStorage.setItem('userEmail', email);
+        sessionStorage.setItem('userName', name);
+      } else {
+        nameEl.textContent = 'Welcome!';
+        emailEl.textContent = '-';
+        facultyEl.textContent = '-';
+        idEl.textContent = '-';
+      }
     })();
+
+    // Show days left for upcoming appointments
+    function updateDaysLeft() {
+      document.querySelectorAll('.consultation-item .upcoming-date').forEach(dateEl => {
+        const dateStr = dateEl.textContent.trim();
+        const today = new Date();
+        const apptDate = new Date(dateStr);
+        apptDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+        const diff = Math.round((apptDate - today) / (1000 * 60 * 60 * 24));
+        let msg = '';
+        if (diff > 1) msg = `in ${diff} days`;
+        else if (diff === 1) msg = 'in 1 day';
+        else if (diff === 0) msg = 'today';
+        else msg = 'passed';
+        const daysLeftEl = dateEl.closest('.consultation-item').querySelector('.days-left');
+        if (daysLeftEl) daysLeftEl.textContent = msg;
+      });
+    }
+    updateDaysLeft();
+
+    // Sort appointment items by date+time descending (latest first)
+    function sortAppointments(listId) {
+      const list = document.getElementById(listId);
+      if (!list) return;
+      const items = Array.from(list.querySelectorAll('.consultation-item'));
+      items.sort((a, b) => {
+        const aDate = a.getAttribute('data-date');
+        const aTime = a.getAttribute('data-time');
+        const bDate = b.getAttribute('data-date');
+        const bTime = b.getAttribute('data-time');
+        const aDT = new Date(`${aDate}T${aTime}`);
+        const bDT = new Date(`${bDate}T${bTime}`);
+        return bDT - aDT; // descending
+      });
+      items.forEach(item => list.appendChild(item));
+    }
+    sortAppointments('upcoming-list');
+    sortAppointments('pending-list');
   </script>
 
+  <script>
+    // Inquiry modal functions
+    function openInquiryModal() {
+      document.getElementById('inquiry-modal').style.display = 'flex';
+    }
 
+    function closeInquiryModal() {
+      document.getElementById('inquiry-modal').style.display = 'none';
+      document.getElementById('inquiry-form').reset();
+    }
 
+    // Make functions global
+    window.openInquiryModal = openInquiryModal;
+    window.closeInquiryModal = closeInquiryModal;
+
+    // Handle inquiry form submission
+    document.getElementById('inquiry-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const subject = document.getElementById('inquiry-subject').value;
+      const message = document.getElementById('inquiry-message').value;
+      
+      // Here you would typically send to Firestore
+      alert('Inquiry submitted successfully!');
+      closeInquiryModal();
+    });
+  </script>
 </body>
-</html>
+</html> 
