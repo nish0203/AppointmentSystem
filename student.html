@@ -1,4 +1,3 @@
-<!-- File: student.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,8 +6,8 @@
   <title>Student Dashboard - Uni Bookings</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="styles.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<style>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <style>
 /* == Reset & Base == */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: Arial, sans-serif; background: #f9fafb; color: #333; }
@@ -270,12 +269,14 @@ main { flex: 1; padding: 24px; }
 </style>
 </head>
 <body>
+
   <header>
     <div class="logo">Uni Bookings</div>
     <nav class="top-nav">
       <a href="login.html">Logout</a>
     </nav>
   </header>
+
   <div class="container">
     <aside class="sidebar">
       <ul>
@@ -290,6 +291,9 @@ main { flex: 1; padding: 24px; }
       </ul>
     </aside>
     <main>
+        
+      <h1 style="font-size:2.5rem; font-weight:bold;">Hi, <span id="user-name">...</span>!</h1>
+      <br>
       <h2>Student Dashboard</h2>
       
       <div class="card collapsible">
@@ -729,5 +733,36 @@ let currentRating = 0;
 
 
 </script>
+
+ <!-- Firebase & Fetch Profile -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+    // Initialize Firebase (same config as login)
+    const app = initializeApp({
+      apiKey:    "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain:"appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531"
+    });
+    const db = getFirestore(app);
+
+    (async () => {
+      const params = new URLSearchParams(window.location.search);
+      const email  = params.get('email');
+      if (email) {
+        const snap = await getDoc(doc(db, 'students', email));
+        if (snap.exists()) {
+          const profile = snap.data();
+          document.getElementById('user-name').textContent = profile.name;
+        } else {
+          document.getElementById('user-name').textContent = 'Student';
+        }
+      } else {
+        document.getElementById('user-name').textContent = 'Student';
+      }
+    })();
+  </script>
+
 </body>
 </html>
