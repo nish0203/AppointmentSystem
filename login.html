@@ -42,6 +42,7 @@
       background:#ffe0e0; color:#b00020; padding:.5rem;
       border-radius:6px; margin-bottom:1rem; display:none;
       font-size:.9rem;
+      margin-top: 5px;
     }
     .loading-msg { display:none; margin-top:1rem; font-weight:bold; color:#667eea; }
     .hidden { display:none }
@@ -53,9 +54,11 @@
 </head>
 <body>
   <div class="main-wrapper">
-    <div class="logo-section"><img src="eBbook.png" alt="Uni Bookings Logo"/></div>
+    <div class="logo-section">
+      <img src="eBbook.png" alt="Uni Bookings Logo"/>
+    </div>
     <div class="login-card">
-      <h2>Login to Uni Bookings</h2>
+      <p style="font: 7px;">Sign in with</p>
       <div id="error-msg" class="error-msg" aria-live="polite"></div>
       <form id="login-form">
         <label for="user-email">Email</label>
@@ -71,7 +74,8 @@
   <!-- EmailJS v4 SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script>
-    emailjs.init({ publicKey: "CO_25CIKuZ9YpYqQt" });
+    // Initialize EmailJS with your public key
+    emailjs.init({ publicKey: "YOUR_PUBLIC_KEY" });
   </script>
 
   <script type="module">
