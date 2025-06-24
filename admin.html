@@ -191,6 +191,8 @@
     </aside>
 
     <main>
+      <h1>Hi, <span id="user-name">...</span>👋!</h1>
+      <br>
       <h2>Admin Dashboard</h2>
 
       <a href="appointmentslot.html" style="text-decoration: none; color: inherit;">
@@ -288,7 +290,51 @@
       }
     });
   </script>
-</body>
-</html>
+
+ <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+    // Firebase config
+    const app = initializeApp({
+      apiKey:    "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain:"appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531"
+    });
+    const db = getFirestore(app);
+
+    (async () => {
+      const params       = new URLSearchParams(window.location.search);
+      const paramEmail   = params.get('email');
+      const storedEmail  = sessionStorage.getItem('userEmail');
+      const email        = paramEmail || storedEmail;
+      const nameEl       = document.getElementById('user-name');
+      const logoutLink   = document.getElementById('logout-link');
+
+      if (!email) {
+        nameEl.textContent = 'Admin';
+        return;
+      }
+
+      if (paramEmail) {
+        const snap = await getDoc(doc(db, 'admins', email));
+        if (snap.exists()) {
+          const profile = snap.data();
+          sessionStorage.setItem('userEmail', email);
+          sessionStorage.setItem('userName', profile.name);
+          nameEl.textContent = profile.name;
+        } else {
+          nameEl.textContent = 'Admin';
+        }
+      } else {
+        const storedName = sessionStorage.getItem('userName') || 'Admin';
+        nameEl.textContent = storedName;
+      }
+
+      // Clear session on logout
+      logoutLink.addEventListener('click', () => sessionStorage.clear());
+    })();
+  </script>
+  
 </body>
 </html>
