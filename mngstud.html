@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Manage Student (with Confirmation & Duplication Check)</title>
+  <title>Manage Student (with Faculty Dropdown)</title>
   <style>
     /* existing CSS unchanged */
     body { font-family: Arial; background: #f6fafa; padding: 20px; }
@@ -19,7 +19,7 @@
     .add-button:hover { background:#218838; }
     .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.4); }
     .modal-content { background:#fff; margin:8% auto; padding:20px; width:420px; border-radius:8px; position:relative; }
-    .modal-content input { width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px; }
+    .modal-content input, .modal-content select { width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px; }
     .submit-btn { background:#3b57c0; color:#fff; padding:8px 14px; border:none; cursor:pointer; border-radius:4px; }
     .submit-btn:hover { background:#2f45a0; }
     .close { position:absolute; top:10px; right:15px; font-size:20px; cursor:pointer; }
@@ -61,7 +61,16 @@
         <input type="text" id="studentId" placeholder="Student ID" required>
         <input type="text" id="studentName" placeholder="Student Name" required>
         <input type="email" id="studentEmail" placeholder="Student Email" required>
-        <input type="text" id="studentFaculty" placeholder="Faculty" required>
+        <!-- Faculty Dropdown -->
+        <select id="studentFaculty" required>
+          <option value="" disabled selected>Select Faculty</option>
+          <option value="FCM">FCM</option>
+          <option value="FCA">FCA</option>
+          <option value="FAC">FAC</option>
+          <option value="FCI">FCI</option>
+          <option value="FOM">FOM</option>
+          <option value="FOE">FOE</option>
+        </select>
         <input type="text" id="studentCourse" placeholder="Course" required>
         <input type="text" id="studentCreatedBy" value="AD001" readonly>
         <button type="submit" class="submit-btn">Save</button>
@@ -69,24 +78,20 @@
     </div>
   </div>
 
-  <script type="module">
+    <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
-      getFirestore, collection, doc, getDocs, getDoc,
+      getFirestore, collection, doc, getDocs,
       setDoc, updateDoc, deleteDoc
     } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-    const firebaseConfig = {
+    // Firebase init
+    const app = initializeApp({
       apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
       authDomain: "appointment-management-c2531.firebaseapp.com",
-      projectId: "appointment-management-c2531",
-      storageBucket: "appointment-management-c2531.appspot.com",
-      messagingSenderId: "428786083628",
-      appId: "1:428786083628:web:d9d9576b12581cc697ee89",
-      measurementId: "G-9FM8F1WJMF"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
+      projectId: "appointment-management-c2531"
+    });
+    const db = getFirestore(app);
 
     let editingDocId = null;
     const tableBody   = document.querySelector('#studentTable tbody');
@@ -97,18 +102,42 @@
     const backBtn     = document.getElementById('backBtn');
     const searchInput = document.getElementById('searchInput');
 
+    // Form fields
+    const idInput        = document.getElementById('studentId');
+    const nameInput      = document.getElementById('studentName');
+    const emailInput     = document.getElementById('studentEmail');
+    const facultyInput   = document.getElementById('studentFaculty');
+    const courseInput    = document.getElementById('studentCourse');
+    const createdByInput = document.getElementById('studentCreatedBy');
+
+    // Cross-collection duplicate check
+    async function checkDuplicate(id, email) {
+      const [adminsSnap, lectsSnap, studsSnap] = await Promise.all([
+        getDocs(collection(db, 'admins')),
+        getDocs(collection(db, 'lecturers')),
+        getDocs(collection(db, 'students'))
+      ]);
+      const all = [...adminsSnap.docs, ...lectsSnap.docs, ...studsSnap.docs];
+      return all.some(d => {
+        const data = d.data();
+        return (data.id === id || data.email === email)
+            && d.id !== editingDocId;
+      });
+    }
+
+    // Load students
     async function loadStudents() {
-      const snapshot = await getDocs(collection(db, 'students'));
-      snapshot.forEach(docSnap => {
+      const snap = await getDocs(collection(db, 'students'));
+      snap.forEach(docSnap => {
         const d = docSnap.data();
-        addStudentRow(d.id, d.name, d.email, d.faculty, d.course, d.createdBy);
+        addStudentRow(d.id, d.name, d.email, d.faculty, d.course, d.createdBy, docSnap.id);
       });
       renumberRows();
     }
 
-    function addStudentRow(id, name, email, faculty, course, createdBy) {
+    function addStudentRow(id, name, email, faculty, course, createdBy, key) {
       const row = tableBody.insertRow();
-      row.dataset.email = email;
+      row.dataset.key = key;
       row.insertCell().textContent = tableBody.rows.length;
       row.insertCell().textContent = id;
       row.insertCell().textContent = name;
@@ -122,118 +151,116 @@
     }
 
     function renumberRows() {
-      [...tableBody.rows].forEach((r,i) => r.cells[0].textContent = i+1);
+      Array.from(tableBody.rows).forEach((r,i)=> r.cells[0].textContent = i+1);
     }
 
-    function openModal(edit = false) {
+    // UI
+    addBtn.onclick     = ()=>{ editingDocId=null; form.reset(); openModal(false); };
+    closeBtn.onclick   = closeModal;
+    backBtn.onclick    = ()=>{ if(confirm('Go back to homepage?')) location='admin.html'; };
+    searchInput.oninput= ()=> {
+      const f = searchInput.value.toLowerCase();
+      Array.from(tableBody.rows)
+        .forEach(r=> r.style.display = r.cells[2].textContent.toLowerCase().includes(f)?'':'none');
+    };
+    window.onclick     = e=>{ if(e.target===modal) closeModal(); };
+
+    function openModal(edit) {
       modal.style.display = 'block';
-      document.getElementById('modalTitle').textContent = edit ? 'Edit Student' : 'Add New Student';
+      document.getElementById('modalTitle').textContent = edit? 'Edit Student':'Add New Student';
     }
-
     function closeModal() {
       modal.style.display = 'none';
       form.reset();
-      editingDocId = null;
     }
 
-    function searchStudents() {
-      const filter = searchInput.value.toLowerCase();
-      [...tableBody.rows].forEach(r => {
-        r.style.display = r.cells[2].textContent.toLowerCase().includes(filter) ? '' : 'none';
-      });
-    }
-
-    addBtn.onclick    = () => openModal(false);
-    closeBtn.onclick  = closeModal;
-    backBtn.onclick   = () => { if(confirm('Go back to homepage?')) window.location='admin.html'; };
-    searchInput.oninput = searchStudents;
-    window.onclick     = e => { if(e.target === modal) closeModal(); };
-
+    // Form submit with duplicate checks
     form.onsubmit = async e => {
       e.preventDefault();
-      const id        = document.getElementById('studentId').value.trim();
-      const name      = document.getElementById('studentName').value.trim();
-      const email     = document.getElementById('studentEmail').value.trim();
-      const faculty   = document.getElementById('studentFaculty').value.trim();
-      const course    = document.getElementById('studentCourse').value.trim();
-      const createdBy = document.getElementById('studentCreatedBy').value;
+      const id      = idInput.value.trim();
+      const name    = nameInput.value.trim();
+      const email   = emailInput.value.trim();
+      const faculty = facultyInput.value;
+      const course  = courseInput.value.trim();
+      const createdBy = createdByInput.value;
 
-      // Duplicate check
-      const allSnap = await getDocs(collection(db, 'students'));
-      const duplicate = allSnap.docs.some(d => {
-        const data = d.data();
-        return (data.email === email || data.id === id) && d.id !== editingDocId;
+      // cross-collection
+      if (await checkDuplicate(id, email)) {
+        alert('ID or email exists in Admins, Lecturers, or Students.');
+        return;
+      }
+      // students-only
+      const studSnap = await getDocs(collection(db, 'students'));
+      const dup = studSnap.docs.some(d => {
+        const dt = d.data();
+        return (dt.id===id || dt.email===email) && d.id!==editingDocId;
       });
-      if(duplicate) {
-        alert('Duplicate student ID or email detected. Cannot add/update.');
+      if (dup) {
+        alert('Duplicate in students—operation denied.');
         return;
       }
 
-      const confirmMsg = editingDocId ?
-        'Are you sure you want to update this student?' :
-        'Are you sure you want to add this student?';
-      if(!confirm(confirmMsg)) return;
+      if (!confirm(editingDocId? 'Confirm update?' : 'Confirm addition?')) return;
+      const rec = { id,name,email,faculty,course,createdBy,role:'student' };
 
-      const data = { id, name, email, faculty, course, createdBy, role: 'student' };
       try {
-        if(editingDocId) {
-          await updateDoc(doc(db, 'students', editingDocId), data);
-          [...tableBody.rows].forEach(r => {
-            if(r.dataset.email === editingDocId) {
+        if (editingDocId) {
+          await updateDoc(doc(db,'students',editingDocId), rec);
+          Array.from(tableBody.rows).forEach(r=>{
+            if (r.dataset.key===editingDocId) {
               r.cells[1].textContent = id;
               r.cells[2].textContent = name;
               r.cells[3].textContent = email;
               r.cells[4].textContent = faculty;
               r.cells[5].textContent = course;
               r.cells[6].textContent = createdBy;
-              r.dataset.email = email;
-              editingDocId = email;
             }
           });
         } else {
-          await setDoc(doc(db, 'students', email), data);
-          addStudentRow(id, name, email, faculty, course, createdBy);
+          await setDoc(doc(db,'students',email), rec);
+          addStudentRow(id,name,email,faculty,course,createdBy,email);
         }
         renumberRows();
         closeModal();
-        alert(`Student ${name} ${editingDocId ? 'updated' : 'added'} successfully.`);
-      } catch (err) {
+        alert('Saved successfully.');
+      } catch(err) {
         console.error(err);
-        alert('Error writing to Firestore: ' + err.message);
+        alert('Firestore error: '+err.message);
       }
     };
 
+    // Edit / delete delegation
     tableBody.onclick = async e => {
-      const action = e.target.dataset.action;
-      if (!action) return;
-      const row   = e.target.closest('tr');
-      const email = row.dataset.email;
+      const act = e.target.dataset.action;
+      if (!act) return;
+      const row = e.target.closest('tr');
+      const key = row.dataset.key;
 
-      if (action === 'edit') {
-        editingDocId = email;
-        document.getElementById('studentId').value      = row.cells[1].textContent;
-        document.getElementById('studentName').value    = row.cells[2].textContent;
-        document.getElementById('studentEmail').value   = row.cells[3].textContent;
-        document.getElementById('studentFaculty').value = row.cells[4].textContent;
-        document.getElementById('studentCourse').value  = row.cells[5].textContent;
-        document.getElementById('studentCreatedBy').value = row.cells[6].textContent;
+      if (act==='edit') {
+        editingDocId = key;
+        idInput.value        = row.cells[1].textContent;
+        nameInput.value      = row.cells[2].textContent;
+        emailInput.value     = row.cells[3].textContent;
+        facultyInput.value   = row.cells[4].textContent;
+        courseInput.value    = row.cells[5].textContent;
+        createdByInput.value = row.cells[6].textContent;
         openModal(true);
       }
-
-      if (action === 'delete') {
-        if (!confirm('Delete this student?')) return;
+      if (act==='delete') {
+        if (!confirm('Confirm deletion?')) return;
         try {
-          await deleteDoc(doc(db, 'students', email));
+          await deleteDoc(doc(db,'students',key));
           row.remove();
           renumberRows();
-          alert('Student deleted.');
-        } catch (err) {
+          alert('Deleted.');
+        } catch(err) {
           console.error(err);
-          alert('Error deleting: ' + err.message);
+          alert('Error deleting: '+err.message);
         }
       }
     };
 
+    // initial
     loadStudents();
   </script>
 </body>

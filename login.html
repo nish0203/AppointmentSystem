@@ -148,101 +148,122 @@
         border-bottom: 1px solid #ddd;
       }
     }
+
+    .hidden { display: none; }
   </style>
 </head>
 <body>
   <div class="main-wrapper">
-    <!-- Left side: eBwise logo -->
     <div class="logo-section">
-      <img src="eBbook.png" alt="eBbook Logo" />
+      <img src="eBbook.png" alt="Uni Bookings Logo" />
     </div>
-
-    <!-- Right side: your login form -->
     <div class="login-card">
+      <div id="error-msg" class="error-msg" aria-live="polite"></div>
       <form id="login-form">
-        <div id="error-msg" class="error-msg" aria-live="polite"></div>
+        <label for="user-email">Email</label>
+        <input type="email" id="user-email" placeholder="Enter your registered email" required />
 
-        <div class="role-selection">
-          <button type="button" class="role-btn" data-role="student">Student</button>
-          <button type="button" class="role-btn" data-role="lecturer">Lecturer</button>
-        </div>
+        <label for="otp" class="hidden" id="otp-label">Enter OTP (check your email)</label>
+        <input type="text" id="otp" class="hidden" placeholder="Enter 6-digit code" maxlength="6" />
 
-        <label for="user-id">ID</label>
-        <input type="text" id="user-id" placeholder="Enter your ID" />
-
-        <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Enter your password" />
-
-        <button type="submit" class="submit-btn">Log In</button>
+        <button type="submit" class="submit-btn" id="submit-btn">Send OTP</button>
       </form>
-      <div id="loading-msg" class="loading-msg">Logging in... Please wait.</div>
+      <div id="loading-msg" class="loading-msg">Please wait…</div>
     </div>
   </div>
 
-  <script>
-    (function() {
-      const form = document.getElementById('login-form');
-      const roleBtns = document.querySelectorAll('.role-btn');
-      const errorEl = document.getElementById('error-msg');
-      const loadingEl = document.getElementById('loading-msg');
-      let selectedRole = null;
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-functions.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-      function showError(msg) {
-        errorEl.textContent = msg;
-        errorEl.style.display = 'block';
-      }
-      function clearError() {
-        errorEl.textContent = '';
-        errorEl.style.display = 'none';
-      }
+    // --- Firebase init ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain: "appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531"
+    };
+    const app  = initializeApp(firebaseConfig);
+    const db   = getFirestore(app);
+    const functions = getFunctions(app);
 
-      roleBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          clearError();
-          if (btn.classList.contains('active')) {
-            btn.classList.remove('active');
-            selectedRole = null;
-          } else {
-            roleBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            selectedRole = btn.dataset.role;
-          }
-        });
-      });
+    // --- UI refs ---
+    const form      = document.getElementById('login-form');
+    const emailIn   = document.getElementById('user-email');
+    const otpIn     = document.getElementById('otp');
+    const otpLabel  = document.getElementById('otp-label');
+    const submitBtn = document.getElementById('submit-btn');
+    const errorEl   = document.getElementById('error-msg');
+    const loadingEl = document.getElementById('loading-msg');
 
-      form.addEventListener('submit', e => {
-        e.preventDefault();
-        clearError();
+    let step = 1;
+    let email = "";
 
-        const idValue = document.getElementById('user-id').value.trim();
-        const passValue = document.getElementById('password').value.trim();
+    function showError(msg) {
+      errorEl.textContent = msg;
+      errorEl.style.display = 'block';
+    }
+    function clearError() {
+      errorEl.textContent = '';
+      errorEl.style.display = 'none';
+    }
 
-        if (!idValue) return showError('ID cannot be blank');
-        if (!passValue) return showError('Password cannot be blank');
-
-        const isAdmin = idValue === 'AD001' && passValue === 'admin' && !selectedRole;
-        if (!isAdmin && !selectedRole) return showError('Please select Student or Lecturer');
-
-        if (!isAdmin && !/^[0-9]+$/.test(idValue))
-          return showError('ID must be numeric');
-
-        if (!isAdmin && idValue.length !== 10)
-          return showError('ID must be exactly 10 digits long');
-
-        loadingEl.style.display = 'block';
-        form.querySelectorAll('input, button').forEach(el => el.disabled = true);
-
-        setTimeout(() => {
-          if (isAdmin) {
-            window.location.href = 'admin.html';
-          } else {
-            window.location.href = selectedRole + '.html';
-          }
-        }, 2000);
-      });
-
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
       clearError();
-    })();
+
+      if (step === 1) {
+        email = emailIn.value.trim().toLowerCase();
+        if (!email) return showError('Please enter your email');
+
+        // Check email in any collection
+        const cols = ['admins','students','lecturers'];
+        let found = false;
+        for (let col of cols) {
+          const snap = await getDoc(doc(db, col, email));
+          if (snap.exists()) { found = true; break; }
+        }
+        if (!found) return showError('No account found for that email');
+
+        // Call sendEmailOtp function
+        submitBtn.disabled = true;
+        emailIn.disabled = true;
+        loadingEl.style.display = 'block';
+        try {
+          await httpsCallable(functions, "sendEmailOtp")({ email });
+          loadingEl.textContent = 'Check your inbox: OTP sent!';
+          otpIn.classList.remove('hidden');
+          otpLabel.classList.remove('hidden');
+          submitBtn.textContent = 'Login';
+          otpIn.focus();
+          step = 2;
+        } catch (err) {
+          showError("Failed to send OTP: " + err.message);
+          emailIn.disabled = false;
+          submitBtn.disabled = false;
+          loadingEl.style.display = 'none';
+        }
+      } else if (step === 2) {
+        const otp = otpIn.value.trim();
+        if (!otp) return showError('Please enter the OTP code');
+        loadingEl.style.display = 'block';
+        submitBtn.disabled = true;
+        try {
+          // Verify OTP
+          const { data } = await httpsCallable(functions, "verifyEmailOtp")({ email, code: otp });
+          // Example: { role, profile, token }
+          // You can sign in user with the token using Firebase Auth if needed
+          // Redirect user based on role
+          loadingEl.textContent = "Login successful! Redirecting…";
+          let page = data.role + ".html";
+          window.location.href = `${page}?name=${encodeURIComponent(data.profile.name)}`;
+        } catch (err) {
+          showError("Invalid code: " + (err.message || err));
+          loadingEl.style.display = 'none';
+          submitBtn.disabled = false;
+        }
+      }
+    });
   </script>
 </body>
 </html>
