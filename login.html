@@ -53,9 +53,7 @@
 </head>
 <body>
   <div class="main-wrapper">
-    <div class="logo-section">
-      <img src="eBbook.png" alt="Uni Bookings Logo"/>
-    </div>
+    <div class="logo-section"><img src="eBbook.png" alt="Uni Bookings Logo"/></div>
     <div class="login-card">
       <h2>Login to Uni Bookings</h2>
       <div id="error-msg" class="error-msg" aria-live="polite"></div>
@@ -73,28 +71,20 @@
   <!-- EmailJS v4 SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <script>
-    // Initialize EmailJS with your public key
-    emailjs.init({ publicKey: "YOUR_PUBLIC_KEY" });
+    emailjs.init({ publicKey: "CO_25CIKuZ9YpYqQt" });
   </script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-    // Firebase init (for user lookup)
-    const app = initializeApp({
-      apiKey:    "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
-      authDomain:"appointment-management-c2531.firebaseapp.com",
-      projectId: "appointment-management-c2531"
-    });
+    const app = initializeApp({ apiKey:"AIzaSyD...", authDomain:"appointment-management-c2531.firebaseapp.com", projectId:"appointment-management-c2531" });
     const db = getFirestore(app);
 
-    // EmailJS service & template IDs
     const SERVICE_ID  = "service_mailgun";
     const TEMPLATE_ID = "template_otp";
-    const PUBLIC_KEY  = "CO_25CIKuZ9YpYqQt";
+    const PUBLIC_KEY  = "YOUR_PUBLIC_KEY";
 
-    // UI references
     const formEl = document.getElementById("login-form");
     const eI     = document.getElementById("user-email");
     const oI     = document.getElementById("otp");
@@ -103,92 +93,58 @@
     const errEl  = document.getElementById("error-msg");
     const loadEl = document.getElementById("loading-msg");
 
-    function showError(msg) {
-      errEl.textContent = msg;
-      errEl.style.display = "block";
-    }
-    function clearError() {
-      errEl.style.display = "none";
-    }
+    function showError(msg) { errEl.textContent = msg; errEl.style.display = "block"; }
+    function clearError()   { errEl.style.display = "none"; }
+    function randomCode(len=6) { return Array.from({length:len},()=>Math.floor(Math.random()*10)).join(""); }
 
-    function randomCode(len = 6) {
-      return Array.from({ length: len }, () => Math.floor(Math.random() * 10)).join("");
-    }
-
-    let step = 1;
-    let otpCode = "";
-    let email = "";
+    let step=1, otpCode="", userRole="", userEmail="";
 
     formEl.addEventListener("submit", async ev => {
-      ev.preventDefault();
-      clearError();
+      ev.preventDefault(); clearError();
+      if(step===1) {
+        userEmail = eI.value.trim().toLowerCase();
+        if(!userEmail) return showError("Please enter your email.");
 
-      if (step === 1) {
-        email = eI.value.trim().toLowerCase();
-        if (!email) return showError("Please enter your email.");
-
-        // Verify account exists in Firestore
-        const cols = ["admins","lecturers","students"];
-        let exists = false;
-        for (let col of cols) {
-          if ((await getDoc(doc(db, col, email))).exists()) {
-            exists = true;
-            break;
+        // Determine role once
+        const cols=["admins","lecturers","students"];
+        for(let col of cols) {
+          if((await getDoc(doc(db,col,userEmail))).exists()) {
+            userRole = col; break;
           }
         }
-        if (!exists) return showError("No account found for that email.");
+        if(!userRole) return showError("No account found for that email.");
 
-        // Generate OTP and expiry time
+        // Generate OTP and expiry
         otpCode = randomCode();
-        const expiry = new Date(Date.now() + 15*60*1000).toLocaleString();
+        const expiry = new Date(Date.now()+15*60*1000).toLocaleString();
 
-        // UI: disable and show loading
-        btn.disabled = true;
-        eI.disabled  = true;
-        loadEl.style.display = "block";
-
+        btn.disabled=true; eI.disabled=true; loadEl.style.display="block";
         try {
-          const resp = await emailjs.send(
-            SERVICE_ID,
-            TEMPLATE_ID,
-            { email: email, passcode: otpCode, time: expiry },
-            { publicKey: PUBLIC_KEY }
+          const resp = await emailjs.send(SERVICE_ID, TEMPLATE_ID,
+            { email:userEmail, passcode:otpCode, time:expiry },
+            { publicKey:PUBLIC_KEY }
           );
-          console.log("EmailJS success:", resp);
-
-          // Reveal OTP input
-          loadEl.style.display = "none";
-          oL.classList.remove("hidden");
-          oI.classList.remove("hidden");
-          btn.textContent = "Login";
-          btn.disabled = false;
-          oI.focus();
-          step = 2;
-
-        } catch (err) {
-          console.error("EmailJS error:", err);
-          showError("Failed to send OTP: " + (err.text||err.error||err.message));
-          btn.disabled = false;
-          eI.disabled  = false;
-          loadEl.style.display = "none";
+          console.log("EmailJS success:",resp);
+          loadEl.style.display="none";
+          oL.classList.remove("hidden"); oI.classList.remove("hidden");
+          btn.textContent="Login"; btn.disabled=false; oI.focus(); step=2;
+        } catch(err) {
+          console.error("EmailJS error:",err);
+          showError("Failed to send OTP: "+(err.error||err.text||err.message));
+          btn.disabled=false; eI.disabled=false; loadEl.style.display="none";
         }
 
       } else {
-        const entered = oI.value.trim();
-        if (!entered) return showError("Please enter the 6-digit code.");
-        if (entered !== otpCode) return showError("Incorrect code.");
+        const entered=oI.value.trim();
+        if(!entered) return showError("Please enter the 6-digit code.");
+        if(entered!==otpCode) return showError("Incorrect code.");
 
-        // Determine role and redirect
-        const aSnap = await getDoc(doc(db, "admins", email));
-        const lSnap = await getDoc(doc(db, "lecturers", email));
-        const sSnap = await getDoc(doc(db, "students", email));
-        let target;
-        if (aSnap.exists)      target = "admin.html";
-        else if (lSnap.exists) target = "lecturer.html";
-        else if (sSnap.exists) target = "student.html";
-        else return showError("Role not found.");
-
-        window.location.href = `${target}?email=${encodeURIComponent(email)}`;
+        // Redirect based on pre-determined role
+        let target="";
+        if(userRole==="admins")    target="admin.html";
+        else if(userRole==="lecturers") target="lecturer.html";
+        else if(userRole==="students")  target="student.html";
+        window.location.href=`${target}?email=${encodeURIComponent(userEmail)}`;
       }
     });
   </script>
