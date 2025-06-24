@@ -1,274 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Login – Uni Bookings</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing:border-box; margin:0; padding:0 }
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #333;
+      font-family:'Segoe UI',sans-serif;
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      min-height:100vh;
+      display:flex; align-items:center; justify-content:center;
+      color:#333;
     }
-
     .main-wrapper {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-      display: flex;
-      max-width: 900px;
-      width: 100%;
-      overflow: hidden;
+      background:#fff; border-radius:12px;
+      box-shadow:0 8px 24px rgba(0,0,0,.15);
+      display:flex; max-width:900px; width:100%; overflow:hidden;
     }
-
     .logo-section {
-      background: white;
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      border-right: 1px solid #ddd;
+      flex:1; display:flex; align-items:center; justify-content:center;
+      padding:2rem; border-right:1px solid #ddd;
     }
-
-    .logo-section img {
-      max-width: 220px;
-      height: auto;
-    }
-
+    .logo-section img { max-width:220px; height:auto }
     .login-card {
-      flex: 1;
-      padding: 2rem 2.5rem;
-      text-align: center;
+      flex:1; padding:2rem 2.5rem; text-align:center;
     }
-
-    .login-card h2 {
-      margin-bottom: 1rem;
-      color: #4a4a4a;
-      letter-spacing: 1px;
-    }
-
-    .role-selection {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .role-btn {
-      flex: 1;
-      padding: 0.6rem 0;
-      border: 2px solid #667eea;
-      background: white;
-      color: #667eea;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .role-btn.active,
-    .role-btn:hover {
-      background: #667eea;
-      color: white;
-    }
-
-    label {
-      display: block;
-      text-align: left;
-      margin: 0.5rem 0 0.2rem;
-      font-size: 0.9rem;
-      color: #555;
-    }
-
+    label { display:block; text-align:left; margin:.5rem 0 .2rem; font-size:.9rem; color:#555; }
     input {
-      width: 100%;
-      padding: 0.6rem;
-      border: 1.5px solid #ccc;
-      border-radius: 6px;
-      margin-bottom: 1rem;
-      transition: border-color 0.3s ease;
+      width:100%; padding:.6rem; border:1.5px solid #ccc;
+      border-radius:6px; margin-bottom:1rem; transition:border-color .3s;
     }
-
-    input:focus {
-      border-color: #667eea;
-      outline: none;
-    }
-
+    input:focus { border-color:#667eea; outline:none }
     .submit-btn {
-      width: 100%;
-      padding: 0.75rem;
-      background: #667eea;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.3s ease;
+      width:100%; padding:.75rem; background:#667eea; color:#fff;
+      border:none; border-radius:6px; font-weight:600; cursor:pointer;
+      transition:background .3s;
     }
-
-    .submit-btn:hover {
-      background: #5a67d8;
-    }
-
+    .submit-btn:hover { background:#5a67d8 }
     .error-msg {
-      background: #ffe0e0;
-      color: #b00020;
-      padding: 0.5rem;
-      border-radius: 6px;
-      margin-bottom: 1rem;
-      display: none;
-      font-size: 0.9rem;
+      background:#ffe0e0; color:#b00020; padding:.5rem;
+      border-radius:6px; margin-bottom:1rem; display:none;
+      font-size:.9rem;
     }
-
-    .loading-msg {
-      display: none;
-      margin-top: 1rem;
-      font-weight: bold;
-      color: #667eea;
+    .loading-msg { display:none; margin-top:1rem; font-weight:bold; color:#667eea; }
+    .hidden { display:none }
+    @media(max-width:768px) {
+      .main-wrapper { flex-direction:column }
+      .logo-section { border-right:none; border-bottom:1px solid #ddd }
     }
-
-    @media (max-width: 768px) {
-      .main-wrapper {
-        flex-direction: column;
-      }
-
-      .logo-section {
-        border-right: none;
-        border-bottom: 1px solid #ddd;
-      }
-    }
-
-    .hidden { display: none; }
   </style>
 </head>
 <body>
   <div class="main-wrapper">
     <div class="logo-section">
-      <img src="eBbook.png" alt="Uni Bookings Logo" />
+      <img src="eBbook.png" alt="Uni Bookings Logo"/>
     </div>
     <div class="login-card">
+      <h2>Login to Uni Bookings</h2>
       <div id="error-msg" class="error-msg" aria-live="polite"></div>
-      <form id="login-form" autocomplete="off">
+      <form id="login-form">
         <label for="user-email">Email</label>
-        <input type="email" id="user-email" placeholder="Enter your registered email" required />
-
-        <label for="otp" class="hidden" id="otp-label">Enter OTP (check your email)</label>
-        <input type="text" id="otp" class="hidden" placeholder="Enter 6-digit code" maxlength="6" pattern="\\d{6}" />
-
-        <button type="submit" class="submit-btn" id="submit-btn">Send OTP</button>
+        <input type="email" id="user-email" placeholder="Enter your email" required />
+        <label id="otp-label" class="hidden" for="otp">Enter OTP</label>
+        <input type="text" id="otp" class="hidden" placeholder="6-digit code" maxlength="6" />
+        <button type="submit" id="submit-btn" class="submit-btn">Send OTP</button>
       </form>
       <div id="loading-msg" class="loading-msg">Please wait…</div>
     </div>
   </div>
 
+  <!-- EmailJS v4 SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    // Initialize EmailJS with your public key
+    emailjs.init({ publicKey: "YOUR_PUBLIC_KEY" });
+  </script>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-functions.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
-    import { getAuth, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
 
-    // --- Firebase init ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
-      authDomain: "appointment-management-c2531.firebaseapp.com",
+    // Firebase init (for user lookup)
+    const app = initializeApp({
+      apiKey:    "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain:"appointment-management-c2531.firebaseapp.com",
       projectId: "appointment-management-c2531"
-    };
-    const app  = initializeApp(firebaseConfig);
-    const db   = getFirestore(app);
-    const functions = getFunctions(app, "us-central1");
-    const auth = getAuth(app);
+    });
+    const db = getFirestore(app);
 
-    // --- UI refs ---
-    const form      = document.getElementById('login-form');
-    const emailIn   = document.getElementById('user-email');
-    const otpIn     = document.getElementById('otp');
-    const otpLabel  = document.getElementById('otp-label');
-    const submitBtn = document.getElementById('submit-btn');
-    const errorEl   = document.getElementById('error-msg');
-    const loadingEl = document.getElementById('loading-msg');
+    // EmailJS service & template IDs
+    const SERVICE_ID  = "service_mailgun";
+    const TEMPLATE_ID = "template_otp";
+    const PUBLIC_KEY  = "CO_25CIKuZ9YpYqQt";
 
-    let step = 1;
-    let email = "";
+    // UI references
+    const formEl = document.getElementById("login-form");
+    const eI     = document.getElementById("user-email");
+    const oI     = document.getElementById("otp");
+    const oL     = document.getElementById("otp-label");
+    const btn    = document.getElementById("submit-btn");
+    const errEl  = document.getElementById("error-msg");
+    const loadEl = document.getElementById("loading-msg");
 
     function showError(msg) {
-      errorEl.textContent = msg;
-      errorEl.style.display = 'block';
+      errEl.textContent = msg;
+      errEl.style.display = "block";
     }
     function clearError() {
-      errorEl.textContent = '';
-      errorEl.style.display = 'none';
+      errEl.style.display = "none";
     }
 
-    form.addEventListener('submit', async e => {
-      e.preventDefault();
+    function randomCode(len = 6) {
+      return Array.from({ length: len }, () => Math.floor(Math.random() * 10)).join("");
+    }
+
+    let step = 1;
+    let otpCode = "";
+    let email = "";
+
+    formEl.addEventListener("submit", async ev => {
+      ev.preventDefault();
       clearError();
 
       if (step === 1) {
-        email = emailIn.value.trim().toLowerCase();
-        if (!email) return showError('Please enter your email');
+        email = eI.value.trim().toLowerCase();
+        if (!email) return showError("Please enter your email.");
 
-        // Debug: log the email being sent
-        console.log("Sending OTP for email:", email);
-
-        // Check email in any collection
-        const cols = ['admins','students','lecturers'];
-        let found = false;
+        // Verify account exists in Firestore
+        const cols = ["admins","lecturers","students"];
+        let exists = false;
         for (let col of cols) {
-          const snap = await getDoc(doc(db, col, email));
-          if (snap.exists()) { found = true; break; }
+          if ((await getDoc(doc(db, col, email))).exists()) {
+            exists = true;
+            break;
+          }
         }
-        if (!found) return showError('No account found for that email');
+        if (!exists) return showError("No account found for that email.");
 
-        // Call sendEmailOtp function
-        submitBtn.disabled = true;
-        emailIn.disabled = true;
-        loadingEl.style.display = 'block';
+        // Generate OTP and expiry time
+        otpCode = randomCode();
+        const expiry = new Date(Date.now() + 15*60*1000).toLocaleString();
+
+        // UI: disable and show loading
+        btn.disabled = true;
+        eI.disabled  = true;
+        loadEl.style.display = "block";
+
         try {
-          const sendEmailOtp = httpsCallable(functions, "sendEmailOtp");
-          const { data } = await sendEmailOtp({ email });
-          console.log("sendEmailOtp called with data:", data, "typeof data:", typeof data, "keys:", Object.keys(data || {}));
-          loadingEl.textContent = 'Check your inbox: OTP sent!';
-          otpIn.classList.remove('hidden');
-          otpLabel.classList.remove('hidden');
-          submitBtn.textContent = 'Login';
-          otpIn.focus();
+          const resp = await emailjs.send(
+            SERVICE_ID,
+            TEMPLATE_ID,
+            { email: email, passcode: otpCode, time: expiry },
+            { publicKey: PUBLIC_KEY }
+          );
+          console.log("EmailJS success:", resp);
+
+          // Reveal OTP input
+          loadEl.style.display = "none";
+          oL.classList.remove("hidden");
+          oI.classList.remove("hidden");
+          btn.textContent = "Login";
+          btn.disabled = false;
+          oI.focus();
           step = 2;
+
         } catch (err) {
-          showError("Failed to send OTP: " + (err.message || err));
-          emailIn.disabled = false;
-          submitBtn.disabled = false;
-          loadingEl.style.display = 'none';
+          console.error("EmailJS error:", err);
+          showError("Failed to send OTP: " + (err.text||err.error||err.message));
+          btn.disabled = false;
+          eI.disabled  = false;
+          loadEl.style.display = "none";
         }
-      } else if (step === 2) {
-        const otp = otpIn.value.trim();
-        if (!otp || !/^\d{6}$/.test(otp)) return showError('Please enter the 6-digit OTP code');
-        loadingEl.style.display = 'block';
-        submitBtn.disabled = true;
-        try {
-          // Verify OTP
-          const { data } = await httpsCallable(functions, "verifyEmailOtp")({ email, code: otp });
-          // Sign in user with the token
-          await signInWithCustomToken(auth, data.token);
-          // Redirect user based on role
-          loadingEl.textContent = "Login successful! Redirecting…";
-          let page = data.role + ".html";
-          window.location.href = `${page}?name=${encodeURIComponent(data.profile.name)}`;
-        } catch (err) {
-          showError("Invalid code: " + (err.message || err));
-          loadingEl.style.display = 'none';
-          submitBtn.disabled = false;
-        }
+
+      } else {
+        const entered = oI.value.trim();
+        if (!entered) return showError("Please enter the 6-digit code.");
+        if (entered !== otpCode) return showError("Incorrect code.");
+
+        // Determine role and redirect
+        const aSnap = await getDoc(doc(db, "admins", email));
+        const lSnap = await getDoc(doc(db, "lecturers", email));
+        const sSnap = await getDoc(doc(db, "students", email));
+        let target;
+        if (aSnap.exists)      target = "admin.html";
+        else if (lSnap.exists) target = "lecturer.html";
+        else if (sSnap.exists) target = "student.html";
+        else return showError("Role not found.");
+
+        window.location.href = `${target}?email=${encodeURIComponent(email)}`;
       }
     });
   </script>
