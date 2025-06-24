@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manage Appointment Slots – Uni Bookings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: #f6f7fb;
+      color: #222;
+      margin: 0;
+    }
+    .container {
+      max-width: 500px;
+      margin: 48px auto;
+      padding: 0 16px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px #0001;
+      padding: 32px 24px 24px 24px;
+      margin-bottom: 32px;
+    }
+    h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1E3A8A;
+      margin-bottom: 18px;
+    }
+    .inputs-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+    .inputs-row input {
+      padding: .7rem 1rem;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 140px;
+      font-size: 1rem;
+      background: #f8fafc;
+      transition: border .2s, box-shadow .2s;
+    }
+    .inputs-row input:focus {
+      border: 1.5px solid #2563eb;
+      outline: none;
+      box-shadow: 0 0 0 2px #2563eb22;
+    }
+    .inputs-row button {
+      padding: .7rem 1.2rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1rem;
+      background: #2563eb;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background .2s;
+    }
+    .inputs-row button:hover {
+      background: #1E3A8A;
+    }
+    #slots-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 18px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    #slots-list li {
+      background: #f1f5f9;
+      border: 1px solid #dde4eb;
+      border-radius: 8px;
+      padding: .75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1rem;
+      color: #222;
+      box-shadow: 0 1px 4px #e0e7ef;
+    }
+    #slots-list li button {
+      background: transparent;
+      border: none;
+      color: #ef4444;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: .2rem .5rem;
+      border-radius: 4px;
+      transition: background .2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    #slots-list li button:hover {
+      background: rgba(239,68,68, .13);
+      color: #b91c1c;
+    }
+    #save-availability-btn {
+      background: #10B981;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: .7rem 1.2rem;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background .2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #save-availability-btn:hover {
+      background: #059669;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h2>Manage Appointment Slots</h2>
+      <div class="inputs-row">
+        <input type="text" id="availability-date" placeholder="Select date">
+        <input type="text" id="start-time-input"  placeholder="Start time">
+        <input type="text" id="end-time-input"    placeholder="End time">
+        <button id="add-slot-btn"><i class="fa-solid fa-plus"></i> Add Slot</button>
+      </div>
+      <ul id="slots-list"><!-- slots go here --></ul>
+      <button id="save-availability-btn"><i class="fa-solid fa-floppy-disk"></i> Save Availability</button>
+    </div>
+  </div>
+  <script type="module">
+    flatpickr("#availability-date",   { inline:true, minDate:"today", dateFormat:"Y-m-d" });
+    flatpickr("#start-time-input",    { enableTime:true, noCalendar:true, dateFormat:"h:i K" });
+    flatpickr("#end-time-input",      { enableTime:true, noCalendar:true, dateFormat:"h:i K" });
+    const slotsList = document.getElementById('slots-list');
+    document.getElementById('add-slot-btn').addEventListener('click', () => {
+      const date  = document.getElementById('availability-date').value;
+      const start = document.getElementById('start-time-input').value;
+      const end   = document.getElementById('end-time-input').value;
+      if(!date||!start||!end) return alert('Select date & times.');
+      if(flatpickr.parseDate(start,"h:i K") >= flatpickr.parseDate(end,"h:i K"))
+        return alert('End must be after start.');
+      const li = document.createElement('li');
+      const span = document.createElement('span');
+      span.textContent = `${date} ${start} – ${end}`;
+      li.append(span);
+      const btn = document.createElement('button');
+      btn.innerHTML = '<i class="fa-solid fa-trash"></i> Remove';
+      btn.onclick = ()=>li.remove();
+      li.append(btn);
+      slotsList.append(li);
+    });
+    document.getElementById('save-availability-btn').addEventListener('click', () => {
+      const date  = document.getElementById('availability-date').value;
+      const times = Array.from(slotsList.children).map(li => li.firstChild.textContent);
+      if(!date||!times.length) return alert('Add at least one slot.');
+      // Add your save logic here (e.g., send to Firestore)
+      alert('Saved! (Demo only)');
+    });
+  </script>
+</body>
+</html> 
