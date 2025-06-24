@@ -265,30 +265,131 @@ main { flex: 1; padding: 24px; }
   background: #dc2626;
   color: #fff;
 }
+/* */
+header {
+  background: white;
+  color: black;
+  padding: 12px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #ccc;
+}
+
+.left-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.menu-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu-links a {
+  color: black;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+
+.menu-links input {
+  padding: 6px;
+  border-radius: 4px;
+  border: none;
+  font-size: 0.9rem;
+}
+
+.menu-links button {
+  padding: 6px 12px;
+  background: none;
+  color: black;
+  border-style: ridge;
+  border-radius: 4px;
+  cursor: pointer;
+  border-color: white;
+}
+
+.menu-links button:hover {
+  border-color: #1E3A8A;
+}
+
+.top-nav a {
+  color: black;
+  font-weight: 500;
+}
+
+
+#search-lecturer {
+  background-color: white;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  color: #1E3A8A;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: background-color 0.4s ease, color 0.4s ease, border 0.4s ease, box-shadow 0.4s ease;
+  box-shadow: 0 0 0 2px transparent;
+  pointer-events: auto;
+}
+
+
+/* Default placeholder: white on blue */
+#search-lecturer::placeholder {
+  color: #999;
+  transition: color 0.4s ease;
+  
+}
+
+/* Focused/Activated State */
+#search-lecturer.focus-transition {
+  background-color: #f0f0f0;
+  color: #1E3A8A;
+  border: 2px solid #1E3A8A;
+  box-shadow: 0 0 6px rgba(30, 58, 138, 0.3);
+}
+
+/* Placeholder when focused */
+#search-lecturer.focus-transition::placeholder {
+  color: #1E3A8A;
+}
+
+
 
 
 </style>
 </head>
 <body>
   <header>
-    <div class="logo">Uni Bookings</div>
-    <nav class="top-nav">
-      <a href="login.html">Logout</a>
+  <div class="left-header">
+    <div class="logo"><img src="eBbook2.png" style="height: 60px;"></div>
+    <nav class="menu-links">
+      <a href="inquirystud.html">Submit Inquiry</a>
+      <a href="#">Search Lecturer</a>
+      <input type="text" id="search-lecturer" placeholder="Enter lecturer name" readonly>
+
+      <button id="search-btn">Search</button>
+      <div id="search-error" class="search-error"></div>
     </nav>
-  </header>
+  </div>
+  <nav class="top-nav">
+    <a href="login.html" style="color: #000;">Logout</a>
+  </nav>
+</header>
+
+
+
   <div class="container">
-    <aside class="sidebar">
-      <ul>
-        <li><a href="inquirystud.html">Submit Inquiry</a></li>
-  
-        <li><a href="#">Search Lecturer</a></li>
-        <li>
-          <input type="text" id="search-lecturer" placeholder="Enter lecturer name">
-          <button id="search-btn">Search</button>
-          <div id="search-error" class="search-error"></div>
-        </li>
-      </ul>
-    </aside>
+    
     <main>
       <h2>Student Dashboard</h2>
       
@@ -729,5 +830,29 @@ let currentRating = 0;
 
 
 </script>
+<script>
+  const input = document.getElementById('search-lecturer');
+
+  input.addEventListener('click', function () {
+    if (input.classList.contains('focus-transition')) return;
+
+    input.classList.add('focus-transition');
+
+    // Enable typing
+    setTimeout(() => {
+      input.removeAttribute('readonly');
+      input.focus();
+    }, 500);
+  });
+
+  input.addEventListener('blur', function () {
+    // Restore state when losing focus
+    input.classList.remove('focus-transition');
+    input.setAttribute('readonly', true);
+  });
+</script>
+
+
+
 </body>
 </html>

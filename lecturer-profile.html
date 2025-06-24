@@ -14,22 +14,35 @@
       margin: 0;
       padding: 0;
     }
-    header {
-      background-color: #1E3A8A;
-      color: white;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .logo {
-      font-weight: bold;
-      font-size: 20px;
-    }
-    .top-nav a {
-      color: white;
-      text-decoration: none;
-    }
+    /* */
+header {
+  background: white;
+  color: black;
+  padding: 12px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #ccc;
+}
+
+.left-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+.top-nav a {
+  text-decoration: none;
+  font-weight: bold;
+  padding: 8px 12px;
+}
+    /**/
     .container {
       max-width: 1800px;
       margin: 30px auto;
@@ -60,15 +73,20 @@
       padding: 5px 10px;
       cursor: pointer;
     }
+
+    
   </style>
 </head>
 <body>
   <header>
-    <div class="logo">Uni Bookings</div>
-    <nav class="top-nav">
-      <a href="student.html">← Back to Dashboard</a>
-    </nav>
-  </header>
+  <div class="left-header">
+    <div class="logo"><img src="eBbook2.png" style="height: 60px;"></div>
+  </div>
+  <nav class="top-nav">
+    <a href="student.html" style="color: black;">← Back to Dashboard</a>
+  </nav>
+</header>
+
 
   <div class="container">
     <main>
