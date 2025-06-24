@@ -1,3 +1,4 @@
+<!-- File: student.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,8 +7,8 @@
   <title>Student Dashboard - Uni Bookings</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" href="styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <style>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<style>
 /* == Reset & Base == */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: Arial, sans-serif; background: #f9fafb; color: #333; }
@@ -264,37 +265,137 @@ main { flex: 1; padding: 24px; }
   background: #dc2626;
   color: #fff;
 }
+/* */
+header {
+  background: white;
+  color: black;
+  padding: 12px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #ccc;
+}
+
+.left-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.menu-links {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.menu-links a {
+  color: black;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+
+.menu-links input {
+  padding: 6px;
+  border-radius: 4px;
+  border: none;
+  font-size: 0.9rem;
+}
+
+.menu-links button {
+  padding: 6px 12px;
+  background: none;
+  color: black;
+  border-style: ridge;
+  border-radius: 4px;
+  cursor: pointer;
+  border-color: white;
+}
+
+.menu-links button:hover {
+  border-color: #1E3A8A;
+}
+
+.top-nav a {
+  color: black;
+  font-weight: 500;
+}
+
+
+#search-lecturer {
+  background-color: white;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  color: #1E3A8A;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: background-color 0.4s ease, color 0.4s ease, border 0.4s ease, box-shadow 0.4s ease;
+  box-shadow: 0 0 0 2px transparent;
+  pointer-events: auto;
+}
+
+
+/* Default placeholder: white on blue */
+#search-lecturer::placeholder {
+  color: #999;
+  transition: color 0.4s ease;
+  
+}
+
+/* Focused/Activated State */
+#search-lecturer.focus-transition {
+  background-color: #f0f0f0;
+  color: #1E3A8A;
+  border: 2px solid #1E3A8A;
+  box-shadow: 0 0 6px rgba(30, 58, 138, 0.3);
+}
+
+/* Placeholder when focused */
+#search-lecturer.focus-transition::placeholder {
+  color: #1E3A8A;
+}
+
+
 
 
 </style>
 </head>
 <body>
-
   <header>
-    <div class="logo">Uni Bookings</div>
-    <nav class="top-nav">
-      <a href="login.html">Logout</a>
+  <div class="left-header">
+    <div class="logo"><img src="eBbook2.png" style="height: 60px;"></div>
+    <nav class="menu-links">
+      <a href="inquirystud.html">Submit Inquiry</a>
+      <a href="#">Search Lecturer</a>
+      <input type="text" id="search-lecturer" placeholder="Enter lecturer name" readonly>
+
+      <button id="search-btn">Search</button>
+      <div id="search-error" class="search-error"></div>
     </nav>
-  </header>
+  </div>
+  <nav class="top-nav">
+    <a href="login.html" style="color: #000;">Logout</a>
+  </nav>
+</header>
+
+
 
   <div class="container">
-    <aside class="sidebar">
-      <ul>
-        <li><a href="inquirystud.html">Submit Inquiry</a></li>
-  
-        <li><a href="#">Search Lecturer</a></li>
-        <li>
-          <input type="text" id="search-lecturer" placeholder="Enter lecturer name">
-          <button id="search-btn">Search</button>
-          <div id="search-error" class="search-error"></div>
-        </li>
-      </ul>
-    </aside>
+    
     <main>
+
         
-      <h1 style="font-size:2.5rem; font-weight:bold;">Hi, <span id="user-name">...</span>!</h1>
-      <br>
-      <h2>Student Dashboard</h2>
+    <h1 style="font-size:2.5rem; font-weight:bold;">Hi, <span id="user-name">...</span>👋!</h1>
+    <br>
+    <h2>Student Dashboard</h2>
       
       <div class="card collapsible">
         <h3>Available Appointment Slots <span class="arrow">&#9662;</span></h3>
@@ -733,13 +834,33 @@ let currentRating = 0;
 
 
 </script>
+<script>
+  const input = document.getElementById('search-lecturer');
 
- <!-- Firebase & Fetch Profile -->
-  <script type="module">
+  input.addEventListener('click', function () {
+    if (input.classList.contains('focus-transition')) return;
+
+    input.classList.add('focus-transition');
+
+    // Enable typing
+    setTimeout(() => {
+      input.removeAttribute('readonly');
+      input.focus();
+    }, 500);
+  });
+
+  input.addEventListener('blur', function () {
+    // Restore state when losing focus
+    input.classList.remove('focus-transition');
+    input.setAttribute('readonly', true);
+  });
+</script>
+
+<script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-    // Initialize Firebase (same config as login)
+    // Initialize Firebase
     const app = initializeApp({
       apiKey:    "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
       authDomain:"appointment-management-c2531.firebaseapp.com",
@@ -749,20 +870,41 @@ let currentRating = 0;
 
     (async () => {
       const params = new URLSearchParams(window.location.search);
-      const email  = params.get('email');
-      if (email) {
+      // Try URL param first, then sessionStorage
+      const paramEmail = params.get('email');
+      const storedEmail = sessionStorage.getItem('userEmail');
+      const email = paramEmail || storedEmail;
+      if (!email) {
+        document.getElementById('user-name').textContent = 'Student';
+        return;
+      }
+
+      // If coming via login (URL param), fetch profile
+      if (paramEmail) {
         const snap = await getDoc(doc(db, 'students', email));
         if (snap.exists()) {
           const profile = snap.data();
+          // Persist for subsequent visits
+          sessionStorage.setItem('userEmail', email);
+          sessionStorage.setItem('userName', profile.name);
           document.getElementById('user-name').textContent = profile.name;
         } else {
           document.getElementById('user-name').textContent = 'Student';
         }
       } else {
-        document.getElementById('user-name').textContent = 'Student';
+        // No param: use stored name
+        const name = sessionStorage.getItem('userName') || 'Student';
+        document.getElementById('user-name').textContent = name;
       }
+
+      // Ensure logout carries session clear
+      document.getElementById('logout-link').addEventListener('click', () => {
+        sessionStorage.clear();
+      });
     })();
   </script>
+
+
 
 </body>
 </html>
