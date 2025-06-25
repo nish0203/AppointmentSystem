@@ -2,9 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Submit Inquiry - Lecturer Portal</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
     * {
       margin: 0;
@@ -13,40 +16,199 @@
     }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-      min-height: 100vh;
-      padding: 2rem;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      overflow: hidden;
+      font-family: 'Inter', Arial, sans-serif;
+      background: #f9fafb;
+      color: #222;
+      margin: 0;
     }
 
     .header {
-      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-      color: white;
-      padding: 2rem;
-      text-align: center;
+      background: #fff;
+      color: #222;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 70px;
+      border-bottom: 1px solid #e5e7eb;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    
+    .header .logo {
+      display: flex; 
+      align-items: center; 
+      gap: 18px;
+    }
+    
+    .header .logo img {
+      height: 60px;
+      transition: height .2s;
+    }
+    
+    .header nav {
+      display: flex; 
+      gap: 24px; 
+      align-items: center;
+    }
+    
+    .header nav .nav-link {
+      color: #222;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.08rem;
+      transition: color .2s;
+      position: relative;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    
+    .header nav .nav-link:hover, .header nav .nav-link.active {
+      background: #f1f5f9;
+      color: #ef4444;
+    }
+    
+    .header nav .dropdown {
+      position: relative;
+    }
+    
+    .header nav .dropdown-content {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 110%;
+      background: #fff;
+      min-width: 220px;
+      box-shadow: 0 4px 16px #0002;
+      border-radius: 8px;
+      z-index: 100;
+      flex-direction: column;
+      padding: 8px 0;
+    }
+    
+    .header nav .dropdown-content.show {
+      display: flex;
+    }
+    
+    .header nav .dropdown-content a {
+      color: #222;
+      text-decoration: none;
+      padding: 12px 22px;
+      font-size: 1rem;
+      border: none;
+      background: none;
+      text-align: left;
+      transition: background .2s, color .2s;
+      border-radius: 0;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .header nav .dropdown-content a:hover {
+      background: #f1f5f9;
+      color: #ef4444;
+    }
+    
+    .header .avatar-btn {
+      width: 44px; 
+      height: 44px;
+      border-radius: 50%;
+      background: #eee;
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      overflow: hidden;
+      margin-left: 18px;
+      cursor: pointer;
+      position: relative;
+      outline: none;
+      border: none;
+      padding: 0;
+    }
+    
+    .header .avatar-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+    
+    .logout-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    
+    .logout-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background: #fff;
+      box-shadow: 0 8px 24px #0003;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      z-index: 200;
+      min-width: 160px;
+      padding: 8px 0;
+    }
+    
+    .logout-dropdown button {
+      width: 100%;
+      background: none;
+      border: none;
+      color: #ef4444;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 12px 24px;
+      text-align: left;
+      border-radius: 0;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    
+    .logout-dropdown button:hover {
+      background: #f1f5f9;
+      color: #b91c1c;
+    }
+    
+    .logout-dropdown.show {
+      display: block;
     }
 
-    .header h1 {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
+    .container {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 16px;
     }
 
-    .header p {
-      opacity: 0.9;
-      font-size: 1.1rem;
+    .page-header {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      padding: 28px 24px;
+      margin-bottom: 32px;
+      text-align: left;
+    }
+
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 8px;
+    }
+
+    .page-header p {
+      color: #64748b;
+      font-size: 1.05rem;
     }
 
     .form-container {
-      padding: 2rem;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      padding: 28px 24px;
     }
 
     .user-info {
@@ -107,8 +269,8 @@
 
     input[type="text"]:focus, select:focus, textarea:focus {
       outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
     }
 
     textarea {
@@ -142,9 +304,9 @@
     }
 
     .file-upload-label:hover {
-      border-color: #2563eb;
-      background: #f0f4ff;
-      color: #2563eb;
+      border-color: #ef4444;
+      background: #fef2f2;
+      color: #ef4444;
     }
 
     .file-info {
@@ -184,8 +346,8 @@
     }
 
     .priority-option input[type="radio"]:checked + .priority-label {
-      border-color: #2563eb;
-      background: #2563eb;
+      border-color: #ef4444;
+      background: #ef4444;
       color: white;
     }
 
@@ -249,13 +411,14 @@
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+      background: #ef4444;
       color: white;
     }
 
     .btn-primary:hover {
+      background: #dc2626;
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
     }
 
     .btn:disabled {
@@ -299,12 +462,12 @@
     }
 
     @media (max-width: 768px) {
-      body {
+      .container {
         padding: 1rem;
       }
 
       .header {
-        padding: 1.5rem;
+        padding: 0 16px;
       }
 
       .form-container {
@@ -318,8 +481,35 @@
   </style>
 </head>
 <body>
+  <header class="header">
+    <div class="logo">
+      <img src="eBbook2.png" alt="Logo">
+    </div>
+    <nav>
+      <a href="lecturer.html" class="nav-link">Dashboard</a>
+      <a href="lecturer-manage-slots.html" class="nav-link">Manage Slots</a>
+      <div class="dropdown nav-link active" tabindex="0" id="inquiry-dropdown">
+        Inquiry <i class="fa fa-caret-down" style="margin-left:6px;"></i>
+        <div class="dropdown-content" id="inquiry-dropdown-content">
+          <a href="inquirylect.html">Submit Inquiry</a>
+          <a href="viewinquirylect.html">View History</a>
+        </div>
+      </div>
+    </nav>
+    <div class="logout-wrapper">
+      <button class="avatar-btn" onclick="toggleLogoutDropdown()" id="avatarBtn">
+        <img src="placeholder.png" alt="Lecturer Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
+      </button>
+      <div class="logout-dropdown" id="logoutDropdown">
+        <button onclick="logout()">
+          <i class="fa fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
   <div class="container">
-    <div class="header">
+    <div class="page-header">
       <h1><i class="fas fa-question-circle"></i> Submit Inquiry</h1>
       <p>Get support from the administration team</p>
     </div>
@@ -457,6 +647,36 @@
     const db = getFirestore(app);
     const storage = getStorage(app);
 
+    // Dropdown functionality
+    document.getElementById('inquiry-dropdown').addEventListener('click', function() {
+      const dropdownContent = document.getElementById('inquiry-dropdown-content');
+      dropdownContent.classList.toggle('show');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      const dropdown = document.getElementById('inquiry-dropdown');
+      const dropdownContent = document.getElementById('inquiry-dropdown-content');
+      if (!dropdown.contains(event.target)) {
+        dropdownContent.classList.remove('show');
+      }
+    });
+
+    // Logout dropdown functionality
+    function toggleLogoutDropdown() {
+      const dropdown = document.getElementById('logoutDropdown');
+      dropdown.classList.toggle('show');
+    }
+
+    function logout() {
+      sessionStorage.clear();
+      window.location.href = 'login.html';
+    }
+
+    // Make functions global
+    window.toggleLogoutDropdown = toggleLogoutDropdown;
+    window.logout = logout;
+
     // Load user information
     window.addEventListener('DOMContentLoaded', async () => {
       await loadUserInfo();
@@ -476,6 +696,11 @@
           const lecturerData = lecturerDoc.data();
           document.getElementById('user-name').textContent = lecturerData.name || 'Unknown';
           document.getElementById('user-email').textContent = userEmail;
+          
+          // Update avatar if available
+          if (lecturerData.avatarUrl) {
+            document.querySelector('#avatarBtn img').src = lecturerData.avatarUrl;
+          }
         } else {
           document.getElementById('user-name').textContent = 'Unknown Lecturer';
           document.getElementById('user-email').textContent = userEmail;

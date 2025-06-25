@@ -281,13 +281,7 @@
     </div>
     <nav>
       <a href="#" class="nav-link active">Dashboard</a>
-      <div class="dropdown nav-link" tabindex="0" id="slot-dropdown">
-        Slot Management <i class="fa fa-caret-down" style="margin-left:6px;"></i>
-        <div class="dropdown-content" id="slot-dropdown-content">
-          <a href="lecturer-appointment-slots.html">Set Appointment Slots</a>
-          <a href="lecturer-manage-slots.html">Manage Booked Appointments</a>
-        </div>
-      </div>
+      <a href="lecturer-manage-slots.html" class="nav-link">Manage Slots</a>
       <div class="dropdown nav-link" tabindex="0" id="inquiry-dropdown">
         Inquiry <i class="fa fa-caret-down" style="margin-left:6px;"></i>
         <div class="dropdown-content" id="inquiry-dropdown-content">
@@ -298,7 +292,7 @@
     </nav>
     <div class="logout-wrapper">
       <button class="avatar-btn" id="avatar-btn">
-        <img id="user-avatar" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2QjcyODAiLz4KPHBhdGggZD0iTTIwIDEwQzIzLjMxIDEwIDI2IDEyLjY5IDI2IDE2QzI2IDE5LjMxIDIzLjMxIDIyIDIwIDIyQzE2LjY5IDIyIDE0IDE5LjMxIDE0IDE2QzE0IDEyLjY5IDE2LjY5IDEwIDIwIDEwWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTggMzJDOCAyNi40NzcyIDEyLjQ3NzIgMjIgMTggMjJIMjJDMjcuNTIyOCAyMiAzMiAyNi40NzcyIDMyIDMyVjM2SDhWMzJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" alt="Lecturer Profile" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;" onclick="changeAvatar()" />
+        <img id="user-avatar" src="placeholder.png" alt="Lecturer Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
       </button>
       <div class="logout-dropdown" id="logout-dropdown">
         <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
@@ -307,32 +301,40 @@
   </div>
   <div class="dashboard-container">
     <div class="welcome-card">
-      <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjYwIiBmaWxsPSIjNkI3MjgwIi8+CjxwYXRoIGQ9Ik02MCAzMEM2OS45NDEgMzAgNzggMzguMDU5IDc4IDQ4Qzc4IDU3Ljk0MSA2OS45NDEgNjYgNjAgNjZDNTAuMDU5IDY2IDQyIDU3Ljk0MSA0MiA0OEM0MiAzOC4wNTkgNTAuMDU5IDMwIDYwIDMwWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTI0IDk2QzI0IDc4LjMyNzYgMzguMzI3NiA2NCA1NiA2NEg2NEM4MS42NzI0IDY0IDk2IDc4LjMyNzYgOTYgOTZWMTEwSDI0Vjk2WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+" alt="Lecturer Profile" class="profile-pic" style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" />
+      <img src="placeholder.png" alt="Lecturer Profile" class="profile-pic" style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" />
       <div class="info">
         <h2 id="lecturer-name">Welcome!</h2>
         <p><b>E-mail:</b> <span id="lecturer-email">-</span></p>
         <p><b>Faculty:</b> <span id="lecturer-faculty">-</span></p>
         <p><b>Office:</b> <span id="lecturer-office">-</span></p>
-        <button onclick="changeAvatar()" style="background: #10B981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 10px;">
-          <i class="fa fa-user"></i> Edit Avatar
-        </button>
+
       </div>
     </div>
-    <div class="consultation-sections">
-      <div class="consultation-card">
+    <!-- Student Requests Section (Full Width) -->
+    <div class="consultation-card" style="margin-bottom: 20px;">
+      <h3>Student Requests</h3>
+      <div class="consultation-list" id="student-requests-list">
+        <p style="color: #6b7280; text-align: center; padding: 20px;">Loading student requests...</p>
+      </div>
+    </div>
+    
+    <!-- Appointments Section (Side by Side) -->
+    <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+      <div class="consultation-card" style="flex: 1;">
         <h3>Upcoming Appointments</h3>
         <div class="consultation-list" id="upcoming-list">
           <p style="color: #6b7280; text-align: center; padding: 20px;">Loading appointments...</p>
         </div>
       </div>
-      <div class="consultation-card">
+      <div class="consultation-card" style="flex: 1;">
         <h3>Pending Appointments</h3>
         <div class="consultation-list" id="pending-list">
           <p style="color: #6b7280; text-align: center; padding: 20px;">Loading appointments...</p>
         </div>
       </div>
     </div>
-    <div class="consultation-card" style="margin-top:32px;">
+    <!-- Appointment History Section -->
+    <div class="consultation-card">
       <h3>Appointment History</h3>
       <div class="consultation-list" id="history-list">
         <p style="color: #6b7280; text-align: center; padding: 20px;">Loading appointment history...</p>
@@ -340,8 +342,7 @@
     </div>
   </div>
 
-  <!-- Hidden file input for avatar -->
-  <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+
 
   <!-- Inquiry Modal -->
   <div id="inquiry-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
@@ -376,10 +377,36 @@
     </div>
   </div>
 
+  <!-- Student Request Modal -->
+  <div id="student-request-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 600px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <span style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #999;" onclick="closeStudentRequestModal()">&times;</span>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <i class="fa fa-user-graduate" style="font-size: 3rem; color: #6366f1; margin-bottom: 10px;"></i>
+        <h3 style="margin: 0; color: #222;">Student Slot Request</h3>
+        <p style="color: #666; margin: 10px 0;">Review and respond to the student's request</p>
+      </div>
+      <div id="request-details" style="margin-bottom: 20px;">
+        <!-- Request details will be populated here -->
+      </div>
+      <div style="display: flex; gap: 12px; justify-content: flex-end;">
+        <button onclick="closeStudentRequestModal()" style="background: #6b7280; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+          Cancel
+        </button>
+        <button onclick="rejectStudentRequest()" style="background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+          Reject
+        </button>
+        <button onclick="acceptStudentRequest()" style="background: #10B981; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+          Accept & Create Slot
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
-      getFirestore, doc, getDoc, collection, getDocs, query, where, orderBy, updateDoc
+      getFirestore, doc, getDoc, collection, getDocs, query, where, orderBy, updateDoc, addDoc
     } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
     import {
       getStorage, ref, uploadBytes, getDownloadURL
@@ -463,6 +490,8 @@
         
         // Load appointments
         await loadAppointments(email);
+        // Load student requests
+        await loadStudentRequests(email);
       } else {
         nameEl.textContent = 'Welcome!';
         emailEl.textContent = '-';
@@ -517,24 +546,29 @@
         // Fallback: Try to load all appointments and filter client-side
         try {
           console.log('Trying fallback query...');
-          const allAppointments = await getDocs(collection(db, 'appointments'));
-          const appointments = [];
+          const allAppointmentsQuery = query(collection(db, 'appointments'));
+          const allSnapshot = await getDocs(allAppointmentsQuery);
           
-          allAppointments.docs.forEach(doc => {
+          const allAppointments = [];
+          allSnapshot.docs.forEach(doc => {
             const data = doc.data();
             if (data.lecturerEmail === lecturerEmail) {
-              appointments.push({ id: doc.id, ...data });
+              allAppointments.push({ id: doc.id, ...data });
             }
           });
           
-          console.log('Fallback found', appointments.length, 'appointments');
-          renderAppointments(appointments);
+          // Sort manually
+          allAppointments.sort((a, b) => {
+            const aTime = a.bookedAt ? new Date(a.bookedAt) : new Date(0);
+            const bTime = b.bookedAt ? new Date(b.bookedAt) : new Date(0);
+            return bTime - aTime;
+          });
+          
+          console.log('Fallback appointments loaded:', allAppointments);
+          renderAppointments(allAppointments);
         } catch (fallbackError) {
-          console.error('Fallback query also failed:', fallbackError);
-          // Show error message in UI
-          document.getElementById('upcoming-list').innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">Error loading appointments</p>';
-          document.getElementById('pending-list').innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">Error loading appointments</p>';
-          document.getElementById('history-list').innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">Error loading appointments</p>';
+          console.error('Fallback also failed:', fallbackError);
+          renderAppointments([]);
         }
       }
     }
@@ -753,18 +787,7 @@
     sortAppointments('upcoming-list');
     sortAppointments('pending-list');
 
-    // Slot Management dropdown (click only)
-    const slotDropdown = document.getElementById('slot-dropdown');
-    const slotDropdownContent = document.getElementById('slot-dropdown-content');
-    slotDropdown.addEventListener('click', (e) => {
-      e.stopPropagation();
-      slotDropdownContent.classList.toggle('show');
-    });
-    document.addEventListener('click', (e) => {
-      if (!slotDropdown.contains(e.target)) {
-        slotDropdownContent.classList.remove('show');
-      }
-    });
+
 
     // Inquiry dropdown
     const inquiryDropdown = document.getElementById('inquiry-dropdown');
@@ -779,226 +802,296 @@
       }
     });
 
-    // Avatar functionality
-    function changeAvatar() {
-      document.getElementById('avatar-input').click();
-    }
 
-    document.getElementById('avatar-input').addEventListener('change', async function(e) {
-      const file = e.target.files[0];
-      if (!file) return;
 
-      // Validate file size (5MB limit)
-      if (file.size > 5 * 1024 * 1024) {
-        showNotification('File size must be less than 5MB', 'error');
-        return;
-      }
-
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        showNotification('Please select an image file', 'error');
-        return;
-      }
-
-      // Show upload progress
-      showNotification('Uploading avatar...', 'progress');
-
+    // Load student requests from Firestore
+    async function loadStudentRequests(lecturerEmail) {
       try {
-        const userEmail = sessionStorage.getItem('userEmail');
-        const fileName = `avatar_${Date.now()}.${file.name.split('.').pop()}`;
+        console.log('Loading student requests for lecturer:', lecturerEmail);
         
-        // Import Firebase functions dynamically
-        const { getStorage, ref: storageRef, uploadBytes, getDownloadURL } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js");
-        const { getFirestore, updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
-        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js");
+        const requestsQuery = query(
+          collection(db, 'slot_requests'),
+          where('lecturerEmail', '==', lecturerEmail),
+          where('status', '==', 'pending')
+        );
         
-        // Get Firebase app and services
-        const firebaseConfig = {
-          apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
-          authDomain: "appointment-management-c2531.firebaseapp.com",
-          projectId: "appointment-management-c2531",
-          storageBucket: "appointment-management-c2531.firebasestorage.app",
-          messagingSenderId: "428786083628",
-          appId: "1:428786083628:web:d9d9576b12581cc697ee89",
-          measurementId: "G-9FM8F1WJMF"
-        };
-        const app = initializeApp(firebaseConfig);
-        const dynamicStorage = getStorage(app);
-        const dynamicDb = getFirestore(app);
+        const snapshot = await getDocs(requestsQuery);
+        console.log('Found', snapshot.size, 'student requests');
         
-        const fileRef = storageRef(dynamicStorage, `avatars/lecturers/${userEmail}/${fileName}`);
-        
-        // Upload file
-        showNotification('Uploading to cloud storage...', 'progress');
-        const snapshot = await uploadBytes(fileRef, file);
-        const downloadURL = await getDownloadURL(snapshot.ref);
-        
-        // Update user profile
-        showNotification('Updating profile...', 'progress');
-        await updateDoc(doc(dynamicDb, 'lecturers', userEmail), {
-          avatarUrl: downloadURL
+        const requests = [];
+        snapshot.docs.forEach(doc => {
+          const data = doc.data();
+          console.log('Request data:', data);
+          requests.push({ id: doc.id, ...data });
         });
         
-        // Update avatar displays (both header and main profile picture)
-        document.getElementById('user-avatar').src = downloadURL;
-        const profilePic = document.querySelector('.profile-pic');
-        if (profilePic) {
-          profilePic.src = downloadURL;
-        }
+        // Sort by request date (newest first)
+        requests.sort((a, b) => {
+          const aTime = a.requestedAt ? new Date(a.requestedAt) : new Date(0);
+          const bTime = b.requestedAt ? new Date(b.requestedAt) : new Date(0);
+          return bTime - aTime;
+        });
         
-        showNotification('Avatar updated successfully!', 'success');
+        console.log('Processed requests:', requests);
+        renderStudentRequests(requests);
       } catch (error) {
-        console.error('Error uploading avatar:', error);
-        showNotification('Failed to upload avatar. Please try again.', 'error');
-      }
-    });
-
-    // Notification system (non-intrusive)
-    function showNotification(message, type = 'info') {
-      // Remove existing notification
-      const existing = document.getElementById('custom-notification');
-      if (existing) {
-        existing.remove();
-      }
-
-      // Find the Edit Avatar button to position notification relative to it
-      const editButton = document.querySelector('.welcome-card button');
-      const buttonRect = editButton ? editButton.getBoundingClientRect() : null;
-
-      // Create notification
-      const notification = document.createElement('div');
-      notification.id = 'custom-notification';
-      
-      let positionStyle;
-      if (buttonRect) {
-        // Position under the Edit Avatar button
-        positionStyle = `
-          position: absolute;
-          top: ${buttonRect.bottom + window.scrollY + 8}px;
-          left: ${buttonRect.left + window.scrollX}px;
-          transform: translateY(-10px);
-          opacity: 0;
-          transition: all 0.3s ease;
-        `;
-      } else {
-        // Fallback to top-right
-        positionStyle = `
-          position: fixed;
-          top: 20px;
-          right: 20px;
-          transform: translateX(100%);
-          transition: transform 0.3s ease;
-        `;
-      }
-
-      notification.style.cssText = `
-        ${positionStyle}
-        padding: 12px 18px;
-        border-radius: 6px;
-        color: white;
-        font-weight: 600;
-        z-index: 10000;
-        max-width: 280px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        font-size: 13px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        pointer-events: none;
-      `;
-
-      // Set color and icon based on type
-      let backgroundColor, icon;
-      switch (type) {
-        case 'success':
-          backgroundColor = '#10B981';
-          icon = '<i class="fa fa-check-circle"></i>';
-          break;
-        case 'error':
-          backgroundColor = '#EF4444';
-          icon = '<i class="fa fa-exclamation-circle"></i>';
-          break;
-        case 'progress':
-          backgroundColor = '#3B82F6';
-          icon = '<i class="fa fa-spinner fa-spin"></i>';
-          break;
-        default:
-          backgroundColor = '#6B7280';
-          icon = '<i class="fa fa-info-circle"></i>';
-      }
-
-      notification.style.backgroundColor = backgroundColor;
-      notification.innerHTML = `${icon} ${message}`;
-
-      document.body.appendChild(notification);
-
-      // Animate in
-      setTimeout(() => {
-        if (buttonRect) {
-          notification.style.transform = 'translateY(0)';
-          notification.style.opacity = '1';
-        } else {
-          notification.style.transform = 'translateX(0)';
-        }
-      }, 100);
-
-      // Auto remove (except for progress)
-      if (type !== 'progress') {
-        setTimeout(() => {
-          if (buttonRect) {
-            notification.style.transform = 'translateY(-10px)';
-            notification.style.opacity = '0';
-          } else {
-            notification.style.transform = 'translateX(100%)';
-          }
-          setTimeout(() => {
-            if (notification.parentNode) {
-              notification.remove();
-            }
-          }, 300);
-        }, 3000);
+        console.error('Error loading student requests:', error);
+        renderStudentRequests([]);
       }
     }
 
-    // Make avatar function global
-    window.changeAvatar = changeAvatar;
-    </script>
-
-    <script>
-      // Inquiry modal functions
-      function openInquiryModal() {
-        document.getElementById('inquiry-modal').style.display = 'flex';
+    // Render student requests
+    function renderStudentRequests(requests) {
+      const container = document.getElementById('student-requests-list');
+      
+      if (requests.length === 0) {
+        container.innerHTML = `
+          <p style="color: #6b7280; text-align: center; padding: 20px;">No pending student requests</p>
+        `;
+        return;
       }
 
-      function closeInquiryModal() {
-        document.getElementById('inquiry-modal').style.display = 'none';
-        document.getElementById('inquiry-form').reset();
-      }
+      // Store requests globally for access in modal
+      window.studentRequests = requests;
 
-      // Make functions global
-      window.openInquiryModal = openInquiryModal;
-      window.closeInquiryModal = closeInquiryModal;
+      container.innerHTML = requests.map(request => {
+        const requestDate = new Date(request.requestedAt);
+        const formattedDate = requestDate.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
 
-      // Handle inquiry form submission
-      document.getElementById('inquiry-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const subject = document.getElementById('inquiry-subject').value;
-        const message = document.getElementById('inquiry-message').value;
-        
-        // Here you would typically send to Firestore
-        // For now, just show a simple message
-        document.getElementById('inquiry-subject').value = '';
-        document.getElementById('inquiry-message').value = '';
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Submitted!';
+        return `
+          <div class="consultation-item" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 12px; cursor: pointer;" onclick="openStudentRequestDetails('${request.id}')">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+              <div style="font-weight: 600; color: #374151;">${request.studentName}</div>
+              <span style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">PENDING</span>
+            </div>
+            <div style="color: #64748b; font-size: 0.9rem; margin-bottom: 8px;">
+              <i class="fa fa-calendar"></i> ${request.preferredDate} at ${request.startTime} - ${request.endTime}
+            </div>
+            <div style="color: #374151; font-size: 0.9rem; margin-bottom: 8px;">
+              <strong>Purpose:</strong> ${request.purpose}
+            </div>
+            <div style="color: #6b7280; font-size: 0.8rem;">
+              <i class="fa fa-clock"></i> Requested ${formattedDate}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  </script>
+
+  <script>
+    // Inquiry modal functions
+    function openInquiryModal() {
+      document.getElementById('inquiry-modal').style.display = 'flex';
+    }
+
+    function closeInquiryModal() {
+      document.getElementById('inquiry-modal').style.display = 'none';
+      document.getElementById('inquiry-form').reset();
+    }
+
+    // Make functions global
+    window.openInquiryModal = openInquiryModal;
+    window.closeInquiryModal = closeInquiryModal;
+
+    // Handle inquiry form submission
+    document.getElementById('inquiry-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const subject = document.getElementById('inquiry-subject').value;
+      const message = document.getElementById('inquiry-message').value;
+      
+      // Here you would typically send to Firestore
+      // For now, just show a simple message
+      document.getElementById('inquiry-subject').value = '';
+      document.getElementById('inquiry-message').value = '';
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Submitted!';
+      submitBtn.style.background = '#10B981';
+      setTimeout(() => {
+        submitBtn.textContent = originalText;
         submitBtn.style.background = '#10B981';
-        setTimeout(() => {
-          submitBtn.textContent = originalText;
-          submitBtn.style.background = '#10B981';
-        }, 2000);
-        closeInquiryModal();
+      }, 2000);
+      closeInquiryModal();
+    });
+  </script>
+
+  <script>
+    // Student Request Modal functions
+    let currentRequest = null;
+
+    function openStudentRequestModal() {
+      document.getElementById('student-request-modal').style.display = 'flex';
+    }
+
+    function closeStudentRequestModal() {
+      document.getElementById('student-request-modal').style.display = 'none';
+      currentRequest = null;
+    }
+
+    // Make functions global
+    window.openStudentRequestModal = openStudentRequestModal;
+    window.closeStudentRequestModal = closeStudentRequestModal;
+
+    // Open student request details
+    window.openStudentRequestDetails = function(requestId) {
+      // Find the request from stored data
+      const request = window.studentRequests?.find(r => r.id === requestId);
+      if (!request) {
+        alert('Request not found');
+        return;
+      }
+
+      currentRequest = request;
+      
+      const requestDate = new Date(request.requestedAt);
+      const formattedDate = requestDate.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
       });
-    </script>
-  </body>
-  </html>
+
+      document.getElementById('request-details').innerHTML = `
+        <div style="background: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
+          <div style="margin-bottom: 12px;">
+            <h4 style="margin: 0 0 8px 0; color: #374151;">Student Information</h4>
+            <p style="margin: 4px 0; color: #64748b;"><strong>Name:</strong> ${request.studentName}</p>
+            <p style="margin: 4px 0; color: #64748b;"><strong>Email:</strong> ${request.studentEmail}</p>
+            <p style="margin: 4px 0; color: #64748b;"><strong>Student ID:</strong> ${request.studentId}</p>
+          </div>
+          <div style="margin-bottom: 12px;">
+            <h4 style="margin: 0 0 8px 0; color: #374151;">Requested Slot</h4>
+            <p style="margin: 4px 0; color: #64748b;"><strong>Date:</strong> ${request.preferredDate}</p>
+            <p style="margin: 4px 0; color: #64748b;"><strong>Time:</strong> ${request.startTime} - ${request.endTime}</p>
+          </div>
+          <div style="margin-bottom: 12px;">
+            <h4 style="margin: 0 0 8px 0; color: #374151;">Purpose</h4>
+            <p style="margin: 4px 0; color: #64748b;">${request.purpose}</p>
+          </div>
+          ${request.notes ? `
+            <div style="margin-bottom: 12px;">
+              <h4 style="margin: 0 0 8px 0; color: #374151;">Additional Notes</h4>
+              <p style="margin: 4px 0; color: #64748b;">${request.notes}</p>
+            </div>
+          ` : ''}
+          <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
+            <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">
+              <i class="fa fa-clock"></i> Requested on ${formattedDate}
+            </p>
+          </div>
+        </div>
+      `;
+      
+      openStudentRequestModal();
+    };
+
+    // Handle student request actions
+    window.acceptStudentRequest = async function() {
+      if (!currentRequest) {
+        alert('No request selected');
+        return;
+      }
+
+      try {
+        // Create a new appointment slot
+        const slotData = {
+          lecturerEmail: currentRequest.lecturerEmail,
+          date: currentRequest.preferredDate,
+          startTime: currentRequest.startTime,
+          endTime: currentRequest.endTime,
+          isBooked: false,
+          createdAt: new Date().toISOString()
+        };
+
+        const slotRef = await addDoc(collection(db, 'appointment_slots'), slotData);
+
+        // Create appointment
+        const appointmentData = {
+          studentEmail: currentRequest.studentEmail,
+          studentName: currentRequest.studentName,
+          studentId: currentRequest.studentId,
+          lecturerEmail: currentRequest.lecturerEmail,
+          lecturerName: currentRequest.lecturerName,
+          slotId: slotRef.id,
+          date: currentRequest.preferredDate,
+          startTime: currentRequest.startTime,
+          endTime: currentRequest.endTime,
+          purpose: currentRequest.purpose,
+          notes: currentRequest.notes,
+          status: 'approved',
+          bookedAt: new Date().toISOString()
+        };
+
+        await addDoc(collection(db, 'appointments'), appointmentData);
+
+        // Update slot as booked
+        await updateDoc(doc(db, 'appointment_slots', slotRef.id), {
+          isBooked: true,
+          bookedBy: currentRequest.studentEmail
+        });
+
+        // Update request status
+        await updateDoc(doc(db, 'slot_requests', currentRequest.id), {
+          status: 'accepted',
+          respondedAt: new Date().toISOString()
+        });
+
+        showSuccessModal('Request Accepted!', 'A new appointment slot has been created and the student has been notified.');
+        closeStudentRequestModal();
+        
+        // Reload data
+        await loadAppointments(sessionStorage.getItem('userEmail'));
+        await loadStudentRequests(sessionStorage.getItem('userEmail'));
+
+      } catch (error) {
+        console.error('Error accepting request:', error);
+        alert(`Failed to accept request: ${error.message}`);
+      }
+    };
+
+    window.rejectStudentRequest = async function() {
+      if (!currentRequest) {
+        alert('No request selected');
+        return;
+      }
+
+      try {
+        // Update request status
+        await updateDoc(doc(db, 'slot_requests', currentRequest.id), {
+          status: 'rejected',
+          respondedAt: new Date().toISOString()
+        });
+
+        showSuccessModal('Request Rejected', 'The student has been notified that their request was rejected.');
+        closeStudentRequestModal();
+        
+        // Reload data
+        await loadStudentRequests(sessionStorage.getItem('userEmail'));
+
+      } catch (error) {
+        console.error('Error rejecting request:', error);
+        alert(`Failed to reject request: ${error.message}`);
+      }
+    };
+
+    // Success modal function
+    window.showSuccessModal = function(title, message) {
+      document.getElementById('success-title').textContent = title;
+      document.getElementById('success-message').textContent = message;
+      document.getElementById('success-modal').style.display = 'flex';
+    };
+
+    window.closeSuccessModal = function() {
+      document.getElementById('success-modal').style.display = 'none';
+    };
+  </script>
+</body>
+</html>

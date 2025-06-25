@@ -404,13 +404,7 @@
     </div>
     <nav>
       <a href="lecturer.html" class="nav-link">Dashboard</a>
-      <div class="dropdown nav-link active" tabindex="0" id="slot-dropdown">
-        Slot Management <i class="fa fa-caret-down" style="margin-left:6px;"></i>
-        <div class="dropdown-content" id="slot-dropdown-content">
-          <a href="lecturer-appointment-slots.html">Set Appointment Slots</a>
-          <a href="lecturer-manage-slots.html">Manage Booked Appointments</a>
-        </div>
-      </div>
+      <a href="lecturer-manage-slots.html" class="nav-link active">Manage Slots</a>
       <div class="dropdown nav-link" tabindex="0" id="inquiry-dropdown">
         Inquiry <i class="fa fa-caret-down" style="margin-left:6px;"></i>
         <div class="dropdown-content" id="inquiry-dropdown-content">
@@ -420,8 +414,8 @@
       </div>
     </nav>
     <div class="logout-wrapper">
-      <button class="avatar-btn" id="avatar-btn">
-        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2QjcyODAiLz4KPHBhdGggZD0iTTIwIDEwQzIzLjMxIDEwIDI2IDEyLjY5IDI2IDE2QzI2IDE5LjMxIDIzLjMxIDIyIDIwIDIyQzE2LjY5IDIyIDE0IDE5LjMxIDE0IDE2QzE0IDEyLjY5IDE2LjY5IDEwIDIwIDEwWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTggMzJDOCAyNi40NzcyIDEyLjQ3NzIgMjIgMTggMjJIMjJDMjcuNTIyOCAyMiAzMiAyNi40NzcyIDMyIDMyVjM2SDhWMzJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" alt="Lecturer Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
+      <button class="avatar-btn" id="avatarBtn">
+        <img src="placeholder.png" alt="Lecturer Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
       </button>
       <div class="logout-dropdown" id="logout-dropdown">
         <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
@@ -1366,7 +1360,7 @@
     const cachedAvatarUrl = sessionStorage.getItem('userAvatarUrl');
     if (cachedAvatarUrl) {
       console.log('📸 Loading cached avatar instantly:', cachedAvatarUrl);
-      const avatarImg = document.querySelector('#avatar-btn img');
+      const avatarImg = document.querySelector('#avatarBtn img');
       if (avatarImg) {
         avatarImg.src = cachedAvatarUrl;
       }
@@ -1385,7 +1379,7 @@
               // Only update if avatar has changed
               if (userData.avatarUrl !== cachedAvatar) {
                 console.log('🔄 Updating avatar from Firebase');
-                const avatarImg = document.querySelector('#avatar-btn img');
+                const avatarImg = document.querySelector('#avatarBtn img');
                 if (avatarImg) {
                   avatarImg.src = userData.avatarUrl;
                 }
@@ -1400,51 +1394,74 @@
       }
     })();
 
-    // --- Navigation dropdown logic ---
-    const avatarBtn = document.getElementById('avatar-btn');
-    const logoutDropdown = document.getElementById('logout-dropdown');
-    avatarBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      logoutDropdown.classList.toggle('show');
-    });
-    document.addEventListener('click', (e) => {
-      if (!avatarBtn.contains(e.target) && !logoutDropdown.contains(e.target)) {
-        logoutDropdown.classList.remove('show');
-      }
-    });
-    document.getElementById('logout-btn').addEventListener('click', () => {
-      sessionStorage.clear();
-      window.location.href = 'login.html';
-    });
 
-    // Slot Management dropdown
-    const slotDropdown = document.getElementById('slot-dropdown');
-    const slotDropdownContent = document.getElementById('slot-dropdown-content');
-    slotDropdown.addEventListener('click', (e) => {
-      e.stopPropagation();
-      slotDropdownContent.classList.toggle('show');
-    });
-    document.addEventListener('click', (e) => {
-      if (!slotDropdown.contains(e.target)) {
-        slotDropdownContent.classList.remove('show');
-      }
-    });
-
-    // Inquiry dropdown
-    const inquiryDropdown = document.getElementById('inquiry-dropdown');
-    const inquiryDropdownContent = document.getElementById('inquiry-dropdown-content');
-    inquiryDropdown.addEventListener('click', (e) => {
-      e.stopPropagation();
-      inquiryDropdownContent.classList.toggle('show');
-    });
-    document.addEventListener('click', (e) => {
-      if (!inquiryDropdown.contains(e.target)) {
-        inquiryDropdownContent.classList.remove('show');
-      }
-    });
   </script>
 
   <script>
+    // Navigation dropdown logic (needs to be immediately available)
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded, setting up dropdown...');
+      const avatarBtn = document.getElementById('avatarBtn');
+      const logoutDropdown = document.getElementById('logout-dropdown');
+      
+      console.log('Avatar button found:', !!avatarBtn);
+      console.log('Logout dropdown found:', !!logoutDropdown);
+      
+      function toggleLogoutDropdown() {
+        console.log('toggleLogoutDropdown called');
+        if (logoutDropdown) {
+          logoutDropdown.classList.toggle('show');
+          console.log('Dropdown show class:', logoutDropdown.classList.contains('show'));
+        }
+      }
+      
+      // Make function globally available
+      window.toggleLogoutDropdown = toggleLogoutDropdown;
+      
+      // Avatar button click handler
+      if (avatarBtn) {
+        avatarBtn.addEventListener('click', (e) => {
+          console.log('Avatar button clicked');
+          e.stopPropagation();
+          if (logoutDropdown) {
+            logoutDropdown.classList.toggle('show');
+            console.log('Dropdown show class after click:', logoutDropdown.classList.contains('show'));
+          }
+        });
+      }
+      
+      // Click outside to close dropdown
+      document.addEventListener('click', (e) => {
+        if (avatarBtn && logoutDropdown && !avatarBtn.contains(e.target) && !logoutDropdown.contains(e.target)) {
+          logoutDropdown.classList.remove('show');
+        }
+      });
+      
+      // Logout button handler
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+          sessionStorage.clear();
+          window.location.href = 'login.html';
+        });
+      }
+
+      // Inquiry dropdown
+      const inquiryDropdown = document.getElementById('inquiry-dropdown');
+      const inquiryDropdownContent = document.getElementById('inquiry-dropdown-content');
+      if (inquiryDropdown && inquiryDropdownContent) {
+        inquiryDropdown.addEventListener('click', (e) => {
+          e.stopPropagation();
+          inquiryDropdownContent.classList.toggle('show');
+        });
+        document.addEventListener('click', (e) => {
+          if (!inquiryDropdown.contains(e.target)) {
+            inquiryDropdownContent.classList.remove('show');
+          }
+        });
+      }
+    });
+
     // Inquiry modal functions
     function openInquiryModal() {
       document.getElementById('inquiry-modal').style.display = 'flex';

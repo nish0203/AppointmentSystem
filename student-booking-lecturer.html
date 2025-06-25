@@ -378,8 +378,8 @@
       <a href="student-manage-appointments.html" class="nav-link">Manage Appointments</a>
     </nav>
     <div class="logout-wrapper">
-      <button class="avatar-btn" id="avatar-btn">
-        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2QjcyODAiLz4KPHBhdGggZD0iTTIwIDEwQzIzLjMxIDEwIDI2IDEyLjY5IDI2IDE2QzI2IDE5LjMxIDIzLjMxIDIyIDIwIDIyQzE2LjY5IDIyIDE0IDE5LjMxIDE0IDE2QzE0IDEyLjY5IDE2LjY5IDEwIDIwIDEwWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTggMzJDOCAyNi40NzcyIDEyLjQ3NzIgMjIgMTggMjJIMjJDMjcuNTIyOCAyMiAzMiAyNi40NzcyIDMyIDMyVjM2SDhWMzJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" alt="Student Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
+      <button class="avatar-btn" onclick="toggleLogoutDropdown()" id="avatarBtn">
+        <img src="placeholder.png" alt="Student Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
       </button>
       <div class="logout-dropdown" id="logout-dropdown">
         <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
@@ -393,7 +393,7 @@
     </a>
 
     <div class="lecturer-header">
-      <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjUwIiBmaWxsPSIjNkI3MjgwIi8+CjxwYXRoIGQ9Ik01MCAyNUM1OC4yOCAyNSA2NSAzMS43MiA2NSA0MEM2NSA0OC4yOCA1OC4yOCA1NSA1MCA1NUM0MS43MiA1NSAzNSA0OC4yOCAzNSA0MEMzNSAzMS43MiA0MS43MiAyNSA1MCAyNVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yMCA4MEMyMCA2Ni4xOTI5IDMxLjE5MjkgNTUgNDUgNTVINTVDNjguODA3MSA1NSA4MCA2Ni4xOTI5IDgwIDgwVjkwSDIwVjgwWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+" alt="Lecturer Profile" id="lecturer-avatar" class="lecturer-avatar" style="width: 100px; height: 100px; border-radius: 50%;" />
+      <img src="placeholder.png" alt="Lecturer Profile" class="lecturer-profile-pic" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" />
       <div class="lecturer-info">
         <h1 id="lecturer-name">Loading...</h1>
         <p><strong>Email:</strong> <span id="lecturer-email">-</span></p>
@@ -411,6 +411,15 @@
           <p>Loading available slots...</p>
         </div>
       </div>
+    </div>
+
+    <!-- Request Slot Section -->
+    <div class="request-slot-container" style="margin-top: 24px; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #0001; padding: 24px;">
+      <h2 style="margin: 0 0 16px 0; font-size: 1.5rem; font-weight: 700; color: #222;">No Available Slots?</h2>
+      <p style="color: #666; margin-bottom: 20px;">If there are no available slots that suit your schedule, you can request this lecturer to create a new slot for you.</p>
+      <button class="btn-request-slot" onclick="openRequestSlotModal()" style="background: #6366f1; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+        <i class="fa fa-calendar-plus"></i> Request New Slot
+      </button>
     </div>
   </div>
 
@@ -456,6 +465,48 @@
       <button onclick="closeSuccessModal()" style="background: #10B981; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
         OK
       </button>
+    </div>
+  </div>
+
+  <!-- Request Slot Modal -->
+  <div id="request-slot-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <span style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #999;" onclick="closeRequestSlotModal()">&times;</span>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <i class="fa fa-calendar-plus" style="font-size: 3rem; color: #6366f1; margin-bottom: 10px;"></i>
+        <h3 style="margin: 0; color: #222;">Request New Appointment Slot</h3>
+        <p style="color: #666; margin: 10px 0;">Ask the lecturer to create a slot that fits your schedule</p>
+      </div>
+      <form id="request-slot-form">
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Preferred Date <span style="color: #ef4444;">*</span>:</label>
+          <input type="date" id="request-preferred-date" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px;" required>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Preferred Time Range <span style="color: #ef4444;">*</span>:</label>
+          <div style="display: flex; gap: 12px;">
+            <input type="time" id="request-start-time" style="flex: 1; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px;" required>
+            <span style="display: flex; align-items: center; color: #666;">to</span>
+            <input type="time" id="request-end-time" style="flex: 1; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px;" required>
+          </div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Purpose of Meeting <span style="color: #ef4444;">*</span>:</label>
+          <textarea id="request-purpose" rows="3" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-family: inherit; resize: vertical;" placeholder="Please describe the purpose of your appointment..." required></textarea>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Additional Notes:</label>
+          <textarea id="request-notes" rows="2" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-family: inherit; resize: vertical;" placeholder="Any additional information or special requirements..."></textarea>
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button type="button" onclick="closeRequestSlotModal()" style="background: #6b7280; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            Cancel
+          </button>
+          <button type="submit" style="background: #6366f1; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            Send Request
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -647,6 +698,90 @@
       document.getElementById('success-modal').style.display = 'none';
     };
 
+    // Request slot modal functions
+    window.openRequestSlotModal = function() {
+      // Set minimum date to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('request-preferred-date').min = today;
+      document.getElementById('request-slot-modal').style.display = 'flex';
+    };
+
+    window.closeRequestSlotModal = function() {
+      document.getElementById('request-slot-modal').style.display = 'none';
+      document.getElementById('request-slot-form').reset();
+    };
+
+    // Handle request slot form submission
+    document.getElementById('request-slot-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const studentEmail = sessionStorage.getItem('userEmail');
+      const studentName = sessionStorage.getItem('userName') || 'Student';
+      if (!studentEmail) {
+        alert('Please log in to request slots');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const preferredDate = document.getElementById('request-preferred-date').value;
+      const startTime = document.getElementById('request-start-time').value;
+      const endTime = document.getElementById('request-end-time').value;
+      const purpose = document.getElementById('request-purpose').value;
+      const notes = document.getElementById('request-notes').value;
+
+      // Validate time range
+      if (startTime >= endTime) {
+        alert('End time must be after start time');
+        return;
+      }
+
+      try {
+        // Show loading state
+        const submitBtn = document.querySelector('#request-slot-form button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Sending Request...';
+        submitBtn.disabled = true;
+
+        // Create slot request
+        const requestData = {
+          studentEmail: studentEmail,
+          studentName: studentName,
+          studentId: sessionStorage.getItem('studentId') || 'N/A',
+          lecturerEmail: lecturerEmail,
+          lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
+          preferredDate: preferredDate,
+          startTime: startTime,
+          endTime: endTime,
+          purpose: purpose,
+          notes: notes,
+          status: 'pending',
+          requestedAt: new Date().toISOString()
+        };
+
+        await addDoc(collection(db, 'slot_requests'), requestData);
+        
+        console.log('Slot request created successfully');
+        showSuccessModal('Request Sent Successfully!', 'Your slot request has been sent to the lecturer. They will review it and create a slot if approved.');
+        closeRequestSlotModal();
+        
+      } catch (error) {
+        console.error('Error creating slot request:', error);
+        alert(`Failed to send request: ${error.message}`);
+      } finally {
+        // Reset loading state
+        const submitBtn = document.querySelector('#request-slot-form button[type="submit"]');
+        submitBtn.textContent = 'Send Request';
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Close request modal when clicking outside
+    document.getElementById('request-slot-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeRequestSlotModal();
+      }
+    });
+
     // Handle booking form submission
     document.getElementById('booking-form').addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -801,7 +936,7 @@
     });
 
     // Logout dropdown functionality
-    document.getElementById('avatar-btn').addEventListener('click', (e) => {
+    document.getElementById('avatarBtn').addEventListener('click', (e) => {
       e.stopPropagation();
       const dropdown = document.getElementById('logout-dropdown');
       dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
@@ -822,7 +957,7 @@
     const cachedAvatarUrl = sessionStorage.getItem('userAvatarUrl');
     if (cachedAvatarUrl) {
       console.log('📸 Loading cached avatar instantly:', cachedAvatarUrl);
-      const avatarImg = document.querySelector('#avatar-btn img');
+      const avatarImg = document.querySelector('#avatarBtn img');
       if (avatarImg) {
         avatarImg.src = cachedAvatarUrl;
       }
@@ -841,7 +976,7 @@
               // Only update if avatar has changed
               if (userData.avatarUrl !== cachedAvatar) {
                 console.log('🔄 Updating avatar from Firebase');
-                const avatarImg = document.querySelector('#avatar-btn img');
+                const avatarImg = document.querySelector('#avatarBtn img');
                 if (avatarImg) {
                   avatarImg.src = userData.avatarUrl;
                 }

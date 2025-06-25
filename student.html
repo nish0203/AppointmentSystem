@@ -285,19 +285,6 @@
       <button class="avatar-btn" id="avatar-btn">
         <img id="user-avatar" src="placeholder.png" alt="Student Profile" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;" />
       </button>
-              <script>
-          // Immediate avatar replacement - runs as soon as element is parsed
-          (function() {
-            const avatar = sessionStorage.getItem('userAvatarUrl');
-            if (avatar) {
-              const img = document.getElementById('user-avatar');
-              if (img) {
-
-                img.src = avatar;
-              }
-            }
-          })();
-        </script>
       <div class="logout-dropdown" id="logout-dropdown">
         <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
       </div>
@@ -306,20 +293,7 @@
 
   <div class="dashboard-container">
     <div class="welcome-card">
-      <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjYwIiBmaWxsPSIjNkI3MjgwIi8+CjxwYXRoIGQ9Ik02MCAzMEM2OS45NDEgMzAgNzggMzguMDU5IDc4IDQ4Qzc4IDU3Ljk0MSA2OS45NDEgNjYgNjAgNjZDNTAuMDU5IDY2IDQyIDU3Ljk0MSA0MiA0OEM0MiAzOC4wNTkgNTAuMDU5IDMwIDYwIDMwWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTI0IDk2QzI0IDc4LjMyNzYgMzguMzI3NiA2NCA1NiA2NEg2NEM4MS42NzI0IDY0IDk2IDc4LjMyNzYgOTYgOTZWMTEwSDI0Vjk2WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+" alt="Student Profile" class="profile-pic" style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" />
-              <script>
-          // Immediate profile picture replacement
-          (function() {
-            const avatar = sessionStorage.getItem('userAvatarUrl');
-            if (avatar) {
-              const pics = document.querySelectorAll('.profile-pic');
-              pics.forEach(pic => {
-
-                pic.src = avatar;
-              });
-            }
-          })();
-        </script>
+      <img src="placeholder.png" alt="Student Profile" class="profile-pic" style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" />
       <div class="info">
         <h2 id="student-name">Welcome!</h2>
         <p><b>E-mail:</b> <span id="student-email">-</span></p>
@@ -703,7 +677,7 @@
         upcomingList.innerHTML = upcoming.map(apt => `
           <div class="consultation-item" data-date="${apt.date}" data-time="${apt.startTime}">
             <div class="lecturer-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-              <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2QjcyODAiLz4KPHBhdGggZD0iTTIwIDEwQzIzLjMxIDEwIDI2IDEyLjY5IDI2IDE2QzI2IDE5LjMxIDIzLjMxIDIyIDIwIDIyQzE2LjY5IDIyIDE0IDE5LjMxIDE0IDE2QzE0IDEyLjY5IDE2LjY5IDEwIDIwIDEwWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTggMzJDOCAyNi40NzcyIDEyLjQ3NzIgMjIgMTggMjJIMjJDMjcuNTIyOCAyMiAzMiAyNi40NzcyIDMyIDMyVjM2SDhWMzJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" alt="Lecturer Avatar" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;" />
+              <img src="placeholder.png" alt="Lecturer Avatar" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;" />
               <div>
                 <div class="lecturer-name" style="font-weight: 600; color: #374151;">${apt.lecturerName || apt.lecturerEmail || 'Lecturer'}</div>
                 <div style="font-size: 0.85rem; color: #6b7280;">Lecturer</div>
@@ -725,7 +699,7 @@
         pendingList.innerHTML = pending.map(apt => `
           <div class="consultation-item" data-date="${apt.date}" data-time="${apt.startTime}">
             <div class="lecturer-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-              <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2QjcyODAiLz4KPHBhdGggZD0iTTIwIDEwQzIzLjMxIDEwIDI2IDEyLjY5IDI2IDE2QzI2IDE5LjMxIDIzLjMxIDIyIDIwIDIyQzE2LjY5IDIyIDE0IDE5LjMxIDE0IDE2QzE0IDEyLjY5IDE2LjY5IDEwIDIwIDEwWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTggMzJDOCAyNi40NzcyIDEyLjQ3NzIgMjIgMTggMjJIMjJDMjcuNTIyOCAyMiAzMiAyNi40NzcyIDMyIDMyVjM2SDhWMzJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" alt="Lecturer Avatar" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;" />
+              <img src="placeholder.png" alt="Lecturer Avatar" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;" />
               <div>
                 <div class="lecturer-name" style="font-weight: 600; color: #374151;">${apt.lecturerName || apt.lecturerEmail || 'Lecturer'}</div>
                 <div style="font-size: 0.85rem; color: #6b7280;">Lecturer</div>
@@ -762,7 +736,7 @@
         historyList.innerHTML = history.map(apt => `
           <div class="consultation-item" data-date="${apt.date}" data-time="${apt.startTime}">
             <div class="lecturer-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
-              <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2QjcyODAiLz4KPHBhdGggZD0iTTIwIDEwQzIzLjMxIDEwIDI2IDEyLjY5IDI2IDE2QzI2IDE5LjMxIDIzLjMxIDIyIDIwIDIyQzE2LjY5IDIyIDE0IDE5LjMxIDE0IDE2QzE0IDEyLjY5IDE2LjY5IDEwIDIwIDEwWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTggMzJDOCAyNi40NzcyIDEyLjQ3NzIgMjIgMTggMjJIMjJDMjcuNTIyOCAyMiAzMiAyNi40NzcyIDMyIDMyVjM2SDhWMzJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" alt="Lecturer Avatar" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;" />
+              <img src="placeholder.png" alt="Lecturer Avatar" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;" />
               <div>
                 <div class="lecturer-name" style="font-weight: 600; color: #374151;">${apt.lecturerName || apt.lecturerEmail || 'Lecturer'}</div>
                 <div style="font-size: 0.85rem; color: #6b7280;">Lecturer</div>

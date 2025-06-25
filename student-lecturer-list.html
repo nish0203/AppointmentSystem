@@ -369,8 +369,8 @@
       </div>
     </nav>
     <div class="logout-wrapper">
-      <button class="avatar-btn" id="avatar-btn">
-        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2QjcyODAiLz4KPHBhdGggZD0iTTIwIDEwQzIzLjMxIDEwIDI2IDEyLjY5IDI2IDE2QzI2IDE5LjMxIDIzLjMxIDIyIDIwIDIyQzE2LjY5IDIyIDE0IDE5LjMxIDE0IDE2QzE0IDEyLjY5IDE2LjY5IDEwIDIwIDEwWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTggMzJDOCAyNi40NzcyIDEyLjQ3NzIgMjIgMTggMjJIMjJDMjcuNTIyOCAyMiAzMiAyNi40NzcyIDMyIDMyVjM2SDhWMzJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" alt="Student Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
+      <button class="avatar-btn" onclick="toggleLogoutDropdown()" id="avatarBtn">
+        <img src="placeholder.png" alt="Student Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
       </button>
       <div class="logout-dropdown" id="logout-dropdown">
         <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
@@ -423,7 +423,7 @@
     let allLecturers = [];
 
     // Avatar dropdown functionality
-    const avatarBtn = document.getElementById('avatar-btn');
+    const avatarBtn = document.getElementById('avatarBtn');
     const logoutDropdown = document.getElementById('logout-dropdown');
     avatarBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -456,7 +456,7 @@
     const cachedAvatar = sessionStorage.getItem('userAvatarUrl');
     if (cachedAvatar) {
       console.log('📸 Setting cached avatar immediately:', cachedAvatar);
-      const avatarImg = document.querySelector('#avatar-btn img');
+      const avatarImg = document.querySelector('#avatarBtn img');
       if (avatarImg) {
         avatarImg.src = cachedAvatar;
       }
@@ -475,7 +475,7 @@
               // Preload the image to prevent flicker
               const img = new Image();
               img.onload = function() {
-                const avatarImg = document.querySelector('#avatar-btn img');
+                const avatarImg = document.querySelector('#avatarBtn img');
                 if (avatarImg) {
                   avatarImg.src = userData.avatarUrl;
                 }
@@ -547,7 +547,7 @@
           ${lecturers.map(lecturer => `
             <div class="lecturer-card" onclick="viewLecturerSlots('${lecturer.email}', '${lecturer.name}')">
               <div class="lecturer-header">
-                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiM2QjcyODAiLz4KPHBhdGggZD0iTTQwIDIwQzQ2LjYyIDIwIDUyIDI1LjM4IDUyIDMyQzUyIDM4LjYyIDQ2LjYyIDQ0IDQwIDQ0QzMzLjM4IDQ0IDI4IDM4LjYyIDI4IDMyQzI4IDI1LjM4IDMzLjM4IDIwIDQwIDIwWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTE2IDY0QzE2IDUyLjk1NDMgMjQuOTU0MyA0NCAzNiA0NEg0NEM1NS4wNDU3IDQ0IDY0IDUyLjk1NDMgNjQgNjRWNzJIMTZWNjRaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" alt="Lecturer Profile" class="lecturer-avatar" style="width: 80px; height: 80px; border-radius: 50%;" />
+                <img src="placeholder.png" alt="Lecturer Avatar" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #e5e7eb;" />
                 <div class="lecturer-info">
                   <h3>${lecturer.name || 'Lecturer'}</h3>
                   <p>${lecturer.title || 'Faculty Member'}</p>
@@ -615,7 +615,11 @@
       window.location.href = `student-booking-lecturer.html?lecturer=${encodeURIComponent(lecturerEmail)}&name=${encodeURIComponent(lecturerName)}`;
     };
 
-
+    // Toggle logout dropdown
+    window.toggleLogoutDropdown = function() {
+      const dropdown = document.getElementById('logout-dropdown');
+      dropdown.classList.toggle('show');
+    };
 
     // Add search on Enter key
     document.getElementById('search-input').addEventListener('keypress', function(e) {
