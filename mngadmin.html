@@ -2,65 +2,558 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Manage Administrator (Firestore)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Administrators - Admin Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; background: #f6fafa; padding: 20px; }
-    .header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:10px; }
-    .header h2 { margin:0; color:#000; }
-    #searchInput { padding:8px 12px; width:300px; border-radius:20px; border:1px solid #ccc; transition:0.3s; }
-    #searchInput:focus { outline:none; border-color:#1E3A8A; box-shadow:0 0 5px rgba(30,58,138,0.5); }
-    table { width:100%; border-collapse:collapse; background:#fff; }
-    th, td { border:1px solid #ddd; padding:12px; text-align:left; }
-    thead { background:#333; color:#fff; }
-    .action-button { background:#3b57c0; color:#fff; border:none; padding:6px 12px; margin-right:5px; cursor:pointer; border-radius:4px; }
-    .action-button:disabled { background:#888; cursor:not-allowed; }
-    .action-button:hover:not(:disabled) { background:#2f45a0; }
-    .add-button { margin-top:20px; background:#28a745; }
-    .add-button:hover { background:#218838; }
-    .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.4); }
-    .modal-content { background:#fff; margin:8% auto; padding:20px; width:400px; border-radius:8px; position:relative; }
-    .modal-content input { width:100%; padding:8px; margin:8px 0; border:1px solid #ccc; border-radius:4px; }
-    .submit-btn { background:#3b57c0; color:#fff; padding:8px 14px; border:none; cursor:pointer; border-radius:4px; }
-    .submit-btn:hover { background:#2f45a0; }
-    .close { position:absolute; top:10px; right:15px; font-size:20px; cursor:pointer; }
-    #backBtn { background:#00aaff; color:#fff; border:none; padding:10px 20px; border-radius:4px; margin-bottom:10px; cursor:pointer; }
-    #backBtn:hover { background:#14214e; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .header-title h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-title .icon {
+      width: 3rem;
+      height: 3rem;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .search-container {
+      position: relative;
+    }
+
+    .search-input {
+      width: 300px;
+      padding: 0.75rem 1rem 0.75rem 3rem;
+      border: 2px solid #e1e5e9;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6b7280;
+      font-size: 1rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6);
+    }
+
+    .btn-secondary {
+      background: #f8fafc;
+      color: #475569;
+      border: 2px solid #e2e8f0;
+    }
+
+    .btn-secondary:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .main-content {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: #64748b;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table thead {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+    }
+
+    .table th,
+    .table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .table th {
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .table tbody tr {
+      transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+      background-color: #f8fafc;
+    }
+
+    .table td {
+      font-size: 0.9rem;
+      color: #374151;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .badge-super {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge-admin {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-sm {
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      border-radius: 8px;
+    }
+
+    .btn-edit {
+      background: #f59e0b;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background: #d97706;
+    }
+
+    .btn-delete {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background: #dc2626;
+    }
+
+    .btn-edit:disabled,
+    .btn-delete:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+      position: relative;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #6b7280;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close:hover {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #374151;
+      font-size: 0.9rem;
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: white;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: #ef4444;
+              box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+
+    .form-input:read-only {
+      background: #f8fafc;
+      color: #6b7280;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #6b7280;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem;
+      color: #6b7280;
+    }
+
+    .loading i {
+      animation: spin 1s linear infinite;
+      margin-right: 0.5rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+
+      .header-content {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-input {
+        width: 100%;
+      }
+
+      .table-container {
+        overflow-x: auto;
+      }
+
+      .modal-content {
+        margin: 1rem;
+        width: calc(100% - 2rem);
+      }
+    }
   </style>
 </head>
 <body>
-  <button id="backBtn">Go back to homepage</button>
-  <div class="header">
-    <h2>Manage Administrator</h2>
-    <input type="text" id="searchInput" placeholder="Search name...">
+  <div class="container">
+    <!-- Header Section -->
+    <div class="header-section">
+      <div class="header-content">
+        <div class="header-title">
+          <div class="icon">
+            <i class="fas fa-users-cog"></i>
+          </div>
+          <h1>Manage Administrators</h1>
+        </div>
+        
+        <div class="header-actions">
+          <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search administrators...">
+          </div>
+          <button class="btn btn-primary" id="addBtn">
+            <i class="fas fa-plus"></i>
+            Add Administrator
+          </button>
+          <a href="admin.html" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Back to Dashboard
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <!-- Statistics -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="totalAdmins">0</div>
+          <div class="stat-label">Total Administrators</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="superAdmins">0</div>
+          <div class="stat-label">Super Administrators</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="regularAdmins">0</div>
+          <div class="stat-label">Regular Administrators</div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-container">
+        <table class="table" id="adminTable">
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Administrator ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Created By</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="7" class="loading">
+                <i class="fas fa-spinner"></i>
+                Loading administrators...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
-  <table id="adminTable">
-    <thead>
-      <tr>
-        <th>No.</th>
-        <th>ADMIN_ID</th>
-        <th>ADMIN_NAME</th>
-        <th>ADMIN_EMAIL</th>
-        <th>CREATED_BY</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <button class="action-button add-button" id="addBtn">Add Administrator</button>
-
-  <div id="addModal" class="modal">
+  <!-- Add/Edit Modal -->
+  <div id="adminModal" class="modal">
     <div class="modal-content">
-      <span class="close" id="modalClose">&times;</span>
-      <h3 id="modalTitle">Add New Administrator</h3>
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fas fa-user-plus"></i>
+          <span id="modalTitle">Add New Administrator</span>
+        </div>
+        <button class="modal-close" id="modalClose">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
       <form id="adminForm">
-        <input type="text" id="adminId" placeholder="Auto-generated ID" readonly required>
-        <input type="text" id="adminName" placeholder="Admin Name" required>
-        <input type="email" id="adminEmail" placeholder="Admin Email" required>
-        <input type="text" id="adminCreatedBy" value="AD001" readonly>
-        <button type="submit" class="submit-btn">Save</button>
+        <div class="form-group">
+          <label class="form-label">Administrator ID</label>
+          <input type="text" id="adminId" class="form-input" placeholder="Auto-generated ID" readonly required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Full Name</label>
+          <input type="text" id="adminName" class="form-input" placeholder="Enter administrator name" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="adminEmail" class="form-input" placeholder="Enter email address" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Created By</label>
+          <input type="text" id="adminCreatedBy" class="form-input" value="AD001" readonly>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancelBtn">
+            <i class="fas fa-times"></i>
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" id="saveBtn">
+            <i class="fas fa-save"></i>
+            Save Administrator
+          </button>
+        </div>
       </form>
     </div>
   </div>
@@ -80,171 +573,285 @@
     });
     const db = getFirestore(app);
 
-    let editingEmail = null;
-    const tableBody   = document.querySelector('#adminTable tbody');
-    const addBtn      = document.getElementById('addBtn');
-    const modal       = document.getElementById('addModal');
-    const closeBtn    = document.getElementById('modalClose');
-    const form        = document.getElementById('adminForm');
-    const backBtn     = document.getElementById('backBtn');
+    // DOM Elements
     const searchInput = document.getElementById('searchInput');
-    const idInput     = document.getElementById('adminId');
-    const nameInput   = document.getElementById('adminName');
-    const emailInput  = document.getElementById('adminEmail');
-    const createdByInput = document.getElementById('adminCreatedBy');
+    const addBtn = document.getElementById('addBtn');
+    const modal = document.getElementById('adminModal');
+    const modalClose = document.getElementById('modalClose');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const form = document.getElementById('adminForm');
+    const tableBody = document.querySelector('#adminTable tbody');
+    const totalAdminsEl = document.getElementById('totalAdmins');
+    const superAdminsEl = document.getElementById('superAdmins');
+    const regularAdminsEl = document.getElementById('regularAdmins');
 
-    // Check duplicates across admins, lecturers, students
-    async function checkDuplicate(id, email) {
-      const [adminsSnap, lectsSnap, studsSnap] = await Promise.all([
-        getDocs(collection(db,'admins')),
-        getDocs(collection(db,'lecturers')),
-        getDocs(collection(db,'students'))
-      ]);
-      const allDocs = [...adminsSnap.docs, ...lectsSnap.docs, ...studsSnap.docs];
-      return allDocs.some(d => {
-        const data = d.data();
-        return (data.id === id || data.email === email) && d.id !== editingEmail;
-      });
-    }
+    // Form elements
+    const adminIdInput = document.getElementById('adminId');
+    const adminNameInput = document.getElementById('adminName');
+    const adminEmailInput = document.getElementById('adminEmail');
+    const adminCreatedByInput = document.getElementById('adminCreatedBy');
+    const modalTitle = document.getElementById('modalTitle');
+    const saveBtn = document.getElementById('saveBtn');
 
-    // Load admins, super-admin first
+    let editingEmail = null;
+    let allAdmins = [];
+
+    // Load administrators
     async function loadAdmins() {
-      const snap = await getDocs(collection(db,'admins'));
-      const docs = snap.docs.map(d => d.data());
-      docs.sort((a,b) => (b.isSuper?1:0) - (a.isSuper?1:0));
-      docs.forEach(data => {
-        const createdBy = data.isSuper ? 'NULL' : data.createdBy;
-        addAdminRow(data.id, data.name, data.email, createdBy, data.isSuper);
-      });
-      renumberRows();
+      try {
+        const snapshot = await getDocs(collection(db, 'admins'));
+        allAdmins = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        // Sort by role (super admin first) then by name
+        allAdmins.sort((a, b) => {
+          if (a.isSuper !== b.isSuper) return (b.isSuper ? 1 : 0) - (a.isSuper ? 1 : 0);
+          return (a.name || '').localeCompare(b.name || '');
+        });
+
+        updateStatistics();
+        displayAdmins();
+      } catch (error) {
+        console.error('Error loading admins:', error);
+        showError('Failed to load administrators');
+      }
     }
 
-    // Render a row
-    function addAdminRow(id,name,email,createdBy,isSuper) {
-      const row = tableBody.insertRow();
-      row.dataset.email   = email;
-      row.dataset.isSuper = isSuper;
-      row.insertCell().textContent = tableBody.rows.length;
-      row.insertCell().textContent = id;
-      row.insertCell().textContent = name;
-      row.insertCell().textContent = email;
-      row.insertCell().textContent = createdBy;
-      let actions = `<button class="action-button" data-action="edit"${isSuper?' disabled':''}>Edit</button>`;
-      if (!isSuper) actions += `<button class="action-button" data-action="delete">Delete</button>`;
-      row.insertCell().innerHTML = actions;
+    // Update statistics
+    function updateStatistics() {
+      const total = allAdmins.length;
+      const superAdmins = allAdmins.filter(admin => admin.isSuper).length;
+      const regularAdmins = total - superAdmins;
+
+      totalAdminsEl.textContent = total;
+      superAdminsEl.textContent = superAdmins;
+      regularAdminsEl.textContent = regularAdmins;
     }
 
-    function renumberRows() {
-      Array.from(tableBody.rows).forEach((r,i)=> r.cells[0].textContent = i+1);
+    // Display administrators in table
+    function displayAdmins(adminsToShow = allAdmins) {
+      if (adminsToShow.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="7" class="empty-state">
+              <i class="fas fa-users"></i>
+              <p>No administrators found</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tableBody.innerHTML = adminsToShow.map((admin, index) => {
+        const createdBy = admin.isSuper ? 'System' : (admin.createdBy || 'Unknown');
+        const roleBadge = admin.isSuper 
+          ? '<span class="badge badge-super"><i class="fas fa-crown"></i> Super Admin</span>'
+          : '<span class="badge badge-admin"><i class="fas fa-user"></i> Administrator</span>';
+
+        return `
+          <tr data-email="${admin.email}" data-is-super="${admin.isSuper}">
+            <td>${index + 1}</td>
+            <td><strong>${admin.id || 'N/A'}</strong></td>
+            <td>${admin.name || 'N/A'}</td>
+            <td>${admin.email}</td>
+            <td>${roleBadge}</td>
+            <td>${createdBy}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn btn-edit btn-sm" data-action="edit" ${admin.isSuper ? 'disabled' : ''}>
+                  <i class="fas fa-edit"></i> Edit
+                </button>
+                ${!admin.isSuper ? `
+                  <button class="btn btn-delete btn-sm" data-action="delete">
+                    <i class="fas fa-trash"></i> Delete
+                  </button>
+                ` : ''}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
-    // Auto-generate next ADxxx
+    // Check for duplicates across all collections
+    async function checkDuplicate(id, email) {
+      try {
+        const [adminsSnap, lecturersSnap, studentsSnap] = await Promise.all([
+          getDocs(collection(db, 'admins')),
+          getDocs(collection(db, 'lecturers')),
+          getDocs(collection(db, 'students'))
+        ]);
+
+        const allDocs = [...adminsSnap.docs, ...lecturersSnap.docs, ...studentsSnap.docs];
+        return allDocs.some(doc => {
+          const data = doc.data();
+          return (data.id === id || data.email === email) && doc.id !== editingEmail;
+        });
+      } catch (error) {
+        console.error('Error checking duplicates:', error);
+        return false;
+      }
+    }
+
+    // Generate next admin ID
     async function generateNextAdminId() {
-      const snap = await getDocs(collection(db,'admins'));
-      const nums = snap.docs
-        .map(d=>parseInt(d.data().id.replace(/^AD/,''),10))
-        .filter(n=>!isNaN(n));
-      const next = (nums.length?Math.max(...nums):0) + 1;
-      idInput.value = 'AD' + String(next).padStart(3,'0');
+      try {
+        const snapshot = await getDocs(collection(db, 'admins'));
+        const existingIds = snapshot.docs
+          .map(doc => doc.data().id)
+          .filter(id => id && id.startsWith('AD'))
+          .map(id => parseInt(id.replace('AD', ''), 10))
+          .filter(num => !isNaN(num));
+
+        const nextNumber = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1;
+        return 'AD' + String(nextNumber).padStart(3, '0');
+      } catch (error) {
+        console.error('Error generating admin ID:', error);
+        return 'AD001';
+      }
     }
 
-    // UI event handlers
-    addBtn.onclick     = ()=> openModal(false);
-    closeBtn.onclick   = closeModal;
-    backBtn.onclick    = ()=> { if(confirm('Go back to homepage?')) location='admin.html'; };
-    searchInput.oninput= ()=> {
-      const f = searchInput.value.toLowerCase();
-      Array.from(tableBody.rows)
-        .forEach(r=> r.style.display = r.cells[2].textContent.toLowerCase().includes(f)?'':'none');
-    };
-    window.onclick     = e => { if(e.target===modal) closeModal(); };
+    // Show modal
+    async function showModal(isEdit = false) {
+      modalTitle.textContent = isEdit ? 'Edit Administrator' : 'Add New Administrator';
+      
+      if (!isEdit) {
+        form.reset();
+        adminIdInput.value = await generateNextAdminId();
+      }
 
-    function openModal(edit=false) {
-      modal.style.display = 'block';
-      document.getElementById('modalTitle').textContent = edit? 'Edit Administrator' : 'Add New Administrator';
-      if (!edit) generateNextAdminId();
+      modal.style.display = 'flex';
     }
-    function closeModal() {
+
+    // Hide modal
+    function hideModal() {
       modal.style.display = 'none';
       form.reset();
       editingEmail = null;
     }
 
-    // Form submit: add or update
-    form.onsubmit = async e => {
-      e.preventDefault();
-      const id    = idInput.value.trim();
-      const name  = nameInput.value.trim();
-      const email = emailInput.value.trim();
-      const createdBy = createdByInput.value;
+    // Show error message
+    function showError(message) {
+      alert(message); // In a real app, you'd use a proper notification system
+    }
 
-      if (await checkDuplicate(id, email)) {
-        alert('That ID or email already exists in Admins, Lecturers, or Students.');
-        return;
-      }
-      if (!confirm(editingEmail ? 'Confirm update?' : 'Confirm addition?')) return;
+    // Show success message
+    function showSuccess(message) {
+      alert(message); // In a real app, you'd use a proper notification system
+    }
 
-      const rec = { id, name, email, createdBy, role:'admin', isSuper:false };
-      try {
-        if (editingEmail) {
-          await updateDoc(doc(db,'admins', editingEmail), rec);
-          // update row in place
-          Array.from(tableBody.rows).forEach(r=>{
-            if (r.dataset.email === editingEmail) {
-              r.cells[1].textContent = id;
-              r.cells[2].textContent = name;
-              r.cells[3].textContent = email;
-              r.cells[4].textContent = createdBy;
-              r.dataset.email = email;
-            }
-          });
-        } else {
-          await setDoc(doc(db,'admins', email), rec);
-          addAdminRow(id, name, email, createdBy, false);
-        }
-        renumberRows();
-        closeModal();
-        alert('Saved successfully.');
-      } catch(err) {
-        console.error(err);
-        alert('Error: ' + err.message);
-      }
-    };
+    // Event listeners
+    addBtn.addEventListener('click', () => showModal(false));
+    modalClose.addEventListener('click', hideModal);
+    cancelBtn.addEventListener('click', hideModal);
 
-    // Table-level edit/delete handler
-    tableBody.onclick = async e => {
-      const action = e.target.dataset.action;
-      if (!action) return;
-      const row = e.target.closest('tr');
+    // Search functionality
+    searchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const filteredAdmins = allAdmins.filter(admin => 
+        (admin.name || '').toLowerCase().includes(searchTerm) ||
+        (admin.email || '').toLowerCase().includes(searchTerm) ||
+        (admin.id || '').toLowerCase().includes(searchTerm)
+      );
+      displayAdmins(filteredAdmins);
+    });
+
+    // Table click handler
+    tableBody.addEventListener('click', async (e) => {
+      const button = e.target.closest('button');
+      if (!button) return;
+
+      const row = button.closest('tr');
       const email = row.dataset.email;
       const isSuper = row.dataset.isSuper === 'true';
+      const action = button.dataset.action;
 
-      if (action === 'edit') {
-        editingEmail = email;
-        idInput.value        = row.cells[1].textContent;
-        nameInput.value      = row.cells[2].textContent;
-        emailInput.value     = row.cells[3].textContent;
-        createdByInput.value = row.cells[4].textContent;
-        openModal(true);
-      } else if (action === 'delete') {
-        if (isSuper) {
-          alert('Cannot delete super-admin');
-          return;
+      if (action === 'edit' && !isSuper) {
+        const admin = allAdmins.find(a => a.email === email);
+        if (admin) {
+          editingEmail = email;
+          adminIdInput.value = admin.id || '';
+          adminNameInput.value = admin.name || '';
+          adminEmailInput.value = admin.email || '';
+          adminCreatedByInput.value = admin.createdBy || 'AD001';
+          await showModal(true);
         }
-        if (!confirm('Confirm deletion?')) return;
-        try {
-          await deleteDoc(doc(db,'admins', email));
-          row.remove();
-          renumberRows();
-          alert('Deleted.');
-        } catch(err) {
-          console.error(err);
-          alert('Error deleting: ' + err.message);
+      } else if (action === 'delete' && !isSuper) {
+        if (confirm('Are you sure you want to delete this administrator? This action cannot be undone.')) {
+          try {
+            await deleteDoc(doc(db, 'admins', email));
+            await loadAdmins();
+            showSuccess('Administrator deleted successfully');
+          } catch (error) {
+            console.error('Error deleting admin:', error);
+            showError('Failed to delete administrator');
+          }
         }
       }
-    };
+    });
 
-    // initial load
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const id = adminIdInput.value.trim();
+      const name = adminNameInput.value.trim();
+      const email = adminEmailInput.value.trim();
+      const createdBy = adminCreatedByInput.value.trim();
+
+      if (!id || !name || !email) {
+        showError('Please fill in all required fields');
+        return;
+      }
+
+      // Check for duplicates
+      if (await checkDuplicate(id, email)) {
+        showError('That ID or email already exists in the system');
+        return;
+      }
+
+      const confirmMessage = editingEmail ? 'Confirm update?' : 'Confirm addition?';
+      if (!confirm(confirmMessage)) return;
+
+      try {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+        const adminData = {
+          id,
+          name,
+          email,
+          createdBy,
+          role: 'admin',
+          isSuper: false
+        };
+
+        if (editingEmail) {
+          await updateDoc(doc(db, 'admins', editingEmail), adminData);
+          showSuccess('Administrator updated successfully');
+        } else {
+          await setDoc(doc(db, 'admins', email), adminData);
+          showSuccess('Administrator added successfully');
+        }
+
+        hideModal();
+        await loadAdmins();
+      } catch (error) {
+        console.error('Error saving admin:', error);
+        showError('Failed to save administrator');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Administrator';
+      }
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        hideModal();
+      }
+    });
+
+    // Initialize
     loadAdmins();
   </script>
 </body>

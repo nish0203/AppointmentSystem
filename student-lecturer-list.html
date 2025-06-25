@@ -347,11 +347,12 @@
     <nav>
       <a href="student.html" class="nav-link">Dashboard</a>
       <a href="#" class="nav-link active">Lecturers</a>
+      <a href="student-manage-appointments.html" class="nav-link">Manage Appointments</a>
       <div class="dropdown nav-link" tabindex="0" id="inquiry-dropdown">
         Inquiry <i class="fa fa-caret-down" style="margin-left:6px;"></i>
         <div class="dropdown-content" id="inquiry-dropdown-content">
-          <a href="#" onclick="openInquiryModal()">Submit Inquiry</a>
-          <a href="#">Inquiry History</a>
+          <a href="inquirystud.html">Submit Inquiry</a>
+          <a href="viewinquirystud.html">Inquiry History</a>
         </div>
       </div>
     </nav>
@@ -391,7 +392,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
-      getFirestore, collection, getDocs, query, where
+      getFirestore, doc, getDoc, collection, getDocs, query, where
     } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -438,6 +439,27 @@
         inquiryDropdownContent.classList.remove('show');
       }
     });
+
+    // Load user avatar from sessionStorage
+    (async () => {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (userEmail) {
+        try {
+          const userDoc = await getDoc(doc(db, 'students', userEmail));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            if (userData.avatarUrl) {
+              const avatarImg = document.querySelector('#avatar-btn img');
+              if (avatarImg) {
+                avatarImg.src = userData.avatarUrl;
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error loading user avatar:', error);
+        }
+      }
+    })();
 
     // Load lecturers from Firestore
     async function loadLecturers() {
@@ -515,8 +537,8 @@
                   <span>${lecturer.office || 'Office'}</span>
                 </div>
                 <div class="detail-row">
-                  <i class="fa fa-graduation-cap"></i>
-                  <span>${lecturer.specialization || 'General'}</span>
+                  <i class="fa fa-star" style="color: #f59e0b;"></i>
+                  <span>${lecturer.averageRating ? `${lecturer.averageRating} ★ (${lecturer.totalRatings || 0} reviews)` : 'No ratings yet'}</span>
                 </div>
                 <div class="availability-indicator ${lecturer.availableSlots > 0 ? 'available' : 'busy'}">
                   ${lecturer.availableSlots > 0 ? `${lecturer.availableSlots} slots available` : 'No available slots'}
@@ -525,9 +547,6 @@
               <div class="lecturer-actions">
                 <button class="btn btn-primary" onclick="event.stopPropagation(); viewLecturerSlots('${lecturer.email}', '${lecturer.name}')">
                   <i class="fa fa-calendar"></i> Book Appointment
-                </button>
-                <button class="btn btn-secondary" onclick="event.stopPropagation(); viewLecturerProfile('${lecturer.email}')">
-                  <i class="fa fa-user"></i> View Profile
                 </button>
               </div>
             </div>
@@ -548,7 +567,6 @@
       const filteredLecturers = allLecturers.filter(lecturer => 
         (lecturer.name || '').toLowerCase().includes(searchTerm) ||
         (lecturer.faculty || '').toLowerCase().includes(searchTerm) ||
-        (lecturer.specialization || '').toLowerCase().includes(searchTerm) ||
         (lecturer.email || '').toLowerCase().includes(searchTerm)
       );
 
@@ -567,10 +585,7 @@
       window.location.href = `student-booking-lecturer.html?lecturer=${encodeURIComponent(lecturerEmail)}&name=${encodeURIComponent(lecturerName)}`;
     };
 
-    // View lecturer profile (placeholder)
-    window.viewLecturerProfile = function(lecturerEmail) {
-      alert(`View profile for ${lecturerEmail} - Feature coming soon!`);
-    };
+
 
     // Add search on Enter key
     document.getElementById('search-input').addEventListener('keypress', function(e) {

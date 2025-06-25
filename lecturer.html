@@ -183,7 +183,7 @@
     }
     .consultation-sections {
       display: grid;
-      grid-template-columns: 2fr 1fr;
+      grid-template-columns: 1fr 1fr;
       gap: 24px;
     }
     .consultation-card {
@@ -285,20 +285,20 @@
         Slot Management <i class="fa fa-caret-down" style="margin-left:6px;"></i>
         <div class="dropdown-content" id="slot-dropdown-content">
           <a href="lecturer-appointment-slots.html">Set Appointment Slots</a>
-          <a href="#">Manage Booked Appointments</a>
+          <a href="lecturer-manage-slots.html">Manage Booked Appointments</a>
         </div>
       </div>
       <div class="dropdown nav-link" tabindex="0" id="inquiry-dropdown">
         Inquiry <i class="fa fa-caret-down" style="margin-left:6px;"></i>
         <div class="dropdown-content" id="inquiry-dropdown-content">
-          <a href="#" onclick="openInquiryModal()">Submit Inquiry</a>
-          <a href="#">Inquiry History</a>
+          <a href="inquirylect.html">Submit Inquiry</a>
+          <a href="viewinquirylect.html">Inquiry History</a>
         </div>
       </div>
     </nav>
     <div class="logout-wrapper">
       <button class="avatar-btn" id="avatar-btn">
-        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2QjcyODAiLz4KPHBhdGggZD0iTTIwIDEwQzIzLjMxIDEwIDI2IDEyLjY5IDI2IDE2QzI2IDE5LjMxIDIzLjMxIDIyIDIwIDIyQzE2LjY5IDIyIDE0IDE5LjMxIDE0IDE2QzE0IDEyLjY5IDE2LjY5IDEwIDIwIDEwWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTggMzJDOCAyNi40NzcyIDEyLjQ3NzIgMjIgMTggMjJIMjJDMjcuNTIyOCAyMiAzMiAyNi40NzcyIDMyIDMyVjM2SDhWMzJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" alt="Lecturer Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
+        <img id="user-avatar" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2QjcyODAiLz4KPHBhdGggZD0iTTIwIDEwQzIzLjMxIDEwIDI2IDEyLjY5IDI2IDE2QzI2IDE5LjMxIDIzLjMxIDIyIDIwIDIyQzE2LjY5IDIyIDE0IDE5LjMxIDE0IDE2QzE0IDEyLjY5IDE2LjY5IDEwIDIwIDEwWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTggMzJDOCAyNi40NzcyIDEyLjQ3NzIgMjIgMTggMjJIMjJDMjcuNTIyOCAyMiAzMiAyNi40NzcyIDMyIDMyVjM2SDhWMzJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" alt="Lecturer Profile" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;" onclick="changeAvatar()" />
       </button>
       <div class="logout-dropdown" id="logout-dropdown">
         <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
@@ -313,58 +313,35 @@
         <p><b>E-mail:</b> <span id="lecturer-email">-</span></p>
         <p><b>Faculty:</b> <span id="lecturer-faculty">-</span></p>
         <p><b>Office:</b> <span id="lecturer-office">-</span></p>
+        <button onclick="changeAvatar()" style="background: #10B981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 10px;">
+          <i class="fa fa-user"></i> Edit Avatar
+        </button>
       </div>
     </div>
     <div class="consultation-sections">
-      <div class="consultation-card" style="grid-column: 1/2;">
+      <div class="consultation-card">
         <h3>Upcoming Appointments</h3>
         <div class="consultation-list" id="upcoming-list">
-          <div class="consultation-item" data-date="2024-07-06" data-time="10:00" data-student="Alice Lee">
-            <div class="row"><span class="label">Booked Date:</span> <span class="value upcoming-date">2024-07-06</span></div>
-            <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">10:00</span></div>
-            <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">11:00</span></div>
-            <div class="booked-by">Booked by : <span class="student-name">Alice Lee</span></div>
-            <div class="days-left" style="font-size:0.97rem;color:#10B981;margin-top:4px;"></div>
-          </div>
-          <div class="consultation-item" data-date="2024-07-08" data-time="09:00" data-student="Bob Tan">
-            <div class="row"><span class="label">Booked Date:</span> <span class="value upcoming-date">2024-07-08</span></div>
-            <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">09:00</span></div>
-            <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">10:00</span></div>
-            <div class="booked-by">Booked by : <span class="student-name">Bob Tan</span></div>
-            <div class="days-left" style="font-size:0.97rem;color:#10B981;margin-top:4px;"></div>
-          </div>
+          <p style="color: #6b7280; text-align: center; padding: 20px;">Loading appointments...</p>
         </div>
       </div>
-      <div class="consultation-card" style="grid-column: 2/3;">
+      <div class="consultation-card">
         <h3>Pending Appointments</h3>
         <div class="consultation-list" id="pending-list">
-          <div class="consultation-item" data-date="2024-07-07" data-time="13:00" data-student="Carol Ng">
-            <div class="row"><span class="label">Booked Date:</span> <span class="value">2024-07-07</span></div>
-            <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">13:00</span></div>
-            <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">14:00</span></div>
-            <div class="booked-by">Booked by : <span class="student-name">Carol Ng</span></div>
-          </div>
-          <div class="consultation-item" data-date="2024-07-05" data-time="15:00" data-student="David Lim">
-            <div class="row"><span class="label">Booked Date:</span> <span class="value">2024-07-05</span></div>
-            <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">15:00</span></div>
-            <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">16:00</span></div>
-            <div class="booked-by">Booked by : <span class="student-name">David Lim</span></div>
-          </div>
+          <p style="color: #6b7280; text-align: center; padding: 20px;">Loading appointments...</p>
         </div>
       </div>
     </div>
     <div class="consultation-card" style="margin-top:32px;">
       <h3>Appointment History</h3>
-      <div class="consultation-list">
-        <div class="consultation-item">
-          <div class="row"><span class="label">Booked Date:</span> <span class="value">2024-06-29</span></div>
-          <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">01:06</span></div>
-          <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">00:16</span></div>
-          <div class="booked-by">Booked by : <span class="student-name">John Doe</span></div>
-        </div>
+      <div class="consultation-list" id="history-list">
+        <p style="color: #6b7280; text-align: center; padding: 20px;">Loading appointment history...</p>
       </div>
     </div>
   </div>
+
+  <!-- Hidden file input for avatar -->
+  <input type="file" id="avatar-input" accept="image/*" style="display: none;">
 
   <!-- Inquiry Modal -->
   <div id="inquiry-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
@@ -385,11 +362,28 @@
     </div>
   </div>
 
+  <!-- Success Modal -->
+  <div id="success-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center;">
+      <div style="margin-bottom: 20px;">
+        <i class="fa fa-check-circle" style="font-size: 3rem; color: #10B981; margin-bottom: 10px;"></i>
+        <h3 style="margin: 0; color: #222;" id="success-title">Success!</h3>
+        <p style="color: #666; margin: 10px 0;" id="success-message">Your request has been processed.</p>
+      </div>
+      <button onclick="closeSuccessModal()" style="background: #10B981; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+        OK
+      </button>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
       getFirestore, doc, getDoc, collection, getDocs, query, where, orderBy, updateDoc
     } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+    import {
+      getStorage, ref, uploadBytes, getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
     const firebaseConfig = {
       apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
       authDomain: "appointment-management-c2531.firebaseapp.com",
@@ -401,6 +395,7 @@
     };
     const app  = initializeApp(firebaseConfig);
     const db   = getFirestore(app);
+    const storage = getStorage(app);
 
     // --- Minimal working avatar/logout dropdown logic ---
     const avatarBtn = document.getElementById('avatar-btn');
@@ -445,6 +440,16 @@
         sessionStorage.setItem('userEmail',email);
         sessionStorage.setItem('userName',name);
         
+        // Load avatar if exists
+        if (profile.avatarUrl) {
+          document.getElementById('user-avatar').src = profile.avatarUrl;
+          // Also update the main profile picture
+          const profilePic = document.querySelector('.profile-pic');
+          if (profilePic) {
+            profilePic.src = profile.avatarUrl;
+          }
+        }
+        
         // Load appointments
         await loadAppointments(email);
       } else {
@@ -458,40 +463,100 @@
     // Load appointments from Firestore
     async function loadAppointments(lecturerEmail) {
       try {
-        const appointmentsQuery = query(
-          collection(db, 'appointments'),
-          where('lecturerEmail', '==', lecturerEmail),
-          orderBy('bookedAt', 'desc')
-        );
+        console.log('Loading appointments for lecturer:', lecturerEmail);
+        
+        // First try without orderBy in case of missing index
+        let appointmentsQuery;
+        try {
+          appointmentsQuery = query(
+            collection(db, 'appointments'),
+            where('lecturerEmail', '==', lecturerEmail),
+            orderBy('bookedAt', 'desc')
+          );
+        } catch (indexError) {
+          console.log('Falling back to query without orderBy due to index issue');
+          appointmentsQuery = query(
+            collection(db, 'appointments'),
+            where('lecturerEmail', '==', lecturerEmail)
+          );
+        }
+        
         const snapshot = await getDocs(appointmentsQuery);
+        console.log('Found', snapshot.size, 'appointments');
         
         const appointments = [];
         snapshot.docs.forEach(doc => {
-          appointments.push({ id: doc.id, ...doc.data() });
+          const data = doc.data();
+          console.log('Appointment data:', data);
+          appointments.push({ id: doc.id, ...data });
         });
         
+        // Sort manually if we couldn't use orderBy
+        appointments.sort((a, b) => {
+          const aTime = a.bookedAt ? new Date(a.bookedAt) : new Date(0);
+          const bTime = b.bookedAt ? new Date(b.bookedAt) : new Date(0);
+          return bTime - aTime;
+        });
+        
+        console.log('Processed appointments:', appointments);
         renderAppointments(appointments);
       } catch (error) {
         console.error('Error loading appointments:', error);
+        
+        // Fallback: Try to load all appointments and filter client-side
+        try {
+          console.log('Trying fallback query...');
+          const allAppointments = await getDocs(collection(db, 'appointments'));
+          const appointments = [];
+          
+          allAppointments.docs.forEach(doc => {
+            const data = doc.data();
+            if (data.lecturerEmail === lecturerEmail) {
+              appointments.push({ id: doc.id, ...data });
+            }
+          });
+          
+          console.log('Fallback found', appointments.length, 'appointments');
+          renderAppointments(appointments);
+        } catch (fallbackError) {
+          console.error('Fallback query also failed:', fallbackError);
+          // Show error message in UI
+          document.getElementById('upcoming-list').innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">Error loading appointments</p>';
+          document.getElementById('pending-list').innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">Error loading appointments</p>';
+          document.getElementById('history-list').innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">Error loading appointments</p>';
+        }
       }
     }
 
     // Render appointments in the dashboard
     function renderAppointments(appointments) {
+      console.log('Rendering dashboard appointments:', appointments);
+      
       const upcomingList = document.getElementById('upcoming-list');
       const pendingList = document.getElementById('pending-list');
+      const historyList = document.getElementById('history-list');
       
-      // Filter appointments
+      // Filter appointments by category
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       
       const upcoming = appointments.filter(apt => {
+        if (apt.status !== 'approved') return false;
         const aptDate = new Date(apt.date);
         aptDate.setHours(0, 0, 0, 0);
-        return apt.status === 'approved' && aptDate >= today;
+        return aptDate >= today;
       });
       
       const pending = appointments.filter(apt => apt.status === 'pending');
+      
+      const history = appointments.filter(apt => {
+        if (apt.status === 'pending' || apt.status === 'rejected') return false;
+        const aptDate = new Date(apt.date);
+        aptDate.setHours(0, 0, 0, 0);
+        return aptDate < today || apt.status === 'done';
+      });
+      
+      console.log('Categorized appointments:', { upcoming, pending, history });
       
       // Render upcoming appointments
       if (upcoming.length === 0) {
@@ -499,10 +564,10 @@
       } else {
         upcomingList.innerHTML = upcoming.map(apt => `
           <div class="consultation-item" data-date="${apt.date}" data-time="${apt.startTime}">
-            <div class="row"><span class="label">Booked Date:</span> <span class="value upcoming-date">${apt.date}</span></div>
+            <div class="row"><span class="label">Appointment Date:</span> <span class="value upcoming-date">${apt.date}</span></div>
             <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">${apt.startTime}</span></div>
             <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">${apt.endTime}</span></div>
-            <div class="booked-by">Booked by : <span class="student-name">${apt.studentName || 'Student'}</span></div>
+            <div class="booked-by">Booked by: <span class="student-name">${apt.studentName || apt.studentEmail || 'Student'}</span></div>
             <div class="days-left" style="font-size:0.97rem;color:#10B981;margin-top:4px;"></div>
             ${apt.purpose ? `<div style="margin-top:8px;font-size:0.9rem;color:#666;"><strong>Purpose:</strong> ${apt.purpose}</div>` : ''}
             ${apt.documents && apt.documents.length > 0 ? `
@@ -521,10 +586,10 @@
       } else {
         pendingList.innerHTML = pending.map(apt => `
           <div class="consultation-item" data-date="${apt.date}" data-time="${apt.startTime}">
-            <div class="row"><span class="label">Booked Date:</span> <span class="value">${apt.date}</span></div>
+            <div class="row"><span class="label">Requested Date:</span> <span class="value">${apt.date}</span></div>
             <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">${apt.startTime}</span></div>
             <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">${apt.endTime}</span></div>
-            <div class="booked-by">Booked by : <span class="student-name">${apt.studentName || 'Student'}</span></div>
+            <div class="booked-by">Requested by: <span class="student-name">${apt.studentName || apt.studentEmail || 'Student'}</span></div>
             ${apt.purpose ? `<div style="margin-top:8px;font-size:0.9rem;color:#666;"><strong>Purpose:</strong> ${apt.purpose}</div>` : ''}
             ${apt.notes ? `<div style="margin-top:4px;font-size:0.9rem;color:#666;"><strong>Notes:</strong> ${apt.notes}</div>` : ''}
             ${apt.documents && apt.documents.length > 0 ? `
@@ -537,6 +602,38 @@
               <button onclick="approveAppointment('${apt.id}')" style="background:#10B981;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:0.8rem;">Approve</button>
               <button onclick="rejectAppointment('${apt.id}')" style="background:#ef4444;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:0.8rem;">Reject</button>
             </div>
+          </div>
+        `).join('');
+      }
+      
+      // Render appointment history
+      if (history.length === 0) {
+        historyList.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No appointment history</p>';
+      } else {
+        historyList.innerHTML = history.map(apt => `
+          <div class="consultation-item" data-date="${apt.date}" data-time="${apt.startTime}">
+            <div class="row">
+              <span class="label">Date:</span> 
+              <span class="value">${apt.date}</span>
+              <span style="margin-left:12px;padding:2px 8px;border-radius:12px;font-size:0.75rem;font-weight:600;${
+                apt.status === 'approved' ? 'background:#d1fae5;color:#065f46;' :
+                apt.status === 'rejected' ? 'background:#fee2e2;color:#991b1b;' :
+                apt.status === 'done' ? 'background:#d1fae5;color:#065f46;' :
+                'background:#f3f4f6;color:#374151;'
+              }">${apt.status === 'done' ? 'COMPLETED' : apt.status?.toUpperCase() || 'COMPLETED'}</span>
+            </div>
+            <div class="row"><span class="label">Time:</span> <span class="value">${apt.startTime} - ${apt.endTime}</span></div>
+            <div class="booked-by">${apt.status === 'rejected' ? 'Rejected request from' : 'Appointment with'}: <span class="student-name">${apt.studentName || apt.studentEmail || 'Student'}</span></div>
+            ${apt.purpose ? `<div style="margin-top:6px;font-size:0.85rem;color:#666;"><strong>Purpose:</strong> ${apt.purpose}</div>` : ''}
+            ${apt.rating && apt.status === 'done' ? `
+              <div style="margin-top:8px;padding:8px;background:#f8f9fa;border-radius:4px;">
+                <div style="font-size:0.85rem;color:#666;"><strong>Student Rating:</strong></div>
+                <div style="color:#f59e0b;margin:2px 0;">
+                  ${'★'.repeat(apt.rating)}${'☆'.repeat(5 - apt.rating)} (${apt.rating}/5)
+                </div>
+                ${apt.ratingComment ? `<div style="font-size:0.8rem;color:#666;margin-top:4px;">"${apt.ratingComment}"</div>` : ''}
+              </div>
+            ` : ''}
           </div>
         `).join('');
       }
@@ -554,10 +651,10 @@
         
         // Reload appointments
         await loadAppointments(currentLecturerEmail);
-        alert('Appointment approved successfully!');
+        showSuccessModal('Approved!', 'Appointment approved successfully!');
       } catch (error) {
         console.error('Error approving appointment:', error);
-        alert('Failed to approve appointment. Please try again.');
+        showSuccessModal('Error', 'Failed to approve appointment. Please try again.');
       }
     }
 
@@ -583,16 +680,28 @@
         
         // Reload appointments
         await loadAppointments(currentLecturerEmail);
-        alert('Appointment rejected. Slot is now available again.');
+        showSuccessModal('Rejected', 'Appointment rejected. Slot is now available again.');
       } catch (error) {
         console.error('Error rejecting appointment:', error);
-        alert('Failed to reject appointment. Please try again.');
+        showSuccessModal('Error', 'Failed to reject appointment. Please try again.');
       }
+    }
+
+    // Success modal functions
+    function showSuccessModal(title, message) {
+      document.getElementById('success-title').textContent = title;
+      document.getElementById('success-message').textContent = message;
+      document.getElementById('success-modal').style.display = 'flex';
+    }
+
+    function closeSuccessModal() {
+      document.getElementById('success-modal').style.display = 'none';
     }
 
     // Make functions globally available
     window.approveAppointment = approveAppointment;
     window.rejectAppointment = rejectAppointment;
+    window.closeSuccessModal = closeSuccessModal;
 
     // Show days left for upcoming appointments
     function updateDaysLeft() {
@@ -657,7 +766,191 @@
       if (!inquiryDropdown.contains(e.target)) {
         inquiryDropdownContent.classList.remove('show');
       }
-          });
+    });
+
+    // Avatar functionality
+    function changeAvatar() {
+      document.getElementById('avatar-input').click();
+    }
+
+    document.getElementById('avatar-input').addEventListener('change', async function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        showNotification('File size must be less than 5MB', 'error');
+        return;
+      }
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        showNotification('Please select an image file', 'error');
+        return;
+      }
+
+      // Show upload progress
+      showNotification('Uploading avatar...', 'progress');
+
+      try {
+        const userEmail = sessionStorage.getItem('userEmail');
+        const fileName = `avatar_${Date.now()}.${file.name.split('.').pop()}`;
+        
+        // Import Firebase functions dynamically
+        const { getStorage, ref: storageRef, uploadBytes, getDownloadURL } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js");
+        const { getFirestore, updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
+        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js");
+        
+        // Get Firebase app and services
+        const firebaseConfig = {
+          apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+          authDomain: "appointment-management-c2531.firebaseapp.com",
+          projectId: "appointment-management-c2531",
+          storageBucket: "appointment-management-c2531.firebasestorage.app",
+          messagingSenderId: "428786083628",
+          appId: "1:428786083628:web:d9d9576b12581cc697ee89",
+          measurementId: "G-9FM8F1WJMF"
+        };
+        const app = initializeApp(firebaseConfig);
+        const dynamicStorage = getStorage(app);
+        const dynamicDb = getFirestore(app);
+        
+        const fileRef = storageRef(dynamicStorage, `avatars/lecturers/${userEmail}/${fileName}`);
+        
+        // Upload file
+        showNotification('Uploading to cloud storage...', 'progress');
+        const snapshot = await uploadBytes(fileRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        
+        // Update user profile
+        showNotification('Updating profile...', 'progress');
+        await updateDoc(doc(dynamicDb, 'lecturers', userEmail), {
+          avatarUrl: downloadURL
+        });
+        
+        // Update avatar displays (both header and main profile picture)
+        document.getElementById('user-avatar').src = downloadURL;
+        const profilePic = document.querySelector('.profile-pic');
+        if (profilePic) {
+          profilePic.src = downloadURL;
+        }
+        
+        showNotification('Avatar updated successfully!', 'success');
+      } catch (error) {
+        console.error('Error uploading avatar:', error);
+        showNotification('Failed to upload avatar. Please try again.', 'error');
+      }
+    });
+
+    // Notification system (non-intrusive)
+    function showNotification(message, type = 'info') {
+      // Remove existing notification
+      const existing = document.getElementById('custom-notification');
+      if (existing) {
+        existing.remove();
+      }
+
+      // Find the Edit Avatar button to position notification relative to it
+      const editButton = document.querySelector('.welcome-card button');
+      const buttonRect = editButton ? editButton.getBoundingClientRect() : null;
+
+      // Create notification
+      const notification = document.createElement('div');
+      notification.id = 'custom-notification';
+      
+      let positionStyle;
+      if (buttonRect) {
+        // Position under the Edit Avatar button
+        positionStyle = `
+          position: absolute;
+          top: ${buttonRect.bottom + window.scrollY + 8}px;
+          left: ${buttonRect.left + window.scrollX}px;
+          transform: translateY(-10px);
+          opacity: 0;
+          transition: all 0.3s ease;
+        `;
+      } else {
+        // Fallback to top-right
+        positionStyle = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          transform: translateX(100%);
+          transition: transform 0.3s ease;
+        `;
+      }
+
+      notification.style.cssText = `
+        ${positionStyle}
+        padding: 12px 18px;
+        border-radius: 6px;
+        color: white;
+        font-weight: 600;
+        z-index: 10000;
+        max-width: 280px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        pointer-events: none;
+      `;
+
+      // Set color and icon based on type
+      let backgroundColor, icon;
+      switch (type) {
+        case 'success':
+          backgroundColor = '#10B981';
+          icon = '<i class="fa fa-check-circle"></i>';
+          break;
+        case 'error':
+          backgroundColor = '#EF4444';
+          icon = '<i class="fa fa-exclamation-circle"></i>';
+          break;
+        case 'progress':
+          backgroundColor = '#3B82F6';
+          icon = '<i class="fa fa-spinner fa-spin"></i>';
+          break;
+        default:
+          backgroundColor = '#6B7280';
+          icon = '<i class="fa fa-info-circle"></i>';
+      }
+
+      notification.style.backgroundColor = backgroundColor;
+      notification.innerHTML = `${icon} ${message}`;
+
+      document.body.appendChild(notification);
+
+      // Animate in
+      setTimeout(() => {
+        if (buttonRect) {
+          notification.style.transform = 'translateY(0)';
+          notification.style.opacity = '1';
+        } else {
+          notification.style.transform = 'translateX(0)';
+        }
+      }, 100);
+
+      // Auto remove (except for progress)
+      if (type !== 'progress') {
+        setTimeout(() => {
+          if (buttonRect) {
+            notification.style.transform = 'translateY(-10px)';
+            notification.style.opacity = '0';
+          } else {
+            notification.style.transform = 'translateX(100%)';
+          }
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.remove();
+            }
+          }, 300);
+        }, 3000);
+      }
+    }
+
+    // Make avatar function global
+    window.changeAvatar = changeAvatar;
     </script>
 
     <script>
@@ -682,7 +975,17 @@
         const message = document.getElementById('inquiry-message').value;
         
         // Here you would typically send to Firestore
-        alert('Inquiry submitted successfully!');
+        // For now, just show a simple message
+        document.getElementById('inquiry-subject').value = '';
+        document.getElementById('inquiry-message').value = '';
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Submitted!';
+        submitBtn.style.background = '#10B981';
+        setTimeout(() => {
+          submitBtn.textContent = originalText;
+          submitBtn.style.background = '#10B981';
+        }, 2000);
         closeInquiryModal();
       });
     </script>

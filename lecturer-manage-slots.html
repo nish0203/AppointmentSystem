@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manage Appointments – Uni Bookings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: #f9fafb;
+      color: #222;
+      margin: 0;
+    }
+    .header {
+      background: #fff;
+      color: #222;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 70px;
+      border-bottom: 1px solid #e5e7eb;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    
+    .header .logo {
+      display: flex; align-items: center; gap: 18px;
+    }
+    .header .logo img {
+      height: 60px;
+      transition: height .2s;
+    }
+    .header nav {
+      display: flex; gap: 24px; align-items: center;
+    }
+    .header nav .nav-link {
+      color: #222;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.08rem;
+      transition: color .2s;
+      position: relative;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .header nav .nav-link:hover, .header nav .nav-link.active {
+      background: #f1f5f9;
+      color: #ef4444;
+    }
+    .header nav .dropdown {
+      position: relative;
+    }
+    .header nav .dropdown-content {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 110%;
+      background: #fff;
+      min-width: 220px;
+      box-shadow: 0 4px 16px #0002;
+      border-radius: 8px;
+      z-index: 1100;
+      flex-direction: column;
+      padding: 8px 0;
+    }
+    .header nav .dropdown-content.show {
+      display: flex;
+    }
+    .header nav .dropdown-content a {
+      color: #222;
+      text-decoration: none;
+      padding: 12px 22px;
+      font-size: 1rem;
+      border: none;
+      background: none;
+      text-align: left;
+      transition: background .2s, color .2s;
+      border-radius: 0;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .header nav .dropdown-content a:hover {
+      background: #f1f5f9;
+      color: #ef4444;
+    }
+    .header .avatar-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: #eee;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      margin-left: 18px;
+      cursor: pointer;
+      position: relative;
+      outline: none;
+      border: none;
+      padding: 0;
+    }
+    .header .avatar-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+    .logout-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .logout-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background: #fff;
+      box-shadow: 0 8px 24px #0003;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      z-index: 200;
+      min-width: 160px;
+      padding: 8px 0;
+    }
+    .logout-dropdown button {
+      width: 100%;
+      background: none;
+      border: none;
+      color: #ef4444;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 12px 24px;
+      text-align: left;
+      border-radius: 0;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .logout-dropdown button:hover {
+      background: #f1f5f9;
+      color: #b91c1c;
+    }
+    .logout-dropdown.show {
+      display: block;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 16px;
+    }
+    .page-header {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #0001;
+      padding: 28px 24px;
+      margin-bottom: 32px;
+    }
+    .page-header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .page-header p {
+      margin: 8px 0 0 0;
+      color: #666;
+      font-size: 1.1rem;
+    }
+    .appointments-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    .appointments-section {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #0001;
+      padding: 24px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .section-header h2 {
+      margin: 0;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .section-header .count {
+      background: #10B981;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .section-header .count.pending {
+      background: #f59e0b;
+    }
+    .appointments-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: 600px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    .appointments-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .appointments-list::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    .appointments-list::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 3px;
+    }
+    .appointment-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 20px;
+      transition: all 0.2s;
+    }
+    .appointment-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transform: translateY(-1px);
+    }
+    .appointment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .appointment-info h3 {
+      margin: 0 0 8px 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .appointment-info .meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .appointment-info .meta span {
+      font-size: 0.9rem;
+      color: #666;
+    }
+    .appointment-info .meta .highlight {
+      color: #10B981;
+      font-weight: 600;
+    }
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .status-badge.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .status-badge.approved {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .appointment-details {
+      margin: 16px 0;
+    }
+    .appointment-details .detail-row {
+      display: flex;
+      margin-bottom: 8px;
+    }
+    .appointment-details .detail-row .label {
+      font-weight: 600;
+      color: #374151;
+      min-width: 80px;
+    }
+    .appointment-details .detail-row .value {
+      color: #666;
+      flex: 1;
+    }
+    .purpose-text {
+      background: #f1f5f9;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 12px 0;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #374151;
+    }
+    .documents-section {
+      margin-top: 12px;
+    }
+    .documents-section h4 {
+      margin: 0 0 8px 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #374151;
+    }
+    .document-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+    .document-item i {
+      color: #10B981;
+    }
+    .document-item a {
+      color: #10B981;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+    .document-item a:hover {
+      text-decoration: underline;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e5e7eb;
+    }
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .btn-approve {
+      background: #10B981;
+      color: white;
+    }
+    .btn-approve:hover {
+      background: #059669;
+    }
+    .btn-reject {
+      background: #ef4444;
+      color: white;
+    }
+    .btn-reject:hover {
+      background: #dc2626;
+    }
+    .btn-view {
+      background: #6366f1;
+      color: white;
+    }
+    .btn-view:hover {
+      background: #4f46e5;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6b7280;
+    }
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    @media (max-width: 1000px) {
+      .appointments-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 700px) {
+      .container {
+        padding: 0 8px;
+      }
+      .appointment-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+      .action-buttons {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <img src="eBbook2.png" alt="Logo">
+    </div>
+    <nav>
+      <a href="lecturer.html" class="nav-link">Dashboard</a>
+      <div class="dropdown nav-link active" tabindex="0" id="slot-dropdown">
+        Slot Management <i class="fa fa-caret-down" style="margin-left:6px;"></i>
+        <div class="dropdown-content" id="slot-dropdown-content">
+          <a href="lecturer-appointment-slots.html">Set Appointment Slots</a>
+          <a href="lecturer-manage-slots.html">Manage Booked Appointments</a>
+        </div>
+      </div>
+      <div class="dropdown nav-link" tabindex="0" id="inquiry-dropdown">
+        Inquiry <i class="fa fa-caret-down" style="margin-left:6px;"></i>
+        <div class="dropdown-content" id="inquiry-dropdown-content">
+          <a href="inquirylect.html">Submit Inquiry</a>
+          <a href="viewinquirylect.html">Inquiry History</a>
+        </div>
+      </div>
+    </nav>
+    <div class="logout-wrapper">
+      <button class="avatar-btn" id="avatar-btn">
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2QjcyODAiLz4KPHBhdGggZD0iTTIwIDEwQzIzLjMxIDEwIDI2IDEyLjY5IDI2IDE2QzI2IDE5LjMxIDIzLjMxIDIyIDIwIDIyQzE2LjY5IDIyIDE0IDE5LjMxIDE0IDE2QzE0IDEyLjY5IDE2LjY5IDEwIDIwIDEwWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTggMzJDOCAyNi40NzcyIDEyLjQ3NzIgMjIgMTggMjJIMjJDMjcuNTIyOCAyMiAzMiAyNi40NzcyIDMyIDMyVjM2SDhWMzJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" alt="Lecturer Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
+      </button>
+      <div class="logout-dropdown" id="logout-dropdown">
+        <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="page-header">
+      <h1><i class="fa fa-calendar-check"></i> Manage Appointments</h1>
+      <p>Review and manage student appointment requests</p>
+      <div style="margin-top: 16px;">
+        <button onclick="debugDatabase()" style="background: #6366f1; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-right: 8px;">
+          Debug Database
+        </button>
+        <button onclick="reloadAppointments()" style="background: #10B981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
+          Reload Appointments
+        </button>
+        <span id="lecturer-info" style="margin-left: 16px; color: #666; font-size: 0.9rem;"></span>
+      </div>
+    </div>
+
+    <div class="appointments-grid">
+      <!-- Pending Appointments -->
+      <div class="appointments-section">
+        <div class="section-header">
+          <h2><i class="fa fa-clock"></i> Pending Requests</h2>
+          <span class="count pending" id="pending-count">0</span>
+        </div>
+        <div class="appointments-list" id="pending-appointments">
+          <div class="empty-state">
+            <i class="fa fa-inbox"></i>
+            <p>No pending appointments</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Approved Appointments -->
+      <div class="appointments-section">
+        <div class="section-header">
+          <h2><i class="fa fa-check-circle"></i> Approved Appointments</h2>
+          <span class="count" id="approved-count">0</span>
+        </div>
+        <div class="appointments-list" id="approved-appointments">
+          <div class="empty-state">
+            <i class="fa fa-calendar-check"></i>
+            <p>No approved appointments</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Student Reschedule Requests Section -->
+    <div class="appointments-section" style="margin-bottom: 32px;" id="student-requests-section">
+      <div class="section-header">
+        <h2><i class="fa fa-calendar-alt"></i> Student Reschedule Requests</h2>
+        <span class="count" style="background: #f59e0b;" id="student-requests-count">0</span>
+      </div>
+      <div class="appointments-list" id="student-requests">
+        <div class="empty-state">
+          <i class="fa fa-calendar-alt"></i>
+          <p>No student requests</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appointment Details Modal -->
+  <div id="appointment-details-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <span style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #999;" onclick="closeAppointmentDetailsModal()">&times;</span>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <i class="fa fa-calendar-check" style="font-size: 3rem; color: #10B981; margin-bottom: 10px;"></i>
+        <h3 style="margin: 0; color: #222;">Appointment Details</h3>
+      </div>
+      <div id="appointment-details-content" style="text-align: left;">
+        <!-- Content will be populated by JavaScript -->
+      </div>
+      <div style="text-align: center; margin-top: 20px;">
+        <button onclick="closeAppointmentDetailsModal()" style="background: #10B981; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="success-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center;">
+      <div style="margin-bottom: 20px;">
+        <i class="fa fa-check-circle" style="font-size: 3rem; color: #10B981; margin-bottom: 10px;"></i>
+        <h3 style="margin: 0; color: #222;" id="success-title">Success!</h3>
+        <p style="color: #666; margin: 10px 0;" id="success-message">Operation completed successfully.</p>
+      </div>
+      <button onclick="closeSuccessModal()" style="background: #10B981; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+        OK
+      </button>
+    </div>
+  </div>
+
+  <!-- Cancel Appointment Modal -->
+  <div id="cancel-appointment-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <span style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #999;" onclick="closeCancelAppointmentModal()">&times;</span>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <i class="fa fa-exclamation-triangle" style="font-size: 3rem; color: #ef4444; margin-bottom: 10px;"></i>
+        <h3 style="margin: 0; color: #222;">Cancel Student Appointment</h3>
+        <p style="color: #666; margin: 10px 0;">Please provide a reason for cancelling this appointment. The student will be notified.</p>
+      </div>
+      <form id="cancel-appointment-form">
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Reason for cancellation:</label>
+          <textarea id="cancel-appointment-reason" rows="4" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-family: inherit; resize: vertical;" placeholder="Please explain why you need to cancel this appointment..." required></textarea>
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button type="button" onclick="closeCancelAppointmentModal()" style="background: #6b7280; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            Keep Appointment
+          </button>
+          <button type="submit" style="background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            Cancel Appointment
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Inquiry Modal -->
+  <div id="inquiry-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 500px; position: relative;">
+      <span style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer;" onclick="closeInquiryModal()">&times;</span>
+      <h3 style="margin-bottom: 20px;">Submit Inquiry</h3>
+      <form id="inquiry-form">
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: 600;">Subject:</label>
+          <input type="text" id="inquiry-subject" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 8px;" required>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: 600;">Message:</label>
+          <textarea id="inquiry-message" rows="5" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 8px;" required></textarea>
+        </div>
+        <button type="submit" style="background: #10B981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Submit Inquiry</button>
+      </form>
+    </div>
+  </div>
+
+
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import {
+      getFirestore, doc, getDoc, collection, getDocs, query, where, orderBy, updateDoc, deleteDoc
+    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain: "appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531",
+      storageBucket: "appointment-management-c2531.firebasestorage.app",
+      messagingSenderId: "428786083628",
+      appId: "1:428786083628:web:d9d9576b12581cc697ee89",
+      measurementId: "G-9FM8F1WJMF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let currentLecturerEmail = '';
+
+    // Initialize page
+    (async () => {
+      const params = new URLSearchParams(location.search);
+      const email = params.get('email') || sessionStorage.getItem('userEmail');
+      currentLecturerEmail = email;
+
+      // Display lecturer info
+      const infoEl = document.getElementById('lecturer-info');
+      if (email) {
+        infoEl.textContent = `Logged in as: ${email}`;
+        sessionStorage.setItem('userEmail', email);
+        await loadAppointments(email);
+      } else {
+        infoEl.textContent = 'No lecturer email found - redirecting to login';
+        setTimeout(() => window.location.href = 'login.html', 2000);
+      }
+    })();
+
+    // Debug function to check database
+    async function debugDatabase() {
+      console.log('=== DEBUG DATABASE ===');
+      console.log('Current lecturer email:', currentLecturerEmail);
+      
+      try {
+        // Check if appointments collection exists
+        const allAppointments = await getDocs(collection(db, 'appointments'));
+        console.log('Total appointments in database:', allAppointments.size);
+        
+        const appointmentsByLecturer = {};
+        const appointmentsByStatus = {};
+        
+        allAppointments.docs.forEach(doc => {
+          const data = doc.data();
+          const lecEmail = data.lecturerEmail || 'NO_LECTURER_EMAIL';
+          const status = data.status || 'NO_STATUS';
+          
+          console.log('Appointment ID:', doc.id);
+          console.log('Data:', data);
+          console.log('---');
+          
+          // Count by lecturer
+          if (!appointmentsByLecturer[lecEmail]) {
+            appointmentsByLecturer[lecEmail] = 0;
+          }
+          appointmentsByLecturer[lecEmail]++;
+          
+          // Count by status
+          if (!appointmentsByStatus[status]) {
+            appointmentsByStatus[status] = 0;
+          }
+          appointmentsByStatus[status]++;
+        });
+        
+        console.log('Appointments by lecturer:', appointmentsByLecturer);
+        console.log('Appointments by status:', appointmentsByStatus);
+        
+        // Check for exact match
+        const exactMatches = allAppointments.docs.filter(doc => 
+          doc.data().lecturerEmail === currentLecturerEmail
+        );
+        console.log(`Exact matches for ${currentLecturerEmail}:`, exactMatches.length);
+        
+        alert(`Debug complete! Check browser console for details.\n\nSummary:\n- Total appointments: ${allAppointments.size}\n- Exact matches for ${currentLecturerEmail}: ${exactMatches.length}\n- Pending status appointments: ${appointmentsByStatus.pending || 0}`);
+        
+      } catch (error) {
+        console.error('Debug error:', error);
+        alert('Debug failed: ' + error.message);
+      }
+    }
+
+    // Reload function
+    async function reloadAppointments() {
+      if (currentLecturerEmail) {
+        await loadAppointments(currentLecturerEmail);
+        alert('Appointments reloaded!');
+      } else {
+        alert('No lecturer email available');
+      }
+    }
+
+    // Make functions global - moved to end of script
+    // window.debugDatabase = debugDatabase;
+    // window.reloadAppointments = reloadAppointments;
+
+    // Load appointments from Firestore
+    async function loadAppointments(lecturerEmail) {
+      try {
+        console.log('Loading appointments for lecturer:', lecturerEmail);
+        
+        // First try without orderBy in case of missing index
+        let appointmentsQuery;
+        try {
+          appointmentsQuery = query(
+            collection(db, 'appointments'),
+            where('lecturerEmail', '==', lecturerEmail),
+            orderBy('bookedAt', 'desc')
+          );
+        } catch (indexError) {
+          console.log('Falling back to query without orderBy due to index issue');
+          appointmentsQuery = query(
+            collection(db, 'appointments'),
+            where('lecturerEmail', '==', lecturerEmail)
+          );
+        }
+        
+        const snapshot = await getDocs(appointmentsQuery);
+        console.log('Found', snapshot.size, 'appointments');
+        
+        const appointments = [];
+        snapshot.docs.forEach(doc => {
+          const data = doc.data();
+          console.log('Appointment data:', data);
+          appointments.push({ id: doc.id, ...data });
+        });
+        
+        // Sort manually if we couldn't use orderBy
+        appointments.sort((a, b) => {
+          const aTime = a.bookedAt ? new Date(a.bookedAt) : new Date(0);
+          const bTime = b.bookedAt ? new Date(b.bookedAt) : new Date(0);
+          return bTime - aTime;
+        });
+        
+        console.log('Processed appointments:', appointments);
+        renderAppointments(appointments);
+        
+        // Also load student requests
+        await loadStudentRequests(lecturerEmail);
+      } catch (error) {
+        console.error('Error loading appointments:', error);
+        
+        // Fallback: Try to load all appointments and filter client-side
+        try {
+          console.log('Trying fallback query...');
+          const allAppointments = await getDocs(collection(db, 'appointments'));
+          const appointments = [];
+          
+          allAppointments.docs.forEach(doc => {
+            const data = doc.data();
+            if (data.lecturerEmail === lecturerEmail) {
+              appointments.push({ id: doc.id, ...data });
+            }
+          });
+          
+          console.log('Fallback found', appointments.length, 'appointments');
+          renderAppointments(appointments);
+          
+          // Also load student requests in fallback
+          await loadStudentRequests(lecturerEmail);
+        } catch (fallbackError) {
+          console.error('Fallback query also failed:', fallbackError);
+        }
+      }
+    }
+
+    // Load student requests from Firestore
+    async function loadStudentRequests(lecturerEmail) {
+      try {
+        console.log('Loading student requests for lecturer:', lecturerEmail);
+        
+        // Get all appointments for this lecturer first to find associated requests
+        const appointmentsSnapshot = await getDocs(query(
+          collection(db, 'appointments'),
+          where('lecturerEmail', '==', lecturerEmail)
+        ));
+        
+        const appointmentIds = appointmentsSnapshot.docs.map(doc => doc.id);
+        
+        if (appointmentIds.length === 0) {
+          renderStudentRequests([]);
+          return;
+        }
+        
+        // Get all pending student requests
+        const requestsSnapshot = await getDocs(collection(db, 'appointment_requests'));
+        const studentRequests = [];
+        
+        requestsSnapshot.docs.forEach(doc => {
+          const data = doc.data();
+          if (appointmentIds.includes(data.appointmentId) && data.status === 'pending') {
+            studentRequests.push({ id: doc.id, ...data });
+          }
+        });
+        
+        console.log('Found student requests:', studentRequests);
+        renderStudentRequests(studentRequests);
+      } catch (error) {
+        console.error('Error loading student requests:', error);
+        renderStudentRequests([]);
+      }
+    }
+
+    // Render student requests (both cancellation and reschedule requests)
+    function renderStudentRequests(requests) {
+      const requestsList = document.getElementById('student-requests');
+      const requestsCount = document.getElementById('student-requests-count');
+      
+      // Show both cancellation and reschedule requests
+      const allRequests = requests.filter(req => req.type === 'cancellation' || req.type === 'reschedule');
+      
+      requestsCount.textContent = allRequests.length;
+      
+      // Always show the section, never hide it
+      document.getElementById('student-requests-section').style.display = 'block';
+      
+      if (allRequests.length === 0) {
+        requestsList.innerHTML = `
+          <div class="empty-state">
+            <i class="fa fa-calendar-alt"></i>
+            <p>No student requests</p>
+          </div>
+        `;
+      } else {
+        requestsList.innerHTML = allRequests.map(request => createStudentRequestCard(request)).join('');
+      }
+    }
+
+    // Create student request card HTML
+    function createStudentRequestCard(request) {
+      const requestTypeIcon = request.type === 'cancellation' ? 'fa-times-circle' : 'fa-calendar-alt';
+      const requestTypeColor = request.type === 'cancellation' ? '#ef4444' : '#6366f1';
+      
+      return `
+        <div class="appointment-card" style="border-left: 4px solid ${requestTypeColor};">
+          <div class="appointment-header">
+            <div class="appointment-info">
+              <h3>
+                <i class="fa ${requestTypeIcon}" style="color: ${requestTypeColor}; margin-right: 8px;"></i>
+                ${request.type === 'cancellation' ? 'Cancellation Request' : 'Reschedule Request'}
+              </h3>
+              <div class="meta">
+                <span><i class="fa fa-envelope"></i> ${request.studentEmail}</span>
+                <span><i class="fa fa-clock"></i> Requested: ${new Date(request.requestedAt).toLocaleDateString()}</span>
+              </div>
+            </div>
+            <span class="status-badge pending">Pending</span>
+          </div>
+          
+          <div class="purpose-text">
+            <strong>Reason:</strong><br>
+            ${request.reason}
+          </div>
+
+          ${request.preferredDate ? `
+            <div class="purpose-text">
+              <strong>Preferred New Date:</strong><br>
+              ${request.preferredDate}
+              ${request.preferredTime ? ` at ${request.preferredTime}` : ''}
+            </div>
+          ` : ''}
+
+          ${request.notes ? `
+            <div class="purpose-text">
+              <strong>Additional Notes:</strong><br>
+              ${request.notes}
+            </div>
+          ` : ''}
+
+          <div class="action-buttons" style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="btn btn-reject" onclick="rejectStudentRequest('${request.id}')" style="width: 100%; background: #ef4444;">
+              <i class="fa fa-times"></i> Deny Request
+            </button>
+            <button class="btn btn-approve" onclick="approveStudentRequest('${request.id}', '${request.type}', '${request.appointmentId}')" style="width: 100%; background: #10B981;">
+              <i class="fa fa-check"></i> Approve Request
+            </button>
+            <button class="btn btn-view" onclick="viewAppointmentForRequest('${request.appointmentId}')" style="width: 100%; background: #6366f1;">
+              <i class="fa fa-eye"></i> View Appointment
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Approve student request
+    async function approveStudentRequest(requestId, requestType, appointmentId) {
+      try {
+        if (requestType === 'cancellation') {
+          // Cancel the appointment
+          const appointment = await getDoc(doc(db, 'appointments', appointmentId));
+          const appointmentData = appointment.data();
+          
+          // Make slot available again
+          if (appointmentData.slotId) {
+            await updateDoc(doc(db, 'appointment_slots', appointmentData.slotId), {
+              isBooked: false,
+              bookedBy: null,
+              appointmentId: null
+            });
+          }
+          
+          // Delete the appointment
+          await deleteDoc(doc(db, 'appointments', appointmentId));
+          
+        } else if (requestType === 'reschedule') {
+          // For reschedule, we'll mark the appointment as needing rescheduling
+          // In a real system, you might want to show available slots to the lecturer
+          await updateDoc(doc(db, 'appointments', appointmentId), {
+            status: 'rescheduling',
+            rescheduleRequested: true
+          });
+        }
+        
+        // Update the request status
+        await updateDoc(doc(db, 'appointment_requests', requestId), {
+          status: 'approved',
+          approvedAt: new Date().toISOString()
+        });
+        
+        showSuccessModal('Success!', `${requestType === 'cancellation' ? 'Cancellation' : 'Reschedule'} request approved!`);
+        await loadAppointments(currentLecturerEmail);
+        await loadStudentRequests(currentLecturerEmail);
+      } catch (error) {
+        console.error('Error approving request:', error);
+        showSuccessModal('Error', 'Failed to approve request. Please try again.');
+      }
+    }
+
+    // Reject student request
+    async function rejectStudentRequest(requestId) {
+      try {
+        await updateDoc(doc(db, 'appointment_requests', requestId), {
+          status: 'rejected',
+          rejectedAt: new Date().toISOString()
+        });
+        
+        showSuccessModal('Success!', 'Request rejected.');
+        await loadStudentRequests(currentLecturerEmail);
+      } catch (error) {
+        console.error('Error rejecting request:', error);
+        showSuccessModal('Error', 'Failed to reject request. Please try again.');
+      }
+    }
+
+    // View appointment for request
+    async function viewAppointmentForRequest(appointmentId) {
+      try {
+        const appointment = await getDoc(doc(db, 'appointments', appointmentId));
+        if (appointment.exists()) {
+          const data = appointment.data();
+          showAppointmentDetails(data);
+        } else {
+          showSuccessModal('Error', 'Appointment not found.');
+        }
+      } catch (error) {
+        console.error('Error viewing appointment:', error);
+        showSuccessModal('Error', 'Failed to load appointment details.');
+      }
+    }
+
+    // Show appointment details modal
+    function showAppointmentDetails(appointment) {
+      const content = document.getElementById('appointment-details-content');
+      
+      const documentsHtml = appointment.documents && appointment.documents.length > 0 
+        ? `
+          <div style="margin-top: 20px;">
+            <h4 style="margin-bottom: 10px; color: #374151;"><i class="fa fa-paperclip"></i> Attached Documents:</h4>
+            ${appointment.documents.map(doc => `
+              <div style="background: #f3f4f6; padding: 8px 12px; border-radius: 6px; margin-bottom: 6px;">
+                <i class="fa fa-file" style="color: #10B981; margin-right: 8px;"></i>
+                <a href="${doc.url}" target="_blank" style="color: #10B981; text-decoration: none; font-weight: 500;">${doc.name}</a>
+              </div>
+            `).join('')}
+          </div>
+        ` 
+        : '';
+      
+      content.innerHTML = `
+        <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div>
+              <strong style="color: #374151;">Student Name:</strong><br>
+              <span style="color: #1f2937;">${appointment.studentName || 'N/A'}</span>
+            </div>
+            <div>
+              <strong style="color: #374151;">Student ID:</strong><br>
+              <span style="color: #1f2937;">${appointment.studentId || 'N/A'}</span>
+            </div>
+            <div>
+              <strong style="color: #374151;">Email:</strong><br>
+              <span style="color: #1f2937;">${appointment.studentEmail}</span>
+            </div>
+            <div>
+              <strong style="color: #374151;">Booked On:</strong><br>
+              <span style="color: #1f2937;">${new Date(appointment.bookedAt).toLocaleDateString()}</span>
+            </div>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+            <div>
+              <strong style="color: #374151;">Date:</strong><br>
+              <span style="color: #1f2937; font-weight: 600;">${appointment.date}</span>
+            </div>
+            <div>
+              <strong style="color: #374151;">Time:</strong><br>
+              <span style="color: #1f2937; font-weight: 600;">${appointment.startTime} - ${appointment.endTime}</span>
+            </div>
+          </div>
+        </div>
+
+        ${appointment.purpose ? `
+          <div style="margin-bottom: 15px;">
+            <strong style="color: #374151;">Purpose:</strong><br>
+            <div style="background: #f1f5f9; padding: 12px; border-radius: 6px; margin-top: 8px; color: #374151; line-height: 1.5;">
+              ${appointment.purpose}
+            </div>
+          </div>
+        ` : ''}
+
+        ${appointment.notes ? `
+          <div style="margin-bottom: 15px;">
+            <strong style="color: #374151;">Additional Notes:</strong><br>
+            <div style="background: #f1f5f9; padding: 12px; border-radius: 6px; margin-top: 8px; color: #374151; line-height: 1.5;">
+              ${appointment.notes}
+            </div>
+          </div>
+        ` : ''}
+
+        ${documentsHtml}
+      `;
+      
+      document.getElementById('appointment-details-modal').style.display = 'flex';
+    }
+
+    function closeAppointmentDetailsModal() {
+      document.getElementById('appointment-details-modal').style.display = 'none';
+    }
+
+    function showSuccessModal(title, message) {
+      document.getElementById('success-title').textContent = title;
+      document.getElementById('success-message').textContent = message;
+      document.getElementById('success-modal').style.display = 'flex';
+    }
+
+    function closeSuccessModal() {
+      document.getElementById('success-modal').style.display = 'none';
+    }
+
+    // Cancel appointment modal functions
+    let selectedAppointmentIdForCancel = null;
+
+    function showCancelAppointmentModal(appointmentId) {
+      selectedAppointmentIdForCancel = appointmentId;
+      document.getElementById('cancel-appointment-modal').style.display = 'flex';
+    }
+
+    function closeCancelAppointmentModal() {
+      document.getElementById('cancel-appointment-modal').style.display = 'none';
+      document.getElementById('cancel-appointment-form').reset();
+      selectedAppointmentIdForCancel = null;
+    }
+
+    // Handle cancel appointment form submission
+    document.getElementById('cancel-appointment-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const reason = document.getElementById('cancel-appointment-reason').value;
+      
+      try {
+        const appointment = await getDoc(doc(db, 'appointments', selectedAppointmentIdForCancel));
+        const appointmentData = appointment.data();
+        
+        // Update appointment status to cancelled with reason
+        await updateDoc(doc(db, 'appointments', selectedAppointmentIdForCancel), {
+          status: 'cancelled',
+          cancellationReason: reason,
+          cancelledAt: new Date().toISOString(),
+          cancelledBy: 'lecturer'
+        });
+        
+        // Delete the slot when appointment is cancelled by lecturer
+        if (appointmentData.slotId) {
+          await deleteDoc(doc(db, 'appointment_slots', appointmentData.slotId));
+        }
+        
+        closeCancelAppointmentModal();
+        showSuccessModal('Appointment Cancelled', 'The appointment has been cancelled and the student has been notified.');
+        await loadAppointments(currentLecturerEmail);
+      } catch (error) {
+        console.error('Error cancelling appointment:', error);
+        showSuccessModal('Error', 'Failed to cancel appointment. Please try again.');
+      }
+    });
+
+    // Make student request functions global
+    window.approveStudentRequest = approveStudentRequest;
+    window.rejectStudentRequest = rejectStudentRequest;
+    window.viewAppointmentForRequest = viewAppointmentForRequest;
+    window.closeAppointmentDetailsModal = closeAppointmentDetailsModal;
+    window.closeSuccessModal = closeSuccessModal;
+    window.showCancelAppointmentModal = showCancelAppointmentModal;
+    window.closeCancelAppointmentModal = closeCancelAppointmentModal;
+
+    // Render appointments
+    function renderAppointments(appointments) {
+      console.log('Rendering appointments:', appointments);
+      
+      const pendingList = document.getElementById('pending-appointments');
+      const approvedList = document.getElementById('approved-appointments');
+      const pendingCount = document.getElementById('pending-count');
+      const approvedCount = document.getElementById('approved-count');
+
+      const pending = appointments.filter(apt => apt.status === 'pending');
+      const approved = appointments.filter(apt => apt.status === 'approved');
+      
+      console.log('Pending appointments:', pending);
+      console.log('Approved appointments:', approved);
+
+      pendingCount.textContent = pending.length;
+      approvedCount.textContent = approved.length;
+
+      // Render pending appointments
+      if (pending.length === 0) {
+        pendingList.innerHTML = `
+          <div class="empty-state">
+            <i class="fa fa-inbox"></i>
+            <p>No pending appointments</p>
+          </div>
+        `;
+      } else {
+        pendingList.innerHTML = pending.map(apt => createAppointmentCard(apt, 'pending')).join('');
+      }
+
+      // Render approved appointments
+      if (approved.length === 0) {
+        approvedList.innerHTML = `
+          <div class="empty-state">
+            <i class="fa fa-calendar-check"></i>
+            <p>No approved appointments</p>
+          </div>
+        `;
+      } else {
+        approvedList.innerHTML = approved.map(apt => createAppointmentCard(apt, 'approved')).join('');
+      }
+    }
+
+    // Create appointment card HTML
+    function createAppointmentCard(appointment, type) {
+      const documentsHtml = appointment.documents && appointment.documents.length > 0 
+        ? `
+          <div class="documents-section">
+            <h4><i class="fa fa-paperclip"></i> Attached Documents</h4>
+            ${appointment.documents.map(doc => `
+              <div class="document-item">
+                <i class="fa fa-file"></i>
+                <a href="${doc.url}" target="_blank">${doc.name}</a>
+              </div>
+            `).join('')}
+          </div>
+        ` 
+        : '';
+
+      let actionButtons = '';
+      
+      if (type === 'pending') {
+        actionButtons = `
+          <div class="action-buttons">
+            <button class="btn btn-approve" onclick="approveAppointment('${appointment.id}')">
+              <i class="fa fa-check"></i> Approve
+            </button>
+            <button class="btn btn-reject" onclick="rejectAppointment('${appointment.id}')">
+              <i class="fa fa-times"></i> Reject
+            </button>
+          </div>
+        `;
+      } else if (type === 'approved') {
+        const hasDocuments = appointment.documents && appointment.documents.length > 0;
+        const viewDetailsButton = hasDocuments 
+          ? `<button class="btn btn-view" onclick="viewAppointmentForRequest('${appointment.id}')">
+               <i class="fa fa-eye"></i> View Details
+             </button>` 
+          : '';
+        
+        // Check if appointment time has passed
+        const appointmentDateTime = new Date(`${appointment.date} ${appointment.startTime}`);
+        const now = new Date();
+        const canMarkAsDone = now >= appointmentDateTime;
+        
+        actionButtons = `
+          <div class="action-buttons">
+            ${viewDetailsButton}
+            ${canMarkAsDone ? `
+              <button class="btn" style="background: #10B981; color: white;" onclick="markAppointmentDone('${appointment.id}')">
+                <i class="fa fa-check"></i> Mark as Done
+              </button>
+            ` : ''}
+            <button class="btn" style="background: #ef4444; color: white;" onclick="showCancelAppointmentModal('${appointment.id}')">
+              <i class="fa fa-ban"></i> Cancel Appointment
+            </button>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="appointment-card">
+          <div class="appointment-header">
+            <div class="appointment-info">
+              <h3>${appointment.studentName || 'Student'}</h3>
+              <div class="meta">
+                <span><i class="fa fa-envelope"></i> ${appointment.studentEmail || 'N/A'}</span>
+                <span><i class="fa fa-calendar"></i> ${appointment.date}</span>
+                <span class="highlight"><i class="fa fa-clock"></i> ${appointment.startTime} - ${appointment.endTime}</span>
+              </div>
+            </div>
+            <span class="status-badge ${type}">${type}</span>
+          </div>
+          
+          <div class="appointment-details">
+            <div class="detail-row">
+              <span class="label">Booked:</span>
+              <span class="value">${new Date(appointment.bookedAt).toLocaleDateString()}</span>
+            </div>
+            ${appointment.studentId ? `
+              <div class="detail-row">
+                <span class="label">Student ID:</span>
+                <span class="value">${appointment.studentId}</span>
+              </div>
+            ` : ''}
+          </div>
+
+          ${appointment.purpose ? `
+            <div class="purpose-text">
+              <strong>Purpose:</strong><br>
+              ${appointment.purpose}
+            </div>
+          ` : ''}
+
+          ${appointment.notes ? `
+            <div class="purpose-text">
+              <strong>Additional Notes:</strong><br>
+              ${appointment.notes}
+            </div>
+          ` : ''}
+
+          ${documentsHtml}
+          ${actionButtons}
+        </div>
+      `;
+    }
+
+    // Approve appointment
+    async function approveAppointment(appointmentId) {
+      try {
+        await updateDoc(doc(db, 'appointments', appointmentId), {
+          status: 'approved',
+          approvedAt: new Date().toISOString()
+        });
+        
+        // Reload appointments
+        await loadAppointments(currentLecturerEmail);
+        showSuccessModal('Approved!', 'Appointment approved successfully!');
+      } catch (error) {
+        console.error('Error approving appointment:', error);
+        showSuccessModal('Error', 'Failed to approve appointment. Please try again.');
+      }
+    }
+
+    // Reject appointment
+    async function rejectAppointment(appointmentId) {
+      showRejectConfirmModal(appointmentId);
+    }
+
+    function showRejectConfirmModal(appointmentId) {
+      const modalHtml = `
+        <div id="reject-confirm-modal" style="display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+          <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+            <div style="text-align: center; margin-bottom: 20px;">
+              <i class="fa fa-exclamation-triangle" style="font-size: 3rem; color: #ef4444; margin-bottom: 10px;"></i>
+              <h3 style="margin: 0; color: #222;">Reject Appointment</h3>
+              <p style="color: #666; margin: 10px 0;">Please provide a reason for rejecting this appointment. The student will be notified.</p>
+            </div>
+            <form id="reject-appointment-form">
+              <div style="margin-bottom: 20px;">
+                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Reason for rejection:</label>
+                <textarea id="reject-reason" rows="4" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-family: inherit; resize: vertical;" placeholder="Please explain why this appointment is being rejected..." required></textarea>
+              </div>
+              <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button type="button" onclick="closeRejectConfirmModal()" style="background: #6b7280; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                  Cancel
+                </button>
+                <button type="submit" style="background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                  Reject Appointment
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      `;
+      
+      document.body.insertAdjacentHTML('beforeend', modalHtml);
+      
+      // Add form submit handler
+      document.getElementById('reject-appointment-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const reason = document.getElementById('reject-reason').value;
+        await confirmRejectAppointment(appointmentId, reason);
+      });
+    }
+
+    function closeRejectConfirmModal() {
+      const modal = document.getElementById('reject-confirm-modal');
+      if (modal) {
+        modal.remove();
+      }
+    }
+
+    async function confirmRejectAppointment(appointmentId, rejectionReason) {
+      try {
+        const appointment = await getDoc(doc(db, 'appointments', appointmentId));
+        const appointmentData = appointment.data();
+        
+        // Update appointment status with rejection reason
+        await updateDoc(doc(db, 'appointments', appointmentId), {
+          status: 'rejected',
+          rejectedAt: new Date().toISOString(),
+          rejectionReason: rejectionReason
+        });
+        
+        // Make the slot available again
+        if (appointmentData.slotId) {
+          await updateDoc(doc(db, 'appointment_slots', appointmentData.slotId), {
+            isBooked: false,
+            bookedBy: null,
+            appointmentId: null
+          });
+        }
+        
+        closeRejectConfirmModal();
+        // Reload appointments
+        await loadAppointments(currentLecturerEmail);
+        showSuccessModal('Rejected', 'Appointment rejected. Slot is now available again.');
+      } catch (error) {
+        console.error('Error rejecting appointment:', error);
+        closeRejectConfirmModal();
+        showSuccessModal('Error', 'Failed to reject appointment. Please try again.');
+      }
+    }
+
+
+
+    // Mark appointment as done
+    async function markAppointmentDone(appointmentId) {
+      try {
+        await updateDoc(doc(db, 'appointments', appointmentId), {
+          status: 'done',
+          completedAt: new Date().toISOString()
+        });
+        
+        await loadAppointments(currentLecturerEmail);
+        showSuccessModal('Completed!', 'Appointment marked as completed successfully!');
+      } catch (error) {
+        console.error('Error marking appointment as done:', error);
+        showSuccessModal('Error', 'Failed to mark appointment as done. Please try again.');
+      }
+    }
+
+    // View appointment details (for approved appointments)
+    function viewAppointmentDetails(appointmentId) {
+      // You can implement a detailed view modal here if needed
+      console.log('Viewing appointment details for:', appointmentId);
+    }
+
+    // Make functions globally available
+    window.approveAppointment = approveAppointment;
+    window.rejectAppointment = rejectAppointment;
+    window.markAppointmentDone = markAppointmentDone;
+    window.viewAppointmentDetails = viewAppointmentDetails;
+    window.closeSuccessModal = closeSuccessModal;
+    window.closeRejectConfirmModal = closeRejectConfirmModal;
+    window.confirmRejectAppointment = confirmRejectAppointment;
+    window.debugDatabase = debugDatabase;
+    window.reloadAppointments = reloadAppointments;
+
+    // --- Navigation dropdown logic ---
+    const avatarBtn = document.getElementById('avatar-btn');
+    const logoutDropdown = document.getElementById('logout-dropdown');
+    avatarBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      logoutDropdown.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!avatarBtn.contains(e.target) && !logoutDropdown.contains(e.target)) {
+        logoutDropdown.classList.remove('show');
+      }
+    });
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      sessionStorage.clear();
+      window.location.href = 'login.html';
+    });
+
+    // Slot Management dropdown
+    const slotDropdown = document.getElementById('slot-dropdown');
+    const slotDropdownContent = document.getElementById('slot-dropdown-content');
+    slotDropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+      slotDropdownContent.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!slotDropdown.contains(e.target)) {
+        slotDropdownContent.classList.remove('show');
+      }
+    });
+
+    // Inquiry dropdown
+    const inquiryDropdown = document.getElementById('inquiry-dropdown');
+    const inquiryDropdownContent = document.getElementById('inquiry-dropdown-content');
+    inquiryDropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+      inquiryDropdownContent.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!inquiryDropdown.contains(e.target)) {
+        inquiryDropdownContent.classList.remove('show');
+      }
+    });
+  </script>
+
+  <script>
+    // Inquiry modal functions
+    function openInquiryModal() {
+      document.getElementById('inquiry-modal').style.display = 'flex';
+    }
+
+    function closeInquiryModal() {
+      document.getElementById('inquiry-modal').style.display = 'none';
+      document.getElementById('inquiry-form').reset();
+    }
+
+    // Make functions global
+    window.openInquiryModal = openInquiryModal;
+    window.closeInquiryModal = closeInquiryModal;
+
+    // Handle inquiry form submission
+    document.getElementById('inquiry-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const subject = document.getElementById('inquiry-subject').value;
+      const message = document.getElementById('inquiry-message').value;
+      
+      // For now, just show a simple message
+      document.getElementById('inquiry-subject').value = '';
+      document.getElementById('inquiry-message').value = '';
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Submitted!';
+      submitBtn.style.background = '#10B981';
+      setTimeout(() => {
+        submitBtn.textContent = originalText;
+        submitBtn.style.background = '#10B981';
+      }, 2000);
+      closeInquiryModal();
+    });
+  </script>
+</body>
+</html>

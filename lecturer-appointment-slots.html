@@ -178,10 +178,29 @@
     }
     .form-card {
       background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px #0001;
-      padding: 24px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      padding: 32px;
       height: fit-content;
+      border: 1px solid rgba(229, 231, 235, 0.5);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .form-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(135deg, #2563eb 0%, #ef4444 100%);
+    }
+    
+    .form-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
     }
     .form-card h3 {
       margin: 0 0 20px 0;
@@ -201,24 +220,71 @@
     }
     .form-group input {
       width: 100%;
-      padding: 12px 14px;
-      border: 1.5px solid #d1d5db;
-      border-radius: 8px;
+      padding: 16px 20px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
       font-size: 1rem;
-      background: #f9fafb;
-      transition: border .2s, box-shadow .2s;
+      background: #fff;
+      transition: all .3s ease;
       box-sizing: border-box;
+      font-weight: 500;
+      position: relative;
     }
     .form-group input:focus {
-      border: 1.5px solid #2563eb;
+      border: 2px solid #2563eb;
       outline: none;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
       background: #fff;
+      transform: translateY(-1px);
+    }
+    .form-group input:hover {
+      border: 2px solid #9ca3af;
     }
     .time-inputs {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    /* Enhanced form group styling */
+    .form-group {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #374151;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .form-group label i {
+      color: #2563eb;
+      font-size: 1rem;
+    }
+    
+    /* Time input specific styling */
+    .time-inputs .form-group input {
+      padding-left: 48px;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%232563eb'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z'%3e%3c/path%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: 16px center;
+      background-size: 20px;
+    }
+    
+    /* Date input styling */
+    #slot-date {
+      padding-left: 48px;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%232563eb'%3e%3cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'%3e%3c/path%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: 16px center;
+      background-size: 20px;
     }
     .btn {
       padding: 12px 20px;
@@ -234,11 +300,364 @@
       gap: 8px;
     }
     .btn-primary {
-      background: #2563eb;
+      background: linear-gradient(135deg, #2563eb 0%, #ef4444 100%);
       color: white;
+      box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.4);
+      border: none;
+      transform: translateY(0);
+      transition: all 0.3s ease;
     }
     .btn-primary:hover {
-      background: #1d4ed8;
+      background: linear-gradient(135deg, #1d4ed8 0%, #dc2626 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px 0 rgba(37, 99, 235, 0.5);
+    }
+    
+    /* Custom Flatpickr Styling - eBbook Theme */
+    .flatpickr-calendar {
+      border: none !important;
+      border-radius: 16px !important;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+      overflow: hidden !important;
+      z-index: 999999 !important;
+    }
+    
+    .flatpickr-calendar.open {
+      z-index: 999999 !important;
+    }
+    
+    /* Month header - solid blue */
+    .flatpickr-months {
+      background: #2563eb !important;
+      border-radius: 16px 16px 0 0 !important;
+      padding: 16px !important;
+    }
+    
+    .flatpickr-month {
+      color: white !important;
+    }
+    
+    .flatpickr-current-month {
+      color: white !important;
+    }
+    
+    .flatpickr-current-month .flatpickr-monthDropdown-month {
+      background: #2563eb !important;
+      color: white !important;
+    }
+    
+    .flatpickr-current-month .cur-month {
+      color: white !important;
+    }
+    
+    .flatpickr-prev-month,
+    .flatpickr-next-month {
+      color: white !important;
+      fill: white !important;
+    }
+    
+    .flatpickr-prev-month:hover,
+    .flatpickr-next-month:hover {
+      color: rgba(255, 255, 255, 0.8) !important;
+      fill: rgba(255, 255, 255, 0.8) !important;
+    }
+    
+    .flatpickr-current-month input.cur-year {
+      color: white !important;
+      background: transparent !important;
+    }
+    
+    .flatpickr-current-month .flatpickr-monthDropdown-months {
+      background: #2563eb !important;
+    }
+    
+    .flatpickr-current-month .flatpickr-monthDropdown-months .flatpickr-monthDropdown-month {
+      background: #2563eb !important;
+      color: white !important;
+    }
+    
+    /* Simple month navigation styling */
+    .flatpickr-current-month {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 0 !important;
+    }
+    
+    .flatpickr-current-month .cur-month {
+      font-size: 1.1rem !important;
+      font-weight: 600 !important;
+      color: white !important;
+      background: transparent !important;
+      border: none !important;
+      outline: none !important;
+      pointer-events: none !important;
+      cursor: default !important;
+      margin-right: 8px !important;
+      text-transform: capitalize !important;
+    }
+    
+    .flatpickr-current-month .cur-year {
+      display: none !important;
+    }
+    
+    .flatpickr-current-month .custom-year-text {
+      font-size: 1.1rem !important;
+      font-weight: 600 !important;
+      color: white !important;
+      margin-left: 8px !important;
+      user-select: none !important;
+    }
+    
+    /* Style the navigation arrows */
+    .flatpickr-prev-month,
+    .flatpickr-next-month {
+      position: relative !important;
+      width: 28px !important;
+      height: 28px !important;
+      background: rgba(255, 255, 255, 0.2) !important;
+      border-radius: 6px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      transition: all 0.2s ease !important;
+    }
+    
+    .flatpickr-prev-month:hover,
+    .flatpickr-next-month:hover {
+      background: rgba(255, 255, 255, 0.3) !important;
+      transform: scale(1.05) !important;
+    }
+    
+    .flatpickr-prev-month svg,
+    .flatpickr-next-month svg {
+      width: 12px !important;
+      height: 12px !important;
+    }
+    
+    /* Remove dropdown indicators */
+    .flatpickr-current-month .flatpickr-monthDropdown-months {
+      display: none !important;
+    }
+    
+    /* Override the material blue theme */
+    .flatpickr-calendar.material_blue .flatpickr-months {
+      background: #2563eb !important;
+    }
+    
+    .flatpickr-calendar.material_blue .flatpickr-day.selected {
+      background: linear-gradient(135deg, #2563eb 0%, #ef4444 100%) !important;
+      border-color: #2563eb !important;
+      box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.4) !important;
+    }
+    
+    .flatpickr-weekday {
+      color: #6b7280 !important;
+      font-weight: 600 !important;
+      font-size: 0.875rem !important;
+    }
+    
+    .flatpickr-day {
+      border-radius: 8px !important;
+      margin: 2px !important;
+      transition: all 0.2s ease !important;
+    }
+    
+    .flatpickr-day:hover {
+      background: rgba(37, 99, 235, 0.1) !important;
+      border-color: #2563eb !important;
+    }
+    
+    .flatpickr-day.selected {
+      background: linear-gradient(135deg, #2563eb 0%, #ef4444 100%) !important;
+      border-color: #2563eb !important;
+      box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.4) !important;
+      color: white !important;
+    }
+    
+    .flatpickr-day.today {
+      border-color: #ef4444 !important;
+      color: #ef4444 !important;
+      font-weight: 600 !important;
+    }
+    
+    .flatpickr-day.today.selected {
+      background: linear-gradient(135deg, #2563eb 0%, #ef4444 100%) !important;
+      color: white !important;
+    }
+    
+    .flatpickr-time {
+      border-top: 1px solid #e5e7eb !important;
+      background: #3b82f6 !important;
+      border-radius: 0 0 12px 12px !important;
+      padding: 6px 8px !important;
+      width: 100% !important;
+      box-sizing: border-box !important;
+      max-width: 180px !important;
+      height: auto !important;
+      min-height: 34px !important;
+      max-height: 34px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    
+    .flatpickr-time input {
+      font-size: 0.9rem !important;
+      font-weight: 600 !important;
+      color: white !important;
+      background: #3b82f6 !important;
+      border: none !important;
+      text-align: center !important;
+      width: auto !important;
+      min-width: 25px !important;
+      padding: 0 2px !important;
+      height: 22px !important;
+      line-height: 22px !important;
+      vertical-align: middle !important;
+      box-sizing: border-box !important;
+    }
+    
+    .flatpickr-time .flatpickr-time-separator {
+      font-size: 0.9rem !important;
+      font-weight: 600 !important;
+      color: white !important;
+      padding: 0 3px !important;
+      line-height: 22px !important;
+      height: 22px !important;
+      vertical-align: middle !important;
+      display: inline-block !important;
+      text-align: center !important;
+    }
+    
+    /* Time picker dropdown specific styling */
+    .flatpickr-calendar.hasTime .flatpickr-time {
+      background: #3b82f6 !important;
+      border-top: 1px solid #e5e7eb !important;
+      overflow: visible !important;
+    }
+    
+    /* Make time picker match the exact width of input field */
+    .flatpickr-calendar.hasTime {
+      width: 100% !important;
+      min-width: auto !important;
+      max-width: 180px !important;
+    }
+    
+    /* Override Flatpickr positioning to match input width */
+    .flatpickr-calendar.hasTime.open {
+      width: 180px !important;
+    }
+    
+    .flatpickr-time .flatpickr-am-pm,
+    .flatpickr-time .flatpickr-hour,
+    .flatpickr-time .flatpickr-minute {
+      background: #3b82f6 !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      font-weight: 600 !important;
+      color: white !important;
+      padding: 0 2px !important;
+      border-radius: 3px !important;
+      min-width: 25px !important;
+      max-width: 30px !important;
+      text-align: center !important;
+      font-size: 0.85rem !important;
+      height: 22px !important;
+      line-height: 22px !important;
+      vertical-align: middle !important;
+      box-sizing: border-box !important;
+      display: inline-block !important;
+    }
+    
+    .flatpickr-time .flatpickr-am-pm:hover,
+    .flatpickr-time .flatpickr-hour:hover,
+    .flatpickr-time .flatpickr-minute:hover {
+      background: #2563eb !important;
+      border-color: rgba(255, 255, 255, 0.4) !important;
+    }
+    
+    /* Time increment/decrement buttons */
+    .flatpickr-time .flatpickr-inc,
+    .flatpickr-time .flatpickr-dec {
+      background: #2563eb !important;
+      border: 1px solid rgba(255, 255, 255, 0.3) !important;
+      border-radius: 2px !important;
+      color: white !important;
+      transition: all 0.2s ease !important;
+      width: 14px !important;
+      height: 14px !important;
+      font-size: 8px !important;
+      line-height: 1 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    
+    .flatpickr-time .flatpickr-inc:hover,
+    .flatpickr-time .flatpickr-dec:hover {
+      background: #1d4ed8 !important;
+      border-color: rgba(255, 255, 255, 0.5) !important;
+    }
+    
+    /* Compact time container layout */
+    .flatpickr-time .flatpickr-time-container {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 2px !important;
+      width: 100% !important;
+      flex-wrap: nowrap !important;
+      height: 100% !important;
+      min-height: 25px !important;
+    }
+    
+    /* Ensure dropdowns always appear above other elements */
+    .flatpickr-calendar {
+      z-index: 999999 !important;
+    }
+    
+    .flatpickr-calendar.open {
+      z-index: 999999 !important;
+      position: absolute !important;
+    }
+    
+    /* Add subtle animations to form elements */
+    .form-group {
+      animation: fadeInUp 0.5s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    /* Improved message styling */
+    .error-message {
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+      color: #991b1b;
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      border: none;
+      box-shadow: 0 4px 14px rgba(220, 38, 38, 0.2);
+      font-weight: 500;
+    }
+    
+    .success-message {
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      color: #065f46;
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      border: none;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.2);
+      font-weight: 500;
     }
     .btn-success {
       background: #10B981;
@@ -249,9 +668,28 @@
     }
     .slots-card {
       background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px #0001;
-      padding: 24px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      padding: 32px;
+      border: 1px solid rgba(229, 231, 235, 0.5);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .slots-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    
+    .slots-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
     }
     .slots-card h3 {
       margin: 0 0 20px 0;
@@ -406,22 +844,7 @@
       padding: 40px 20px;
       color: #6b7280;
     }
-    .error-message {
-      background: #fee2e2;
-      color: #991b1b;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      border: 1px solid #fca5a5;
-    }
-    .success-message {
-      background: #d1fae5;
-      color: #065f46;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 16px;
-      border: 1px solid #a7f3d0;
-    }
+    /* Message styles are defined later in the file for better appearance */
     @media (max-width: 1000px) {
       .content-grid { 
         grid-template-columns: 1fr; 
@@ -454,7 +877,14 @@
         Slot Management <i class="fa fa-caret-down" style="margin-left:6px;"></i>
         <div class="dropdown-content" id="slot-dropdown-content">
           <a href="lecturer-appointment-slots.html">Set Appointment Slots</a>
-          <a href="#">Manage Booked Appointments</a>
+          <a href="lecturer-manage-slots.html">Manage Booked Appointments</a>
+        </div>
+      </div>
+      <div class="dropdown nav-link" tabindex="0" id="inquiry-dropdown">
+        Inquiry <i class="fa fa-caret-down" style="margin-left:6px;"></i>
+        <div class="dropdown-content" id="inquiry-dropdown-content">
+          <a href="inquirylect.html">Submit Inquiry</a>
+          <a href="viewinquirylect.html">Inquiry History</a>
         </div>
       </div>
     </nav>
@@ -476,31 +906,45 @@
 
     <div class="content-grid">
       <div class="form-card">
-        <h3>Add New Slot</h3>
+        <h3><i class="fa fa-plus-circle" style="color: #2563eb; margin-right: 8px;"></i> Add New Slot</h3>
         <div id="message-container"></div>
         <form id="slot-form">
           <div class="form-group">
-            <label for="slot-date">Date</label>
-            <input type="text" id="slot-date" placeholder="Select date" readonly>
+            <label for="slot-date">
+              <i class="fa fa-calendar-alt"></i>
+              Select Date
+            </label>
+            <input type="text" id="slot-date" placeholder="Choose a date for your appointment slot" readonly>
           </div>
           <div class="time-inputs">
             <div class="form-group">
-              <label for="start-time">Start Time</label>
+              <label for="start-time">
+                <i class="fa fa-clock"></i>
+                Start Time
+              </label>
               <input type="text" id="start-time" placeholder="Start time" readonly>
             </div>
             <div class="form-group">
-              <label for="end-time">End Time</label>
+              <label for="end-time">
+                <i class="fa fa-clock"></i>
+                End Time
+              </label>
               <input type="text" id="end-time" placeholder="End time" readonly>
             </div>
           </div>
           <button type="submit" class="btn btn-primary" style="width: 100%;">
-            <i class="fa fa-plus"></i> Add Slot
+            <i class="fa fa-plus"></i> Create Appointment Slot
           </button>
         </form>
       </div>
 
       <div class="slots-card">
-        <h3>Your Appointment Slots</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h3 style="margin: 0;">Your Appointment Slots</h3>
+          <button onclick="manualRefresh()" style="background: #10B981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.9rem;">
+            <i class="fa fa-refresh"></i> Refresh
+          </button>
+        </div>
         <div id="slots-container">
           <div class="loading">
             <i class="fa fa-spinner fa-spin"></i>
@@ -530,12 +974,103 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Initialize Flatpickr
+    // Initialize Flatpickr with eBbook theme
     const datePicker = flatpickr("#slot-date", {
       inline: false,
       minDate: "today",
       dateFormat: "Y-m-d",
-      theme: "material_blue"
+      position: "auto center",
+      animate: true,
+      static: false,
+      disableMobile: true,
+      monthSelectorType: "static",
+      locale: {
+        weekdays: {
+          shorthand: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+          longhand: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        },
+        months: {
+          shorthand: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+          longhand: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        }
+      },
+      onOpen: function() {
+        // Ensure proper z-index and apply custom styling
+        const calendar = document.querySelector('.flatpickr-calendar');
+        if (calendar) {
+          calendar.style.zIndex = '999999';
+          // Force our custom styling
+          const months = calendar.querySelector('.flatpickr-months');
+          if (months) {
+            months.style.background = '#2563eb';
+          }
+          
+          // Replace year input with plain text
+          setTimeout(() => {
+            const yearInput = calendar.querySelector('.cur-year');
+            const currentMonth = calendar.querySelector('.cur-month');
+            const currentMonthContainer = calendar.querySelector('.flatpickr-current-month');
+            
+            if (yearInput && currentMonthContainer) {
+              // Check if custom year text already exists
+              let yearSpan = calendar.querySelector('.custom-year-text');
+              
+              if (!yearSpan) {
+                // Only create if it doesn't exist
+                const year = yearInput.value;
+                
+                yearSpan = document.createElement('span');
+                yearSpan.className = 'custom-year-text';
+                yearSpan.textContent = year;
+                yearSpan.style.cssText = `
+                  font-size: 1.1rem !important;
+                  font-weight: 600 !important;
+                  color: white !important;
+                  margin-left: 8px !important;
+                `;
+                
+                currentMonthContainer.appendChild(yearSpan);
+              } else {
+                // Update existing year text
+                yearSpan.textContent = yearInput.value;
+              }
+              
+              // Hide the original year input
+              yearInput.style.display = 'none';
+            }
+            
+            // Make month text non-interactive
+            if (currentMonth) {
+              currentMonth.style.pointerEvents = 'none';
+              currentMonth.style.cursor = 'default';
+            }
+          }, 10);
+        }
+      },
+      onReady: function() {
+        // Apply styling when ready
+        const calendar = document.querySelector('.flatpickr-calendar');
+        if (calendar) {
+          const months = calendar.querySelector('.flatpickr-months');
+          if (months) {
+            months.style.background = '#2563eb';
+          }
+        }
+      },
+      onMonthChange: function() {
+        // Update year text when month changes
+        setTimeout(() => {
+          const calendar = document.querySelector('.flatpickr-calendar');
+          if (calendar) {
+            const yearInput = calendar.querySelector('.cur-year');
+            const yearSpan = calendar.querySelector('.custom-year-text');
+            
+            if (yearInput && yearSpan) {
+              yearSpan.textContent = yearInput.value;
+            }
+          }
+        }, 10);
+      }
     });
 
     const startTimePicker = flatpickr("#start-time", {
@@ -543,7 +1078,15 @@
       noCalendar: true,
       dateFormat: "H:i",
       time_24hr: true,
-      minuteIncrement: 30
+      minuteIncrement: 30,
+      position: "auto center",
+      static: false,
+      onOpen: function() {
+        const calendar = document.querySelector('.flatpickr-calendar');
+        if (calendar) {
+          calendar.style.zIndex = '999999';
+        }
+      }
     });
 
     const endTimePicker = flatpickr("#end-time", {
@@ -551,7 +1094,15 @@
       noCalendar: true,
       dateFormat: "H:i",
       time_24hr: true,
-      minuteIncrement: 30
+      minuteIncrement: 30,
+      position: "auto center",
+      static: false,
+      onOpen: function() {
+        const calendar = document.querySelector('.flatpickr-calendar');
+        if (calendar) {
+          calendar.style.zIndex = '999999';
+        }
+      }
     });
 
     // Global variables
@@ -602,6 +1153,19 @@
       }
     });
 
+    // Inquiry dropdown
+    const inquiryDropdown = document.getElementById('inquiry-dropdown');
+    const inquiryDropdownContent = document.getElementById('inquiry-dropdown-content');
+    inquiryDropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+      inquiryDropdownContent.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!inquiryDropdown.contains(e.target)) {
+        inquiryDropdownContent.classList.remove('show');
+      }
+    });
+
     // Utility functions
     function showMessage(message, type = 'error') {
       const container = document.getElementById('message-container');
@@ -644,12 +1208,20 @@
     // Check if slot is booked
     async function isSlotBooked(slotId) {
       try {
+        // Get all appointments for this slot
         const bookingsQuery = query(
           collection(db, 'appointments'), 
           where('slotId', '==', slotId)
         );
         const bookingsSnapshot = await getDocs(bookingsQuery);
-        return !bookingsSnapshot.empty;
+        
+        // Check if there are any pending or approved appointments
+        const activeBookings = bookingsSnapshot.docs.filter(doc => {
+          const status = doc.data().status;
+          return status === 'pending' || status === 'approved';
+        });
+        
+        return activeBookings.length > 0;
       } catch (error) {
         console.error('Error checking slot bookings:', error);
         return false;
@@ -997,9 +1569,86 @@
       }
     }
 
+    // Auto-refresh slots every 30 seconds to catch changes from other pages
+    async function autoRefresh() {
+      try {
+        await loadSlots();
+      } catch (error) {
+        console.error('Auto-refresh failed:', error);
+      }
+    }
+
+    // Manual refresh function for the refresh button
+    window.manualRefresh = async function() {
+      const refreshBtn = document.querySelector('button[onclick="manualRefresh()"]');
+      const originalText = refreshBtn.innerHTML;
+      
+      refreshBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Refreshing...';
+      refreshBtn.disabled = true;
+      
+      try {
+        await loadSlots();
+        showMessage('Slots refreshed successfully!', 'success');
+      } catch (error) {
+        console.error('Manual refresh failed:', error);
+        showMessage('Failed to refresh slots');
+      } finally {
+        refreshBtn.innerHTML = originalText;
+        refreshBtn.disabled = false;
+      }
+    };
+
     // Initialize the page
     await loadSlots();
     await removeExpiredSlots();
+    
+    // Set up auto-refresh every 30 seconds
+    setInterval(autoRefresh, 30000);
+  </script>
+
+  <!-- Inquiry Modal -->
+  <div id="inquiry-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 500px; position: relative;">
+      <span style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer;" onclick="closeInquiryModal()">&times;</span>
+      <h3 style="margin-bottom: 20px;">Submit Inquiry</h3>
+      <form id="inquiry-form">
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: 600;">Subject:</label>
+          <input type="text" id="inquiry-subject" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 8px;" required>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: 600;">Message:</label>
+          <textarea id="inquiry-message" rows="5" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 8px;" required></textarea>
+        </div>
+        <button type="submit" style="background: #10B981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Submit Inquiry</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Inquiry modal functions
+    function openInquiryModal() {
+      document.getElementById('inquiry-modal').style.display = 'flex';
+    }
+
+    function closeInquiryModal() {
+      document.getElementById('inquiry-modal').style.display = 'none';
+      document.getElementById('inquiry-form').reset();
+    }
+
+    // Make functions global
+    window.openInquiryModal = openInquiryModal;
+    window.closeInquiryModal = closeInquiryModal;
+
+    // Handle inquiry form submission
+    document.getElementById('inquiry-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const subject = document.getElementById('inquiry-subject').value;
+      const message = document.getElementById('inquiry-message').value;
+      
+      alert('Inquiry submitted successfully!');
+      closeInquiryModal();
+    });
   </script>
 </body>
 </html> 

@@ -3,202 +3,598 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Submit Inquiry</title>
+  <title>Submit Inquiry - Lecturer Portal</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      background-color: #0a0a0a;
-      color: white;
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      position: relative;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+      min-height: 100vh;
+      padding: 2rem;
     }
-    .back-home {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      background-color: #00aaff;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      border-radius: 4px;
-      z-index: 1000;
-    }
+
     .container {
-      border: 1px solid #444;
-      background-color: #1c1c1c;
-      padding: 20px;
-      max-width: 900px;
-      margin: 80px auto 20px; /* account for fixed button */
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
     }
-    .inline-success {
-      display: none;
-      margin-bottom: 15px;
-      color: #00ff00;
-      font-size: 1.1rem;
-      text-align: left; /* match heading alignment */
-    }
-    h3 {
-      margin-top: 0;
-      text-align: left;
-    }
-    .field {
-      display: flex;
-      margin-bottom: 20px;
-      align-items: flex-start;
-    }
-    .label {
-      width: 150px;
-      color: #bbb;
-      padding-top: 5px;
-    }
-    textarea, .value {
-      background-color: #101010;
-      border: 1px solid #333;
-      padding: 10px;
-      flex: 1;
+
+    .header {
+      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
       color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      opacity: 0.9;
+      font-size: 1.1rem;
+    }
+
+    .form-container {
+      padding: 2rem;
+    }
+
+    .user-info {
+      background: #f8fafc;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      border: 1px solid #e2e8f0;
+    }
+
+    .user-info h3 {
+      color: #1e293b;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .user-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+
+    .user-detail {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #64748b;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .required {
+      color: #ef4444;
+    }
+
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="text"]:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    textarea {
       resize: vertical;
-      min-height: 60px;
+      min-height: 120px;
+    }
+
+    .file-upload {
+      position: relative;
+      display: inline-block;
+      cursor: pointer;
       width: 100%;
     }
-    .note {
-      font-size: 0.9rem;
-      color: #888;
-      margin-top: -15px;
-      margin-left: 150px;
-      margin-bottom: 15px;
+
+    .file-upload input[type="file"] {
+      display: none;
     }
-    .actions {
+
+    .file-upload-label {
       display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      margin-left: 150px;
-      gap: 15px;
-    }
-    .attach-btn label {
-      color: #00aaff;
-      background-color: transparent;
-      border: none;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      border: 2px dashed #d1d5db;
+      border-radius: 6px;
+      background: #f9fafb;
+      color: #6b7280;
       cursor: pointer;
-      font-size: 1rem;
+      transition: all 0.2s;
     }
-    .attach-btn input {
-      display: none;
+
+    .file-upload-label:hover {
+      border-color: #2563eb;
+      background: #f0f4ff;
+      color: #2563eb;
     }
-    .send-btn {
-      background-color: #00aaff;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 1rem;
-      cursor: pointer;
+
+    .file-info {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: #ecfdf5;
+      border: 1px solid #d1fae5;
       border-radius: 4px;
-    }
-    /* Popup overlay */
-    #popup {
+      color: #065f46;
+      font-size: 0.9rem;
       display: none;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: #222;
-      border: 1px solid #444;
-      padding: 20px 30px;
-      border-radius: 8px;
+    }
+
+    .priority-selector {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+    }
+
+    .priority-option {
+      position: relative;
+    }
+
+    .priority-option input[type="radio"] {
+      display: none;
+    }
+
+    .priority-label {
+      display: block;
+      padding: 0.75rem;
       text-align: center;
-      font-size: 1.1rem;
-      z-index: 1000;
-      line-height: 1.5;
+      border: 2px solid #e5e7eb;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .priority-option input[type="radio"]:checked + .priority-label {
+      border-color: #2563eb;
+      background: #2563eb;
+      color: white;
+    }
+
+    .priority-low .priority-label {
+      color: #059669;
+    }
+
+    .priority-medium .priority-label {
+      color: #d97706;
+    }
+
+    .priority-high .priority-label {
+      color: #dc2626;
+    }
+
+    .priority-option input[type="radio"]:checked + .priority-label.priority-low {
+      background: #059669;
+      border-color: #059669;
+    }
+
+    .priority-option input[type="radio"]:checked + .priority-label.priority-medium {
+      background: #d97706;
+      border-color: #d97706;
+    }
+
+    .priority-option input[type="radio"]:checked + .priority-label.priority-high {
+      background: #dc2626;
+      border-color: #dc2626;
+    }
+
+    .submit-section {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid transparent;
+      border-top: 2px solid currentColor;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .success-message {
+      background: #ecfdf5;
+      border: 1px solid #d1fae5;
+      color: #065f46;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    .error-message {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+
+      .header {
+        padding: 1.5rem;
+      }
+
+      .form-container {
+        padding: 1.5rem;
+      }
+
+      .submit-section {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
-  <button id="backBtn" class="back-home">Go back to homepage</button>
   <div class="container">
-    <div id="inline-success" class="inline-success"><strong>Ticket successfully submitted!</strong></div>
-    <h3>Submit Ticket</h3>
-
-    <div class="field">
-      <div class="label">Name:</div>
-      <div class="value">Nurasma' Binti Shamsuddin (2424244444)</div>
+    <div class="header">
+      <h1><i class="fas fa-question-circle"></i> Submit Inquiry</h1>
+      <p>Get support from the administration team</p>
     </div>
 
-    <div class="field">
-      <div class="label">Subject: <span style="color: red;">*</span></div>
-      <textarea id="subject" placeholder="Enter subject" required></textarea>
-    </div>
-
-    <div class="field">
-      <div class="label">Message: <span style="color: red;">*</span></div>
-      <textarea id="message" placeholder="Describe your issue" required></textarea>
-    </div>
-
-    <div class="field">
-      <div class="label">Sensitive Data:</div>
-      <textarea placeholder="Optional..."></textarea>
-    </div>
-
-    <div class="note">
-      If you have any sensitive data, place them here. These details will not appear in the ticket history.
-    </div>
-
-    <div class="actions">
-      <div class="attach-btn">
-        <label for="fileUpload">Attach File</label>
-        <input type="file" id="fileUpload">
+    <div class="form-container">
+      <div class="success-message" id="success-message">
+        <strong><i class="fas fa-check-circle"></i> Success!</strong>
+        <p>Your inquiry has been submitted successfully. Inquiry ID: <span id="inquiry-id"></span></p>
       </div>
-      <div id="attached-file-info" class="note"></div>
-      <button class="send-btn">Send</button>
+
+      <div class="error-message" id="error-message">
+        <strong><i class="fas fa-exclamation-triangle"></i> Error!</strong>
+        <p id="error-text">Something went wrong. Please try again.</p>
+      </div>
+
+      <div class="user-info">
+        <h3><i class="fas fa-chalkboard-teacher"></i> Your Information</h3>
+        <div class="user-details">
+          <div class="user-detail">
+            <i class="fas fa-user"></i>
+            <span id="user-name">Loading...</span>
+          </div>
+          <div class="user-detail">
+            <i class="fas fa-envelope"></i>
+            <span id="user-email">Loading...</span>
+          </div>
+          <div class="user-detail">
+            <i class="fas fa-chalkboard-teacher"></i>
+            <span>Lecturer</span>
+          </div>
+        </div>
+      </div>
+
+      <form id="inquiry-form">
+        <div class="form-group">
+          <label for="category">
+            <i class="fas fa-tag"></i>
+            Category <span class="required">*</span>
+          </label>
+          <select id="category" required>
+            <option value="">Select a category</option>
+            <option value="appointment">Appointment Management</option>
+            <option value="student">Student Issues</option>
+            <option value="technical">Technical Support</option>
+            <option value="account">Account Issues</option>
+            <option value="schedule">Schedule Management</option>
+            <option value="system">System Issues</option>
+            <option value="policy">Policy Questions</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="subject">
+            <i class="fas fa-heading"></i>
+            Subject <span class="required">*</span>
+          </label>
+          <input type="text" id="subject" placeholder="Brief description of your inquiry" required maxlength="100">
+        </div>
+
+        <div class="form-group">
+          <label for="description">
+            <i class="fas fa-align-left"></i>
+            Description <span class="required">*</span>
+          </label>
+          <textarea id="description" placeholder="Provide detailed information about your inquiry..." required maxlength="1000"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>
+            <i class="fas fa-exclamation"></i>
+            Priority <span class="required">*</span>
+          </label>
+          <div class="priority-selector">
+            <div class="priority-option priority-low">
+              <input type="radio" id="priority-low" name="priority" value="low" checked>
+              <label for="priority-low" class="priority-label">Low</label>
+            </div>
+            <div class="priority-option priority-medium">
+              <input type="radio" id="priority-medium" name="priority" value="medium">
+              <label for="priority-medium" class="priority-label">Medium</label>
+            </div>
+            <div class="priority-option priority-high">
+              <input type="radio" id="priority-high" name="priority" value="high">
+              <label for="priority-high" class="priority-label">High</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="attachment">
+            <i class="fas fa-paperclip"></i>
+            Attachment (Optional)
+          </label>
+          <div class="file-upload">
+            <input type="file" id="attachment" accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg,.gif">
+            <label for="attachment" class="file-upload-label">
+              <i class="fas fa-cloud-upload-alt"></i>
+              Click to upload file or drag and drop
+            </label>
+          </div>
+          <div class="file-info" id="file-info"></div>
+        </div>
+
+        <div class="submit-section">
+          <button type="button" class="btn btn-secondary" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-primary" id="submit-btn">
+            <i class="fas fa-paper-plane"></i>
+            Submit Inquiry
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <div id="popup"></div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, doc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
 
-  <script>
-    const fileInput = document.getElementById('fileUpload');
-    const fileInfo = document.getElementById('attached-file-info');
-    fileInput.addEventListener('change', () => {
-      const file = fileInput.files[0];
-      fileInfo.textContent = file ? `Attached: ${file.name} (${file.type || 'Unknown type'})` : '';
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain: "appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531",
+      storageBucket: "appointment-management-c2531.firebasestorage.app",
+      messagingSenderId: "428786083628",
+      appId: "1:428786083628:web:d9d9576b12581cc697ee89",
+      measurementId: "G-9FM8F1WJMF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // Load user information
+    window.addEventListener('DOMContentLoaded', async () => {
+      await loadUserInfo();
+      setupFileUpload();
     });
 
-    const backBtn = document.getElementById('backBtn');
-    backBtn.addEventListener('click', () => {
-      if (confirm('Are you sure you want to go back to the homepage?')) {
+    async function loadUserInfo() {
+      try {
+        const userEmail = sessionStorage.getItem('userEmail');
+        if (!userEmail) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        const lecturerDoc = await getDoc(doc(db, 'lecturers', userEmail));
+        if (lecturerDoc.exists()) {
+          const lecturerData = lecturerDoc.data();
+          document.getElementById('user-name').textContent = lecturerData.name || 'Unknown';
+          document.getElementById('user-email').textContent = userEmail;
+        } else {
+          document.getElementById('user-name').textContent = 'Unknown Lecturer';
+          document.getElementById('user-email').textContent = userEmail;
+        }
+      } catch (error) {
+        console.error('Error loading user info:', error);
+        document.getElementById('user-name').textContent = 'Error loading name';
+        document.getElementById('user-email').textContent = sessionStorage.getItem('userEmail') || 'Unknown';
+      }
+    }
+
+    function setupFileUpload() {
+      const fileInput = document.getElementById('attachment');
+      const fileInfo = document.getElementById('file-info');
+
+      fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          // Validate file size (5MB limit)
+          if (file.size > 5 * 1024 * 1024) {
+            showError('File size must be less than 5MB');
+            fileInput.value = '';
+            return;
+          }
+
+          fileInfo.style.display = 'block';
+          fileInfo.innerHTML = `
+            <i class="fas fa-file"></i>
+            <strong>${file.name}</strong> (${(file.size / 1024 / 1024).toFixed(2)} MB)
+          `;
+        } else {
+          fileInfo.style.display = 'none';
+        }
+      });
+    }
+
+    // Form submission
+    document.getElementById('inquiry-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submit-btn');
+      const originalText = submitBtn.innerHTML;
+      
+      try {
+        // Disable button and show loading
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<div class="loading-spinner"></div> Submitting...';
+
+        // Get form data
+        const formData = {
+          userEmail: sessionStorage.getItem('userEmail'),
+          userName: document.getElementById('user-name').textContent,
+          userType: 'lecturer',
+          category: document.getElementById('category').value,
+          subject: document.getElementById('subject').value,
+          description: document.getElementById('description').value,
+          priority: document.querySelector('input[name="priority"]:checked').value,
+          status: 'open',
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        };
+
+        // Upload attachment if provided
+        const fileInput = document.getElementById('attachment');
+        if (fileInput.files[0]) {
+          const file = fileInput.files[0];
+          const storageRef = ref(storage, `inquiries/${Date.now()}_${file.name}`);
+          const snapshot = await uploadBytes(storageRef, file);
+          const downloadURL = await getDownloadURL(snapshot.ref);
+          formData.attachmentUrl = downloadURL;
+          formData.attachmentName = file.name;
+        }
+
+        // Submit to Firestore
+        const docRef = await addDoc(collection(db, 'inquiries'), formData);
+        
+        // Generate inquiry ID (using document ID)
+        const inquiryId = `INQ-${docRef.id.slice(-8).toUpperCase()}`;
+        
+        // Show success message
+        showSuccess(inquiryId);
+        
+        // Reset form
+        document.getElementById('inquiry-form').reset();
+        document.getElementById('file-info').style.display = 'none';
+        
+        // Redirect after 3 seconds
+        setTimeout(() => {
+          window.location.href = 'lecturer.html';
+        }, 3000);
+
+      } catch (error) {
+        console.error('Error submitting inquiry:', error);
+        showError('Failed to submit inquiry. Please try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+      }
+    });
+
+    function showSuccess(inquiryId) {
+      document.getElementById('inquiry-id').textContent = inquiryId;
+      document.getElementById('success-message').style.display = 'block';
+      document.getElementById('error-message').style.display = 'none';
+      document.getElementById('success-message').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function showError(message) {
+      document.getElementById('error-text').textContent = message;
+      document.getElementById('error-message').style.display = 'block';
+      document.getElementById('success-message').style.display = 'none';
+      document.getElementById('error-message').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    window.goBack = function() {
+      if (confirm('Are you sure you want to cancel? Any unsaved changes will be lost.')) {
         window.location.href = 'lecturer.html';
       }
-    });
-
-    const subjectInput = document.getElementById('subject');
-    const messageInput = document.getElementById('message');
-    const popup = document.getElementById('popup');
-    const inlineSuccess = document.getElementById('inline-success');
-
-    document.querySelector('.send-btn').addEventListener('click', e => {
-      e.preventDefault();
-      const subjectVal = subjectInput.value.trim();
-      const messageVal = messageInput.value.trim();
-      if (!subjectVal || !messageVal) {
-        alert('You must fill in subject and message');
-        return;
-      }
-      inlineSuccess.style.display = 'block';
-      let count = 10;
-      popup.innerHTML = `<strong>Ticket successfully submitted!</strong><br>Returning to home page in ${count} seconds...`;
-      popup.style.display = 'block';
-
-      const intervalId = setInterval(() => {
-        count -= 1;
-        if (count > 0) {
-          popup.innerHTML = `<strong>Ticket successfully submitted!</strong><br>Returning to home page in ${count} seconds...`;
-        } else {
-          clearInterval(intervalId);
-          window.location.href = 'lecturer.html';
-        }
-      }, 1000);
-    });
+    };
   </script>
 </body>
 </html>
