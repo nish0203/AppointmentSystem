@@ -1362,6 +1362,44 @@
     window.debugDatabase = debugDatabase;
     window.reloadAppointments = reloadAppointments;
 
+    // --- Instant Avatar Loading (cached from login) ---
+    const cachedAvatarUrl = sessionStorage.getItem('userAvatarUrl');
+    if (cachedAvatarUrl) {
+      console.log('📸 Loading cached avatar instantly:', cachedAvatarUrl);
+      const avatarImg = document.querySelector('#avatar-btn img');
+      if (avatarImg) {
+        avatarImg.src = cachedAvatarUrl;
+      }
+    }
+
+    // Load user avatar from Firebase (for updates)
+    (async () => {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (userEmail) {
+        try {
+          const userDoc = await getDoc(doc(db, 'lecturers', userEmail));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            if (userData.avatarUrl) {
+              const cachedAvatar = sessionStorage.getItem('userAvatarUrl');
+              // Only update if avatar has changed
+              if (userData.avatarUrl !== cachedAvatar) {
+                console.log('🔄 Updating avatar from Firebase');
+                const avatarImg = document.querySelector('#avatar-btn img');
+                if (avatarImg) {
+                  avatarImg.src = userData.avatarUrl;
+                }
+                // Update cache
+                sessionStorage.setItem('userAvatarUrl', userData.avatarUrl);
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error loading user avatar:', error);
+        }
+      }
+    })();
+
     // --- Navigation dropdown logic ---
     const avatarBtn = document.getElementById('avatar-btn');
     const logoutDropdown = document.getElementById('logout-dropdown');

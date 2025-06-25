@@ -390,6 +390,18 @@
       }
     }
   </style>
+  <script>
+    // Set avatar immediately when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      const cachedAvatar = sessionStorage.getItem('userAvatarUrl');
+      if (cachedAvatar) {
+        const avatarImg = document.querySelector('#avatar-btn img');
+        if (avatarImg) {
+          avatarImg.src = cachedAvatar;
+        }
+      }
+    });
+  </script>
 </head>
 <body>
   <div class="header">
@@ -410,7 +422,7 @@
     </nav>
     <div class="logout-wrapper">
       <button class="avatar-btn" id="avatar-btn">
-        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2QjcyODAiLz4KPHN2ZyB4PSI4IiB5PSI4IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzRjNGM0YyI+CjxwYXRoIGQ9Ik0xMiAyQzEzLjEgMiAxNCAyLjkgMTQgNEMxNCA1LjEgMTMuMSA2IDEyIDZDMTAuOSA2IDEwIDUuMSAxMCA0QzEwIDIuOSAxMC45IDIgMTIgMlpNMjEgOVYyMkgxNVYxNkgxM1Y3SDE1QzE1IDguNjYgMTYuMzQgMTAgMTggMTBIMTlWMTJIMTdWMjJIMTFWMTJIOVYxMEgxMEM4IDEwIDYuMzQgMTAgNiA4LjM0VjdIOEM4IDcgOCA3IDggN0g5VjZIMTBWN0gxMVY5SDEzVjEwSDEyVjEySDEwVjEwSDlWOUg4VjdIOVY5SDEwVjEwSDEyVjlIMTNWN0gxMlY2SDEwVjdIOVY2SDhWN0g2VjlIMjFaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+" alt="Student Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
+        <img src="placeholder.png" alt="Student Profile" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;" />
       </button>
       <div class="logout-dropdown" id="logout-dropdown">
         <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
@@ -672,17 +684,55 @@
     })();
 
     // Load user avatar from Firebase
+    // Set cached avatar immediately on page load
+    const initializeAvatar = () => {
+      const cachedAvatar = sessionStorage.getItem('userAvatarUrl');
+      if (cachedAvatar) {
+        console.log('📸 Setting cached avatar immediately:', cachedAvatar);
+        const avatarImg = document.querySelector('#avatar-btn img');
+        if (avatarImg) {
+          avatarImg.src = cachedAvatar;
+        }
+      }
+    };
+
+    // Call immediately
+    initializeAvatar();
+
     async function loadUserAvatar(email) {
       try {
+        const avatarImg = document.querySelector('#avatar-btn img');
+        if (!avatarImg) return;
+        
         const userDoc = await getDoc(doc(db, 'students', email));
+        const cachedAvatar = sessionStorage.getItem('userAvatarUrl');
+        
+        let avatarUrl = null;
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          if (userData.avatarUrl) {
-            const avatarImg = document.querySelector('#avatar-btn img');
-            if (avatarImg) {
-              avatarImg.src = userData.avatarUrl;
-            }
-          }
+          avatarUrl = userData.avatarUrl;
+        }
+        
+        // Use fresh data or cached data
+        const finalAvatarUrl = avatarUrl || cachedAvatar;
+        
+        if (finalAvatarUrl) {
+          // Preload the image to prevent flicker
+          const img = new Image();
+          img.onload = function() {
+            // Successfully loaded - update UI
+            avatarImg.src = finalAvatarUrl;
+            // Cache for future use
+            sessionStorage.setItem('userAvatarUrl', finalAvatarUrl);
+          };
+          img.onerror = function() {
+            // Failed to load - keep placeholder
+            console.log('Avatar failed to load, keeping placeholder');
+          };
+          img.src = finalAvatarUrl;
+        } else {
+          // No avatar URL available - ensure placeholder is visible
+          console.log('No avatar URL available, using placeholder');
         }
       } catch (error) {
         console.error('Error loading user avatar:', error);
@@ -945,8 +995,14 @@
       return `
         <div class="appointment-card">
           <div class="appointment-header">
+            <div class="lecturer-profile" style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
+              <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjUiIGZpbGw9IiM2QjcyODAiLz4KPHBhdGggZD0iTTI1IDEyLjVDMjkuMTQgMTIuNSAzMi41IDE1Ljg2IDMyLjUgMjBDMzIuNSAyNC4xNCAyOS4xNCAyNy41IDI1IDI3LjVDMjAuODYgMjcuNSAxNy41IDI0LjE0IDE3LjUgMjBDMTcuNSAxNS44NiAyMC44NiAxMi41IDI1IDEyLjVaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMTAgNDBDMTAgMzMuMDk2NSAxNS41OTY1IDI3LjUgMjIuNSAyNy41SDI3LjVDMzQuNDAzNSAyNy41IDQwIDMzLjA5NjUgNDAgNDBWNDVIMTBWNDBaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" alt="Lecturer Avatar" style="width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0;" />
+              <div>
+                <h3 style="margin: 0; font-size: 1.1rem; color: #374151;">${appointment.lecturerName || appointment.lecturerEmail || 'Lecturer'}</h3>
+                <div style="font-size: 0.85rem; color: #6b7280; margin-top: 2px;">Lecturer</div>
+              </div>
+            </div>
             <div class="appointment-info">
-              <h3>${appointment.lecturerName || appointment.lecturerEmail || 'Lecturer'}</h3>
               <div class="meta">
                 <span><i class="fa fa-calendar"></i> ${appointment.date}</span>
                 <span class="highlight"><i class="fa fa-clock"></i> ${appointment.startTime} - ${appointment.endTime}</span>
@@ -1463,22 +1519,40 @@
       });
     });
 
-    // Navigation dropdown functionality
+    // Navigation dropdown functionality with debugging
     const avatarBtn = document.getElementById('avatar-btn');
     const logoutDropdown = document.getElementById('logout-dropdown');
-    avatarBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      logoutDropdown.classList.toggle('show');
-    });
-    document.addEventListener('click', (e) => {
-      if (!avatarBtn.contains(e.target) && !logoutDropdown.contains(e.target)) {
-        logoutDropdown.classList.remove('show');
+    
+    console.log('🔍 Avatar button found:', avatarBtn);
+    console.log('🔍 Logout dropdown found:', logoutDropdown);
+    
+    if (avatarBtn && logoutDropdown) {
+      avatarBtn.addEventListener('click', (e) => {
+        console.log('🖱️ Avatar button clicked!');
+        e.stopPropagation();
+        logoutDropdown.classList.toggle('show');
+        console.log('👆 Dropdown should be:', logoutDropdown.classList.contains('show') ? 'visible' : 'hidden');
+      });
+      
+      document.addEventListener('click', (e) => {
+        if (!avatarBtn.contains(e.target) && !logoutDropdown.contains(e.target)) {
+          logoutDropdown.classList.remove('show');
+        }
+      });
+      
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+          console.log('🚪 Logout clicked!');
+          sessionStorage.clear();
+          window.location.href = 'login.html';
+        });
+      } else {
+        console.error('❌ Logout button not found!');
       }
-    });
-    document.getElementById('logout-btn').addEventListener('click', () => {
-      sessionStorage.clear();
-      window.location.href = 'login.html';
-    });
+    } else {
+      console.error('❌ Avatar button or dropdown not found!');
+    }
 
     // Inquiry dropdown
     const inquiryDropdown = document.getElementById('inquiry-dropdown');

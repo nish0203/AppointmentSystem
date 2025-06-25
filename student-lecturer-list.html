@@ -338,6 +338,18 @@
       }
     }
   </style>
+  <script>
+    // Set avatar immediately when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      const cachedAvatar = sessionStorage.getItem('userAvatarUrl');
+      if (cachedAvatar) {
+        const avatarImg = document.querySelector('#avatar-btn img');
+        if (avatarImg) {
+          avatarImg.src = cachedAvatar;
+        }
+      }
+    });
+  </script>
 </head>
 <body>
   <div class="header">
@@ -440,19 +452,37 @@
       }
     });
 
+    // Set cached avatar immediately on page load
+    const cachedAvatar = sessionStorage.getItem('userAvatarUrl');
+    if (cachedAvatar) {
+      console.log('📸 Setting cached avatar immediately:', cachedAvatar);
+      const avatarImg = document.querySelector('#avatar-btn img');
+      if (avatarImg) {
+        avatarImg.src = cachedAvatar;
+      }
+    }
+
     // Load user avatar from sessionStorage
     (async () => {
       const userEmail = sessionStorage.getItem('userEmail');
       if (userEmail) {
         try {
+
           const userDoc = await getDoc(doc(db, 'students', userEmail));
           if (userDoc.exists()) {
             const userData = userDoc.data();
             if (userData.avatarUrl) {
-              const avatarImg = document.querySelector('#avatar-btn img');
-              if (avatarImg) {
-                avatarImg.src = userData.avatarUrl;
-              }
+              // Preload the image to prevent flicker
+              const img = new Image();
+              img.onload = function() {
+                const avatarImg = document.querySelector('#avatar-btn img');
+                if (avatarImg) {
+                  avatarImg.src = userData.avatarUrl;
+                }
+                // Cache for future use
+                sessionStorage.setItem('userAvatarUrl', userData.avatarUrl);
+              };
+              img.src = userData.avatarUrl;
             }
           }
         } catch (error) {

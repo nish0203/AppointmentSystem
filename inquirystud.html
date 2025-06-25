@@ -126,6 +126,14 @@
       padding: 0;
     }
     
+    .header .avatar-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+    
     .logout-wrapper {
       position: relative;
       display: flex;
@@ -491,7 +499,7 @@
     </nav>
     <div class="logout-wrapper">
       <button class="avatar-btn" onclick="toggleLogoutDropdown()" id="avatarBtn">
-        <span style="font-weight: 600; color: #666;">S</span>
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiM2QjcyODAiLz4KPHBhdGggZD0iTTIwIDEwQzIzLjMxIDEwIDI2IDEyLjY5IDI2IDE2QzI2IDE5LjMxIDIzLjMxIDIyIDIwIDIyQzE2LjY5IDIyIDE0IDE5LjMxIDE0IDE2QzE0IDEyLjY5IDE2LjY5IDEwIDIwIDEwWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTggMzJDOCAyNi40NzcyIDEyLjQ3NzIgMjIgMTggMjJIMjJDMjcuNTIyOCAyMiAzMiAyNi40NzcyIDMyIDMyVjM2SDhWMzJaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4=" alt="Student Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
       </button>
       <div class="logout-dropdown" id="logoutDropdown">
         <button onclick="logout()">
@@ -673,6 +681,16 @@
     const db = getFirestore(app);
     const storage = getStorage(app);
 
+    // Load cached avatar instantly
+    const cachedAvatarUrl = sessionStorage.getItem('userAvatarUrl');
+    if (cachedAvatarUrl) {
+      console.log('📸 Loading cached avatar instantly:', cachedAvatarUrl);
+      const avatarImg = document.querySelector('#avatarBtn img');
+      if (avatarImg) {
+        avatarImg.src = cachedAvatarUrl;
+      }
+    }
+
     // Load user information
     window.addEventListener('DOMContentLoaded', async () => {
       await loadUserInfo();
@@ -692,6 +710,21 @@
           const studentData = studentDoc.data();
           document.getElementById('user-name').textContent = studentData.name || 'Unknown';
           document.getElementById('user-email').textContent = userEmail;
+          
+          // Load avatar if exists
+          if (studentData.avatarUrl) {
+            const cachedAvatar = sessionStorage.getItem('userAvatarUrl');
+            // Only update if avatar has changed
+            if (studentData.avatarUrl !== cachedAvatar) {
+              console.log('🔄 Updating avatar from Firebase');
+              const avatarImg = document.querySelector('#avatarBtn img');
+              if (avatarImg) {
+                avatarImg.src = studentData.avatarUrl;
+              }
+              // Update cache
+              sessionStorage.setItem('userAvatarUrl', studentData.avatarUrl);
+            }
+          }
         } else {
           document.getElementById('user-name').textContent = 'Unknown Student';
           document.getElementById('user-email').textContent = userEmail;

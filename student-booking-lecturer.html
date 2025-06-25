@@ -818,7 +818,17 @@
       window.location.href = 'login.html';
     });
 
-    // Load user avatar
+    // Load cached avatar instantly
+    const cachedAvatarUrl = sessionStorage.getItem('userAvatarUrl');
+    if (cachedAvatarUrl) {
+      console.log('📸 Loading cached avatar instantly:', cachedAvatarUrl);
+      const avatarImg = document.querySelector('#avatar-btn img');
+      if (avatarImg) {
+        avatarImg.src = cachedAvatarUrl;
+      }
+    }
+
+    // Load user avatar from Firebase (for updates)
     (async () => {
       const userEmail = sessionStorage.getItem('userEmail');
       if (userEmail) {
@@ -827,9 +837,16 @@
           if (userDoc.exists()) {
             const userData = userDoc.data();
             if (userData.avatarUrl) {
-              const avatarImg = document.querySelector('#avatar-btn img');
-              if (avatarImg) {
-                avatarImg.src = userData.avatarUrl;
+              const cachedAvatar = sessionStorage.getItem('userAvatarUrl');
+              // Only update if avatar has changed
+              if (userData.avatarUrl !== cachedAvatar) {
+                console.log('🔄 Updating avatar from Firebase');
+                const avatarImg = document.querySelector('#avatar-btn img');
+                if (avatarImg) {
+                  avatarImg.src = userData.avatarUrl;
+                }
+                // Update cache
+                sessionStorage.setItem('userAvatarUrl', userData.avatarUrl);
               }
             }
           }

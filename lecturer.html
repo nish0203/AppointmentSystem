@@ -414,6 +414,17 @@
       window.location.href = 'login.html';
     });
 
+    // --- Instant Avatar Loading (cached from login) ---
+    const cachedAvatarUrl = sessionStorage.getItem('userAvatarUrl');
+    if (cachedAvatarUrl) {
+      console.log('Loading cached avatar instantly:', cachedAvatarUrl);
+      document.getElementById('user-avatar').src = cachedAvatarUrl;
+      const profilePic = document.querySelector('.profile-pic');
+      if (profilePic) {
+        profilePic.src = cachedAvatarUrl;
+      }
+    }
+
     // --- Existing dashboard logic ---
     let currentLecturerEmail = '';
     

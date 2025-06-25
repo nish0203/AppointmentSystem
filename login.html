@@ -82,7 +82,17 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
-    const app = initializeApp({ apiKey:"AIzaSyD...", authDomain:"appointment-management-c2531.firebaseapp.com", projectId:"appointment-management-c2531" });
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain: "appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531",
+      storageBucket: "appointment-management-c2531.firebasestorage.app",
+      messagingSenderId: "428786083628",
+      appId: "1:428786083628:web:d9d9576b12581cc697ee89",
+      measurementId: "G-9FM8F1WJMF"
+    };
+
+    const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
     const SERVICE_ID  = "service_mailgun";
@@ -143,12 +153,78 @@
         if(!entered) return showError("Please enter the 6-digit code.");
         if(entered!==otpCode) return showError("Incorrect code.");
 
-        // Redirect based on pre-determined role
-        let target="";
-        if(userRole==="admins")    target="admin.html";
-        else if(userRole==="lecturers") target="lecturer.html";
-        else if(userRole==="students")  target="student.html";
-        window.location.href=`${target}?email=${encodeURIComponent(userEmail)}`;
+        // Show simple logging in message
+        btn.disabled=true; oI.disabled=true; loadEl.style.display="block";
+        loadEl.textContent="Logging in...";
+
+        try {
+          // Store user session data immediately
+          sessionStorage.setItem('userEmail', userEmail);
+          
+          // Preload avatar for students/lecturers before redirect (silently)
+          if(userRole==="students" || userRole==="lecturers") {
+            try {
+              const userDoc = await getDoc(doc(db, userRole, userEmail));
+              if(userDoc.exists()) {
+                const userData = userDoc.data();
+                
+                // Store user data in session
+                sessionStorage.setItem('userName', userData.name || 'User');
+                if(userRole==="students") {
+                  sessionStorage.setItem('studentId', userData.id || '');
+                }
+                
+                // Preload and cache avatar if exists (silently in background)
+                if(userData.avatarUrl) {
+                  console.log('Preloading avatar in background:', userData.avatarUrl);
+                  
+                  await new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                      // Cache the avatar URL for instant display
+                      sessionStorage.setItem('userAvatarUrl', userData.avatarUrl);
+                      console.log('✅ Avatar cached successfully');
+                      resolve();
+                    };
+                    img.onerror = (error) => {
+                      console.warn('❌ Avatar failed to load:', error);
+                      resolve(); // Don't block redirect if avatar fails
+                    };
+                    // Shorter timeout for seamless experience
+                    setTimeout(() => {
+                      console.warn('⏰ Avatar loading timeout, proceeding');
+                      resolve();
+                    }, 2000);
+                    img.src = userData.avatarUrl;
+                  });
+                }
+              }
+            } catch(avatarError) {
+              console.warn('Error preloading user data:', avatarError);
+              // Don't block redirect for avatar errors
+            }
+          }
+
+          // Redirect based on pre-determined role
+          let target="";
+          if(userRole==="admins")    target="admin.html";
+          else if(userRole==="lecturers") target="lecturer.html";
+          else if(userRole==="students")  target="student.html";
+          
+          window.location.href=`${target}?email=${encodeURIComponent(userEmail)}`;
+          
+        } catch(error) {
+          console.error('Error during login:', error);
+          showError("Login error. Redirecting anyway...");
+          // Fallback redirect after brief delay
+          setTimeout(() => {
+            let target="";
+            if(userRole==="admins")    target="admin.html";
+            else if(userRole==="lecturers") target="lecturer.html";
+            else if(userRole==="students")  target="student.html";
+            window.location.href=`${target}?email=${encodeURIComponent(userEmail)}`;
+          }, 1000);
+        }
       }
     });
   </script>
