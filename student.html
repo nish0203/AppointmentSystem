@@ -448,6 +448,19 @@
       console.error('❌ Avatar button or dropdown not found!');
     }
 
+    // Initialize notification service for student
+    const userEmail = sessionStorage.getItem('userEmail');
+    if (userEmail && window.NotificationService) {
+      window.NotificationService.setUser(userEmail, 'student');
+      
+      // Add welcome notification after a short delay
+      setTimeout(() => {
+        window.NotificationService.addSystemUpdate({
+          message: 'Welcome to your student dashboard!'
+        });
+      }, 2000);
+    }
+
     // Inquiry dropdown
     const inquiryDropdown = document.getElementById('inquiry-dropdown');
     const inquiryDropdownContent = document.getElementById('inquiry-dropdown-content');
@@ -817,6 +830,9 @@
     sortAppointments('upcoming-list');
     sortAppointments('pending-list');
   </script>
+
+  <!-- Notification Service -->
+  <script src="notification-service.js"></script>
 
   <script>
     // Inquiry modal functions

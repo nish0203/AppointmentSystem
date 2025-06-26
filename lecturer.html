@@ -1044,6 +1044,17 @@
           respondedAt: new Date().toISOString()
         });
 
+        // Add notification for lecturer (accepted request)
+        if (window.NotificationService) {
+          window.NotificationService.addSlotRequest({
+            studentName: currentRequest.studentName,
+            studentEmail: currentRequest.studentEmail,
+            date: currentRequest.preferredDate,
+            time: `${currentRequest.startTime} - ${currentRequest.endTime}`,
+            status: 'accepted'
+          });
+        }
+
         showSuccessModal('Request Accepted!', 'A new appointment slot has been created and the student has been notified.');
         closeStudentRequestModal();
         
@@ -1070,6 +1081,17 @@
           respondedAt: new Date().toISOString()
         });
 
+        // Add notification for lecturer (rejected request)
+        if (window.NotificationService) {
+          window.NotificationService.addSlotRequest({
+            studentName: currentRequest.studentName,
+            studentEmail: currentRequest.studentEmail,
+            date: currentRequest.preferredDate,
+            time: `${currentRequest.startTime} - ${currentRequest.endTime}`,
+            status: 'rejected'
+          });
+        }
+
         showSuccessModal('Request Rejected', 'The student has been notified that their request was rejected.');
         closeStudentRequestModal();
         
@@ -1092,6 +1114,26 @@
     window.closeSuccessModal = function() {
       document.getElementById('success-modal').style.display = 'none';
     };
+  </script>
+
+  <!-- Notification Service -->
+  <script src="notification-service.js"></script>
+  
+  <script>
+    // Initialize notification service for lecturer
+    document.addEventListener('DOMContentLoaded', function() {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (userEmail && window.NotificationService) {
+        window.NotificationService.setUser(userEmail, 'lecturer');
+        
+        // Add welcome notification after a short delay
+        setTimeout(() => {
+          window.NotificationService.addSystemUpdate({
+            message: 'Welcome to your lecturer dashboard!'
+          });
+        }, 2000);
+      }
+    });
   </script>
 </body>
 </html>

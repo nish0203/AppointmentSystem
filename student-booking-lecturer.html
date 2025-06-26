@@ -513,8 +513,8 @@
     </div>
   </div>
 
-  <!-- Hybrid Email Service (Mailgun + Mailtrap) -->
-  <script src="email-service-hybrid.js"></script>
+  <!-- Email Service - Mailtrap for appointments, EmailJS+Mailgun for OTP (PRESERVED) -->
+  <script src="email-service-mailtrap-only.js"></script>
   
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
@@ -766,6 +766,17 @@
 
         await addDoc(collection(db, 'slot_requests'), requestData);
         
+        // Add in-app notification for student
+        if (window.NotificationService) {
+          window.NotificationService.addSlotRequest({
+            studentName: studentName,
+            lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
+            preferredDate: preferredDate,
+            preferredTime: `${startTime} - ${endTime}`,
+            purpose: purpose
+          });
+        }
+        
         console.log('Slot request created successfully');
         showSuccessModal('Request Sent Successfully!', 'Your slot request has been sent to the lecturer. They will review it and create a slot if approved.');
         closeRequestSlotModal();
@@ -917,6 +928,20 @@
         clearTimeout(bookingTimeout);
         console.log('Booking completed successfully!');
         
+        // Add in-app notification for student
+        if (window.NotificationService) {
+          window.NotificationService.addBookingConfirmation({
+            studentEmail: studentEmail,
+            studentName: studentName,
+            lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
+            lecturerEmail: lecturerEmail,
+            date: selectedSlot.date,
+            time: `${selectedSlot.startTime} - ${selectedSlot.endTime}`,
+            purpose: purpose,
+            bookingId: appointmentRef.id
+          });
+        }
+        
         // Send email notifications
         try {
           console.log('Sending email notifications...');
@@ -1035,6 +1060,19 @@
 
     // Initialize
     loadLecturerData();
+  </script>
+
+  <!-- Notification Service -->
+  <script src="notification-service.js"></script>
+  
+  <script>
+    // Initialize notification service
+    document.addEventListener('DOMContentLoaded', function() {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (userEmail && window.NotificationService) {
+        window.NotificationService.setUser(userEmail, 'student');
+      }
+    });
   </script>
 </body>
 </html> 
