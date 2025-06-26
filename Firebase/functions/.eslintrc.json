@@ -1,0 +1,12 @@
+{
+  "env": {
+    "es2022": true,
+    "node": true
+  },
+  "extends": ["google"],
+  "rules": {
+    "max-len": ["warn", 120],
+    "require-jsdoc": "off",
+    "object-curly-spacing": ["error", "always"]
+  }
+}

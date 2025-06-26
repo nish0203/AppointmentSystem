@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "appointment-management-c2531",
+    "staging": "appointment-management-c2531"
+  },
+  "targets": {},
+  "etags": {}
+}

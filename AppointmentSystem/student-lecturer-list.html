@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Browse Lecturers – Uni Bookings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: #f9fafb;
+      color: #222;
+      margin: 0;
+    }
+    .header {
+      background: #fff;
+      color: #222;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 70px;
+      border-bottom: 1px solid #e5e7eb;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    
+    .header .logo {
+      display: flex; align-items: center; gap: 18px;
+    }
+    .header .logo img {
+      height: 60px;
+      transition: height .2s;
+    }
+    .header nav {
+      display: flex; gap: 24px; align-items: center;
+    }
+    .header nav .nav-link {
+      color: #222;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.08rem;
+      transition: color .2s;
+      position: relative;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .header nav .nav-link:hover, .header nav .nav-link.active {
+      background: #f1f5f9;
+      color: #ef4444;
+    }
+    .header nav .dropdown {
+      position: relative;
+    }
+    .header nav .dropdown-content {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 110%;
+      background: #fff;
+      min-width: 220px;
+      box-shadow: 0 4px 16px #0002;
+      border-radius: 8px;
+      z-index: 100;
+      flex-direction: column;
+      padding: 8px 0;
+    }
+    .header nav .dropdown-content.show {
+      display: flex;
+    }
+    .header nav .dropdown-content a {
+      color: #222;
+      text-decoration: none;
+      padding: 12px 22px;
+      font-size: 1rem;
+      border: none;
+      background: none;
+      text-align: left;
+      transition: background .2s, color .2s;
+      border-radius: 0;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .header nav .dropdown-content a:hover {
+      background: #f1f5f9;
+      color: #ef4444;
+    }
+    .header .avatar-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: #eee;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      margin-left: 18px;
+      cursor: pointer;
+      position: relative;
+      outline: none;
+      border: none;
+      padding: 0;
+    }
+    .header .avatar-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+    .logout-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .logout-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background: #fff;
+      box-shadow: 0 8px 24px #0003;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      z-index: 200;
+      min-width: 160px;
+      padding: 8px 0;
+    }
+    .logout-dropdown button {
+      width: 100%;
+      background: none;
+      border: none;
+      color: #ef4444;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 12px 24px;
+      text-align: left;
+      border-radius: 0;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .logout-dropdown button:hover {
+      background: #f1f5f9;
+      color: #b91c1c;
+    }
+    .logout-dropdown.show {
+      display: block;
+    }
+    .main-container {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 16px;
+    }
+    .page-header {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #0001;
+      padding: 28px 24px;
+      margin-bottom: 32px;
+    }
+    .page-header h1 {
+      margin: 0 0 8px 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .page-header p {
+      margin: 0;
+      font-size: 1.05rem;
+      color: #666;
+    }
+    .search-section {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #0001;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+    .search-box {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #f9fafb;
+      transition: border .2s, box-shadow .2s;
+    }
+    .search-box input:focus {
+      border: 1.5px solid #2563eb;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      background: #fff;
+    }
+    .search-btn {
+      padding: 12px 20px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background .2s;
+    }
+    .search-btn:hover {
+      background: #1d4ed8;
+    }
+    .lecturers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+    }
+    .lecturer-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #0001;
+      padding: 24px;
+      transition: transform .2s, box-shadow .2s;
+      cursor: pointer;
+    }
+    .lecturer-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px #0002;
+    }
+    .lecturer-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .lecturer-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 2px 8px #0002;
+    }
+    .lecturer-info h3 {
+      margin: 0 0 4px 0;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .lecturer-info p {
+      margin: 0;
+      color: #666;
+      font-size: 0.95rem;
+    }
+    .lecturer-details {
+      margin-bottom: 16px;
+    }
+    .detail-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+    .detail-row i {
+      width: 16px;
+      color: #666;
+    }
+    .lecturer-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all .2s;
+      flex: 1;
+      text-align: center;
+    }
+    .btn-primary {
+      background: #10B981;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #059669;
+    }
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6b7280;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6b7280;
+    }
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      color: #d1d5db;
+    }
+    .availability-indicator {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+    .availability-indicator.available {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .availability-indicator.busy {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    @media (max-width: 700px) {
+      .main-container { 
+        padding: 0 4vw; 
+      }
+      .lecturers-grid {
+        grid-template-columns: 1fr;
+      }
+      .search-box {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+  <script>
+    // Set avatar immediately when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      const cachedAvatar = sessionStorage.getItem('userAvatarUrl');
+      if (cachedAvatar) {
+        const avatarImg = document.querySelector('#avatar-btn img');
+        if (avatarImg) {
+          avatarImg.src = cachedAvatar;
+        }
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <img src="eBbook2.png" alt="Logo">
+    </div>
+    <nav>
+      <a href="student.html" class="nav-link">Dashboard</a>
+      <a href="#" class="nav-link active">Lecturers</a>
+      <a href="student-manage-appointments.html" class="nav-link">Manage Appointments</a>
+      <div class="dropdown nav-link" tabindex="0" id="inquiry-dropdown">
+        Inquiry <i class="fa fa-caret-down" style="margin-left:6px;"></i>
+        <div class="dropdown-content" id="inquiry-dropdown-content">
+          <a href="inquirystud.html">Submit Inquiry</a>
+          <a href="viewinquirystud.html">Inquiry History</a>
+        </div>
+      </div>
+    </nav>
+    <div class="logout-wrapper">
+      <button class="avatar-btn" onclick="toggleLogoutDropdown()" id="avatarBtn">
+        <img src="placeholder.png" alt="Student Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
+      </button>
+      <div class="logout-dropdown" id="logout-dropdown">
+        <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="page-header">
+      <h1>Browse Lecturers</h1>
+      <p>Find and book appointments with available lecturers</p>
+    </div>
+
+    <div class="search-section">
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Search lecturers by name, faculty, or specialization...">
+        <button class="search-btn" onclick="searchLecturers()">
+          <i class="fa fa-search"></i> Search
+        </button>
+      </div>
+    </div>
+
+    <div id="lecturers-container">
+      <div class="loading">
+        <i class="fa fa-spinner fa-spin"></i>
+        <p>Loading lecturers...</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import {
+      getFirestore, doc, getDoc, collection, getDocs, query, where
+    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain: "appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531",
+      storageBucket: "appointment-management-c2531.firebasestorage.app",
+      messagingSenderId: "428786083628",
+      appId: "1:428786083628:web:d9d9576b12581cc697ee89",
+      measurementId: "G-9FM8F1WJMF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let allLecturers = [];
+
+    // Avatar dropdown functionality
+    const avatarBtn = document.getElementById('avatarBtn');
+    const logoutDropdown = document.getElementById('logout-dropdown');
+    avatarBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      logoutDropdown.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!avatarBtn.contains(e.target) && !logoutDropdown.contains(e.target)) {
+        logoutDropdown.classList.remove('show');
+      }
+    });
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      sessionStorage.clear();
+      window.location.href = 'login.html';
+    });
+
+    // Inquiry dropdown
+    const inquiryDropdown = document.getElementById('inquiry-dropdown');
+    const inquiryDropdownContent = document.getElementById('inquiry-dropdown-content');
+    inquiryDropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+      inquiryDropdownContent.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!inquiryDropdown.contains(e.target)) {
+        inquiryDropdownContent.classList.remove('show');
+      }
+    });
+
+    // Set cached avatar immediately on page load
+    const cachedAvatar = sessionStorage.getItem('userAvatarUrl');
+    if (cachedAvatar) {
+      console.log('📸 Setting cached avatar immediately:', cachedAvatar);
+      const avatarImg = document.querySelector('#avatarBtn img');
+      if (avatarImg) {
+        avatarImg.src = cachedAvatar;
+      }
+    }
+
+    // Load user avatar from sessionStorage
+    (async () => {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (userEmail) {
+        try {
+
+          const userDoc = await getDoc(doc(db, 'students', userEmail));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            if (userData.avatarUrl) {
+              // Preload the image to prevent flicker
+              const img = new Image();
+              img.onload = function() {
+                const avatarImg = document.querySelector('#avatarBtn img');
+                if (avatarImg) {
+                  avatarImg.src = userData.avatarUrl;
+                }
+                // Cache for future use
+                sessionStorage.setItem('userAvatarUrl', userData.avatarUrl);
+              };
+              img.src = userData.avatarUrl;
+            }
+          }
+        } catch (error) {
+          console.error('Error loading user avatar:', error);
+        }
+      }
+    })();
+
+    // Load lecturers from Firestore
+    async function loadLecturers() {
+      try {
+        const lecturersQuery = collection(db, 'lecturers');
+        const snapshot = await getDocs(lecturersQuery);
+        
+        allLecturers = [];
+        for (const docSnapshot of snapshot.docs) {
+          const lecturerData = { email: docSnapshot.id, ...docSnapshot.data() };
+          
+          // Check availability by counting available slots
+          const slotsQuery = query(
+            collection(db, 'appointment_slots'),
+            where('lecturerEmail', '==', docSnapshot.id),
+            where('isBooked', '==', false)
+          );
+          const slotsSnapshot = await getDocs(slotsQuery);
+          lecturerData.availableSlots = slotsSnapshot.size;
+          
+          allLecturers.push(lecturerData);
+        }
+        
+        renderLecturers(allLecturers);
+      } catch (error) {
+        console.error('Error loading lecturers:', error);
+        const container = document.getElementById('lecturers-container');
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fa fa-exclamation-circle"></i>
+            <h3>Error loading lecturers</h3>
+            <p>Please try again later</p>
+          </div>
+        `;
+      }
+    }
+
+    // Render lecturers grid
+    function renderLecturers(lecturers) {
+      const container = document.getElementById('lecturers-container');
+      
+      if (lecturers.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fa fa-user-tie"></i>
+            <h3>No lecturers found</h3>
+            <p>Try adjusting your search criteria</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="lecturers-grid">
+          ${lecturers.map(lecturer => `
+            <div class="lecturer-card" onclick="viewLecturerSlots('${lecturer.email}', '${lecturer.name}')">
+              <div class="lecturer-header">
+                <img src="placeholder.png" alt="Lecturer Avatar" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #e5e7eb;" />
+                <div class="lecturer-info">
+                  <h3>${lecturer.name || 'Lecturer'}</h3>
+                  <p>${lecturer.title || 'Faculty Member'}</p>
+                </div>
+              </div>
+              <div class="lecturer-details">
+                <div class="detail-row">
+                  <i class="fa fa-envelope"></i>
+                  <span>${lecturer.email}</span>
+                </div>
+                <div class="detail-row">
+                  <i class="fa fa-building"></i>
+                  <span>${lecturer.faculty || 'Faculty'}</span>
+                </div>
+                <div class="detail-row">
+                  <i class="fa fa-map-marker-alt"></i>
+                  <span>${lecturer.office || 'Office'}</span>
+                </div>
+                <div class="detail-row">
+                  <i class="fa fa-star" style="color: #f59e0b;"></i>
+                  <span>${lecturer.averageRating ? `${lecturer.averageRating} ★ (${lecturer.totalRatings || 0} reviews)` : 'No ratings yet'}</span>
+                </div>
+                <div class="availability-indicator ${lecturer.availableSlots > 0 ? 'available' : 'busy'}">
+                  ${lecturer.availableSlots > 0 ? `${lecturer.availableSlots} slots available` : 'No available slots'}
+                </div>
+              </div>
+              <div class="lecturer-actions">
+                <button class="btn btn-primary" onclick="event.stopPropagation(); viewLecturerSlots('${lecturer.email}', '${lecturer.name}')">
+                  <i class="fa fa-calendar"></i> Book Appointment
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // Search lecturers
+    window.searchLecturers = function() {
+      const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+      
+      if (!searchTerm) {
+        renderLecturers(allLecturers);
+        return;
+      }
+
+      const filteredLecturers = allLecturers.filter(lecturer => 
+        (lecturer.name || '').toLowerCase().includes(searchTerm) ||
+        (lecturer.faculty || '').toLowerCase().includes(searchTerm) ||
+        (lecturer.email || '').toLowerCase().includes(searchTerm)
+      );
+
+      renderLecturers(filteredLecturers);
+    };
+
+    // View lecturer appointment slots
+    window.viewLecturerSlots = function(lecturerEmail, lecturerName) {
+      // Store lecturer data in sessionStorage for the booking page
+      const lecturer = allLecturers.find(l => l.email === lecturerEmail);
+      if (lecturer) {
+        sessionStorage.setItem('selectedLecturer', JSON.stringify(lecturer));
+      }
+      
+      // Redirect to booking page
+      window.location.href = `student-booking-lecturer.html?lecturer=${encodeURIComponent(lecturerEmail)}&name=${encodeURIComponent(lecturerName)}`;
+    };
+
+    // Toggle logout dropdown
+    window.toggleLogoutDropdown = function() {
+      const dropdown = document.getElementById('logout-dropdown');
+      dropdown.classList.toggle('show');
+    };
+
+    // Add search on Enter key
+    document.getElementById('search-input').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        searchLecturers();
+      }
+    });
+
+    // Initialize
+    loadLecturers();
+  </script>
+</body>
+</html> 

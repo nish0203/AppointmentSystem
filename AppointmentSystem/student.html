@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student Dashboard – Uni Bookings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: #f9fafb;
+      color: #222;
+      margin: 0;
+    }
+    .header {
+      background: #fff;
+      color: #222;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 70px;
+      border-bottom: 1px solid #e5e7eb;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    
+    .header .logo {
+      display: flex; align-items: center; gap: 18px;
+    }
+    .header .logo img {
+      height: 60px;
+      transition: height .2s;
+    }
+    .header nav {
+      display: flex; gap: 24px; align-items: center;
+    }
+    .header nav .nav-link {
+      color: #222;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.08rem;
+      transition: color .2s;
+      position: relative;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .header nav .nav-link:hover, .header nav .nav-link.active {
+      background: #f1f5f9;
+      color: #ef4444;
+    }
+    .header nav .dropdown {
+      position: relative;
+    }
+    .header nav .dropdown-content {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 110%;
+      background: #fff;
+      min-width: 220px;
+      box-shadow: 0 4px 16px #0002;
+      border-radius: 8px;
+      z-index: 100;
+      flex-direction: column;
+      padding: 8px 0;
+    }
+    .header nav .dropdown-content.show {
+      display: flex;
+    }
+    .header nav .dropdown-content a {
+      color: #222;
+      text-decoration: none;
+      padding: 12px 22px;
+      font-size: 1rem;
+      border: none;
+      background: none;
+      text-align: left;
+      transition: background .2s, color .2s;
+      border-radius: 0;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .header nav .dropdown-content a:hover {
+      background: #f1f5f9;
+      color: #ef4444;
+    }
+    .header .avatar-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: #eee;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      margin-left: 18px;
+      cursor: pointer;
+      position: relative;
+      outline: none;
+      border: none;
+      padding: 0;
+    }
+    .header .avatar-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+    .logout-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .logout-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background: #fff;
+      box-shadow: 0 8px 24px #0003;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      z-index: 200;
+      min-width: 160px;
+      padding: 8px 0;
+    }
+    .logout-dropdown button {
+      width: 100%;
+      background: none;
+      border: none;
+      color: #ef4444;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 12px 24px;
+      text-align: left;
+      border-radius: 0;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    .logout-dropdown button:hover {
+      background: #f1f5f9;
+      color: #b91c1c;
+    }
+    .logout-dropdown.show {
+      display: block;
+    }
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 16px;
+    }
+    .welcome-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #0001;
+      padding: 28px 24px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+    .welcome-card .profile-pic {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 2px 8px #0002;
+    }
+    .welcome-card .info {
+      flex: 1;
+    }
+    .welcome-card .info h2 {
+      margin: 0 0 8px 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .welcome-card .info p {
+      margin: 4px 0;
+      font-size: 1.05rem;
+      color: #444;
+    }
+    .consultation-sections {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .consultation-card {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px #0001;
+      padding: 20px 18px 18px 18px;
+      margin-bottom: 18px;
+      min-width: 0;
+    }
+    .consultation-card h3 {
+      margin: 0 0 16px 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .consultation-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 8px;
+    }
+    .consultation-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .consultation-list::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 3px;
+    }
+    .consultation-list::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 3px;
+    }
+    .consultation-list::-webkit-scrollbar-thumb:hover {
+      background: #a8a8a8;
+    }
+    .consultation-item {
+      background: #f1f5f9;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px #0001;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 1rem;
+    }
+    .consultation-item .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .consultation-item .label {
+      color: #888;
+      font-size: .97rem;
+    }
+    .consultation-item .value {
+      font-weight: 600;
+    }
+    .consultation-item .booked-by {
+      font-size: .97rem;
+      color: #222;
+      margin-top: 2px;
+    }
+    .consultation-item .lecturer-name {
+      font-weight: 600;
+      color: #10B981;
+    }
+    @media (max-width: 1000px) {
+      .consultation-sections { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 700px) {
+      .dashboard-container { padding: 0 4vw; }
+      .welcome-card { flex-direction: column; align-items: flex-start; gap: 18px; }
+      .consultation-sections { grid-template-columns: 1fr; }
+    }
+  </style>
+
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <img src="eBbook2.png" alt="Logo">
+    </div>
+    <nav>
+      <a href="#" class="nav-link active">Dashboard</a>
+      <a href="student-lecturer-list.html" class="nav-link">Lecturers</a>
+      <a href="student-manage-appointments.html" class="nav-link">Manage Appointments</a>
+      <div class="dropdown nav-link" tabindex="0" id="inquiry-dropdown">
+        Inquiry <i class="fa fa-caret-down" style="margin-left:6px;"></i>
+        <div class="dropdown-content" id="inquiry-dropdown-content">
+          <a href="inquirystud.html">Submit Inquiry</a>
+          <a href="viewinquirystud.html">Inquiry History</a>
+        </div>
+      </div>
+    </nav>
+    <div class="logout-wrapper">
+      <button class="avatar-btn" id="avatar-btn">
+        <img id="user-avatar" src="placeholder.png" alt="Student Profile" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;" />
+      </button>
+      <div class="logout-dropdown" id="logout-dropdown">
+        <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-container">
+    <div class="welcome-card">
+      <img src="placeholder.png" alt="Student Profile" class="profile-pic" style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" />
+      <div class="info">
+        <h2 id="student-name">Welcome!</h2>
+        <p><b>E-mail:</b> <span id="student-email">-</span></p>
+        <p><b>Faculty:</b> <span id="student-faculty">-</span></p>
+        <p><b>Student ID:</b> <span id="student-id">-</span></p>
+        <button onclick="changeAvatar()" style="background: #10B981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 10px;">
+          <i class="fa fa-user"></i> Edit Avatar
+        </button>
+      </div>
+    </div>
+
+    <div class="consultation-sections">
+      <div class="consultation-card">
+        <h3>Upcoming Appointments</h3>
+        <div class="consultation-list" id="upcoming-list">
+          <p style="color: #6b7280; text-align: center; padding: 20px;">Loading appointments...</p>
+        </div>
+      </div>
+
+      <div class="consultation-card">
+        <h3>Pending Appointments</h3>
+        <div class="consultation-list" id="pending-list">
+          <p style="color: #6b7280; text-align: center; padding: 20px;">Loading appointments...</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="consultation-card" style="margin-top:32px;">
+      <h3>Appointment History</h3>
+      <div class="consultation-list" id="history-list">
+        <p style="color: #6b7280; text-align: center; padding: 20px;">Loading appointment history...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inquiry Modal -->
+  <div id="inquiry-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 500px; position: relative;">
+      <span style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer;" onclick="closeInquiryModal()">&times;</span>
+      <h3 style="margin-bottom: 20px;">Submit Inquiry</h3>
+      <form id="inquiry-form">
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: 600;">Subject:</label>
+          <input type="text" id="inquiry-subject" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 8px;" required>
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label style="display: block; margin-bottom: 5px; font-weight: 600;">Message:</label>
+          <textarea id="inquiry-message" rows="5" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 8px;" required></textarea>
+        </div>
+        <button type="submit" style="background: #10B981; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;">Submit Inquiry</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Hidden file input for avatar -->
+  <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+
+  <!-- Rating Modal -->
+  <div id="rating-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <span style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #999;" onclick="closeRatingModal()">&times;</span>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <i class="fa fa-star" style="font-size: 3rem; color: #f59e0b; margin-bottom: 10px;"></i>
+        <h3 style="margin: 0; color: #222;">Rate Your Appointment</h3>
+        <p style="color: #666; margin: 10px 0;">How was your appointment experience?</p>
+      </div>
+      <form id="rating-form">
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Rating:</label>
+          <div style="text-align: center; margin-bottom: 15px;">
+            <div id="star-rating" style="font-size: 2rem; color: #e5e7eb; cursor: pointer;">
+              <span data-rating="1">☆</span>
+              <span data-rating="2">☆</span>
+              <span data-rating="3">☆</span>
+              <span data-rating="4">☆</span>
+              <span data-rating="5">☆</span>
+            </div>
+            <p style="font-size: 0.9rem; color: #666; margin: 8px 0;">Click the stars to rate</p>
+          </div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Comment (optional):</label>
+          <textarea id="rating-comment" rows="3" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-family: inherit; resize: vertical;" placeholder="Share your experience..."></textarea>
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button type="button" onclick="closeRatingModal()" style="background: #6b7280; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            Cancel
+          </button>
+          <button type="submit" style="background: #f59e0b; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            Submit Rating
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import {
+      getFirestore, doc, getDoc, collection, getDocs, query, where, orderBy, updateDoc
+    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+    import {
+      getStorage, ref, uploadBytes, getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain: "appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531",
+      storageBucket: "appointment-management-c2531.firebasestorage.app",
+      messagingSenderId: "428786083628",
+      appId: "1:428786083628:web:d9d9576b12581cc697ee89",
+      measurementId: "G-9FM8F1WJMF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // Avatar dropdown functionality with debugging
+    const avatarBtn = document.getElementById('avatar-btn');
+    const logoutDropdown = document.getElementById('logout-dropdown');
+    
+    console.log('🔍 Avatar button found:', avatarBtn);
+    console.log('🔍 Logout dropdown found:', logoutDropdown);
+    
+    if (avatarBtn && logoutDropdown) {
+      avatarBtn.addEventListener('click', (e) => {
+        console.log('🖱️ Avatar button clicked!');
+        e.stopPropagation();
+        logoutDropdown.classList.toggle('show');
+        console.log('👆 Dropdown should be:', logoutDropdown.classList.contains('show') ? 'visible' : 'hidden');
+      });
+      
+      document.addEventListener('click', (e) => {
+        if (!avatarBtn.contains(e.target) && !logoutDropdown.contains(e.target)) {
+          logoutDropdown.classList.remove('show');
+        }
+      });
+      
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+          console.log('🚪 Logout clicked!');
+          sessionStorage.clear();
+          window.location.href = 'login.html';
+        });
+      } else {
+        console.error('❌ Logout button not found!');
+      }
+    } else {
+      console.error('❌ Avatar button or dropdown not found!');
+    }
+
+    // Initialize notification service for student
+    const userEmail = sessionStorage.getItem('userEmail');
+    if (userEmail && window.NotificationService) {
+      window.NotificationService.setUser(userEmail, 'student');
+      
+      // Add welcome notification after a short delay
+      setTimeout(() => {
+        window.NotificationService.addSystemUpdate({
+          message: 'Welcome to your student dashboard!'
+        });
+      }, 2000);
+    }
+
+    // Inquiry dropdown
+    const inquiryDropdown = document.getElementById('inquiry-dropdown');
+    const inquiryDropdownContent = document.getElementById('inquiry-dropdown-content');
+    inquiryDropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+      inquiryDropdownContent.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!inquiryDropdown.contains(e.target)) {
+        inquiryDropdownContent.classList.remove('show');
+      }
+    });
+
+    let currentStudentEmail = '';
+
+    // Immediately display cached data on page load (before any async operations)
+    const initializePageImmediately = () => {
+      const params = new URLSearchParams(location.search);
+      const email = params.get('email') || sessionStorage.getItem('userEmail');
+      const cachedName = sessionStorage.getItem('userName');
+      const cachedStudentId = sessionStorage.getItem('studentId');
+      const cachedAvatar = sessionStorage.getItem('userAvatarUrl');
+
+      const nameEl = document.getElementById('student-name');
+      const emailEl = document.getElementById('student-email');
+      const facultyEl = document.getElementById('student-faculty');
+      const idEl = document.getElementById('student-id');
+
+      console.log('🚀 Initializing page with cached data:', { email, cachedName, cachedStudentId, cachedAvatar });
+
+      if (email && cachedName) {
+        nameEl.textContent = `Welcome, ${cachedName}!`;
+        emailEl.textContent = email;
+        facultyEl.textContent = '-';
+        idEl.textContent = cachedStudentId || '-';
+      }
+
+      // Set cached profile picture immediately (synchronously)
+      if (cachedAvatar) {
+        console.log('📸 Setting cached profile picture:', cachedAvatar);
+        const profilePic = document.querySelector('.profile-pic');
+        if (profilePic) {
+          profilePic.src = cachedAvatar;
+        }
+      }
+    };
+
+    // Call immediately on page load
+    initializePageImmediately();
+
+    // Load student profile and appointments (async)
+    (async () => {
+      const params = new URLSearchParams(location.search);
+      const email = params.get('email') || sessionStorage.getItem('userEmail');
+      currentStudentEmail = email;
+      
+      const nameEl = document.getElementById('student-name');
+      const emailEl = document.getElementById('student-email');
+      const facultyEl = document.getElementById('student-faculty');
+      const idEl = document.getElementById('student-id');
+
+      if (email) {
+        const cachedName = sessionStorage.getItem('userName');
+        const cachedStudentId = sessionStorage.getItem('studentId');
+        const cachedAvatar = sessionStorage.getItem('userAvatarUrl');
+
+        console.log('🔄 Starting async data refresh...');
+
+        // Fetch fresh data from Firebase (in background)
+        const snap = await getDoc(doc(db, 'students', email));
+        const profile = snap.exists() ? snap.data() : {};
+        const name = profile.name || cachedName || 'Student';
+        const faculty = profile.faculty || '-';
+        const studentId = profile.id || cachedStudentId || '-';
+
+        // Update with fresh data
+        nameEl.textContent = `Welcome, ${name}!`;
+        emailEl.textContent = email;
+        facultyEl.textContent = faculty;
+        idEl.textContent = studentId;
+
+        // Store updated session data
+        sessionStorage.setItem('userEmail', email);
+        sessionStorage.setItem('userName', name);
+        sessionStorage.setItem('studentId', studentId);
+
+        // Handle avatar loading with proper fallback
+        const avatarElement = document.getElementById('user-avatar');
+        const profilePicElement = document.querySelector('.profile-pic');
+        
+        // Always try to load avatar (cached or fresh)
+        const avatarUrl = profile.avatarUrl || cachedAvatar;
+        
+        if (avatarUrl) {
+          // Pre-load the image to avoid broken image display
+          const img = new Image();
+          img.onload = function() {
+            // Successfully loaded - update UI
+            avatarElement.src = avatarUrl;
+            if (profilePicElement) {
+              profilePicElement.src = avatarUrl;
+            }
+            // Update cache with current data
+            sessionStorage.setItem('userAvatarUrl', avatarUrl);
+          };
+          img.onerror = function() {
+            // Failed to load - keep placeholder
+            console.log('Avatar failed to load, keeping placeholder');
+          };
+          img.src = avatarUrl;
+        } else {
+          // No avatar URL available - ensure placeholder is visible
+          console.log('No avatar URL available, using placeholder');
+        }
+
+        // Load appointments after setting up profile
+        await loadAppointments(email);
+      } else {
+        nameEl.textContent = 'Welcome!';
+        emailEl.textContent = '-';
+        facultyEl.textContent = '-';
+        idEl.textContent = '-';
+      }
+    })();
+
+    // Load appointments from Firebase
+    async function loadAppointments(studentEmail) {
+      try {
+        console.log('Loading appointments for student:', studentEmail);
+        
+        // Try query with orderBy first, fallback if index is missing
+        let appointmentsQuery;
+        try {
+          appointmentsQuery = query(
+            collection(db, 'appointments'),
+            where('studentEmail', '==', studentEmail),
+            orderBy('bookedAt', 'desc')
+          );
+        } catch (indexError) {
+          console.log('Falling back to query without orderBy');
+          appointmentsQuery = query(
+            collection(db, 'appointments'),
+            where('studentEmail', '==', studentEmail)
+          );
+        }
+        
+        const snapshot = await getDocs(appointmentsQuery);
+        console.log('Found', snapshot.size, 'appointments');
+        
+        const appointments = [];
+        snapshot.docs.forEach(doc => {
+          const data = doc.data();
+          appointments.push({ id: doc.id, ...data });
+        });
+        
+        // Sort manually if we couldn't use orderBy
+        appointments.sort((a, b) => {
+          const aTime = a.bookedAt ? new Date(a.bookedAt) : new Date(0);
+          const bTime = b.bookedAt ? new Date(b.bookedAt) : new Date(0);
+          return bTime - aTime;
+        });
+        
+        console.log('Processed appointments:', appointments);
+        renderAppointments(appointments);
+      } catch (error) {
+        console.error('Error loading appointments:', error);
+        
+        // Fallback: Try to load all appointments and filter client-side
+        try {
+          console.log('Trying fallback query...');
+          const allAppointments = await getDocs(collection(db, 'appointments'));
+          const appointments = [];
+          
+          allAppointments.docs.forEach(doc => {
+            const data = doc.data();
+            if (data.studentEmail === studentEmail) {
+              appointments.push({ id: doc.id, ...data });
+            }
+          });
+          
+          console.log('Fallback found', appointments.length, 'appointments');
+          renderAppointments(appointments);
+        } catch (fallbackError) {
+          console.error('Fallback query also failed:', fallbackError);
+          // Show error in UI
+          document.getElementById('upcoming-list').innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">Error loading appointments</p>';
+          document.getElementById('pending-list').innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">Error loading appointments</p>';
+          document.getElementById('history-list').innerHTML = '<p style="color: #ef4444; text-align: center; padding: 20px;">Error loading appointments</p>';
+        }
+      }
+    }
+
+    // Render appointments in the dashboard
+    function renderAppointments(appointments) {
+      console.log('Rendering student appointments:', appointments);
+      
+      const upcomingList = document.getElementById('upcoming-list');
+      const pendingList = document.getElementById('pending-list');
+      const historyList = document.getElementById('history-list');
+      
+      // Filter appointments by category
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const upcoming = appointments.filter(apt => {
+        if (apt.status !== 'approved') return false;
+        const aptDate = new Date(apt.date);
+        aptDate.setHours(0, 0, 0, 0);
+        return aptDate >= today;
+      });
+      
+      const pending = appointments.filter(apt => apt.status === 'pending');
+      
+      const history = appointments.filter(apt => {
+        if (apt.status === 'pending' || apt.status === 'rejected') return false;
+        const aptDate = new Date(apt.date);
+        aptDate.setHours(0, 0, 0, 0);
+        return aptDate < today || apt.status === 'done';
+      });
+      
+      console.log('Categorized appointments:', { upcoming, pending, history });
+      
+      // Render upcoming appointments
+      if (upcoming.length === 0) {
+        upcomingList.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No upcoming appointments</p>';
+      } else {
+        upcomingList.innerHTML = upcoming.map(apt => `
+          <div class="consultation-item" data-date="${apt.date}" data-time="${apt.startTime}">
+            <div class="lecturer-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+              <img src="placeholder.png" alt="Lecturer Avatar" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;" />
+              <div>
+                <div class="lecturer-name" style="font-weight: 600; color: #374151;">${apt.lecturerName || apt.lecturerEmail || 'Lecturer'}</div>
+                <div style="font-size: 0.85rem; color: #6b7280;">Lecturer</div>
+              </div>
+            </div>
+            <div class="row"><span class="label">Appointment Date:</span> <span class="value upcoming-date">${apt.date}</span></div>
+            <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">${apt.startTime}</span></div>
+            <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">${apt.endTime}</span></div>
+            <div class="days-left" style="font-size:0.97rem;color:#10B981;margin-top:4px;"></div>
+            ${apt.purpose ? `<div style="margin-top:8px;font-size:0.9rem;color:#666;"><strong>Purpose:</strong> ${apt.purpose}</div>` : ''}
+          </div>
+        `).join('');
+      }
+      
+      // Render pending appointments
+      if (pending.length === 0) {
+        pendingList.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No pending appointments</p>';
+      } else {
+        pendingList.innerHTML = pending.map(apt => `
+          <div class="consultation-item" data-date="${apt.date}" data-time="${apt.startTime}">
+            <div class="lecturer-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+              <img src="placeholder.png" alt="Lecturer Avatar" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;" />
+              <div>
+                <div class="lecturer-name" style="font-weight: 600; color: #374151;">${apt.lecturerName || apt.lecturerEmail || 'Lecturer'}</div>
+                <div style="font-size: 0.85rem; color: #6b7280;">Lecturer</div>
+              </div>
+            </div>
+            <div class="row"><span class="label">Requested Date:</span> <span class="value">${apt.date}</span></div>
+            <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">${apt.startTime}</span></div>
+            <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">${apt.endTime}</span></div>
+            ${apt.purpose ? `<div style="margin-top:8px;font-size:0.9rem;color:#666;"><strong>Purpose:</strong> ${apt.purpose}</div>` : ''}
+            ${apt.documents && apt.documents.length > 0 ? `
+              <div style="margin-top:8px;">
+                <strong style="font-size:0.9rem;color:#666;">Documents:</strong>
+                <div style="margin-top:4px;">
+                  ${apt.documents.map(doc => `
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                      <i class="fa fa-file" style="color:#10B981;font-size:0.8rem;"></i>
+                      <a href="${doc.url}" target="_blank" style="color:#10B981;text-decoration:none;font-size:0.85rem;">${doc.name}</a>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+            <div style="margin-top:12px;">
+              <div style="font-size:0.85rem;color:#f59e0b;font-weight:600;">⏳ Awaiting lecturer approval</div>
+            </div>
+          </div>
+        `).join('');
+      }
+      
+      // Render appointment history
+      if (history.length === 0) {
+        historyList.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No appointment history</p>';
+      } else {
+        historyList.innerHTML = history.map(apt => `
+          <div class="consultation-item" data-date="${apt.date}" data-time="${apt.startTime}">
+            <div class="lecturer-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+              <img src="placeholder.png" alt="Lecturer Avatar" style="width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;" />
+              <div>
+                <div class="lecturer-name" style="font-weight: 600; color: #374151;">${apt.lecturerName || apt.lecturerEmail || 'Lecturer'}</div>
+                <div style="font-size: 0.85rem; color: #6b7280;">Lecturer</div>
+              </div>
+            </div>
+            <div class="row">
+              <span class="label">Date:</span> 
+              <span class="value">${apt.date}</span>
+              <span style="margin-left:12px;padding:2px 8px;border-radius:12px;font-size:0.75rem;font-weight:600;${
+                apt.status === 'approved' ? 'background:#d1fae5;color:#065f46;' :
+                apt.status === 'rejected' ? 'background:#fee2e2;color:#991b1b;' :
+                apt.status === 'done' ? 'background:#d1fae5;color:#065f46;' :
+                'background:#f3f4f6;color:#374151;'
+              }">${apt.status === 'done' ? 'COMPLETED' : apt.status?.toUpperCase() || 'COMPLETED'}</span>
+            </div>
+            <div class="row"><span class="label">Time:</span> <span class="value">${apt.startTime} - ${apt.endTime}</span></div>
+            ${apt.purpose ? `<div style="margin-top:6px;font-size:0.85rem;color:#666;"><strong>Purpose:</strong> ${apt.purpose}</div>` : ''}
+            ${apt.status === 'done' && !apt.rating ? `
+              <div style="margin-top:12px;">
+                <button onclick="openRatingModal('${apt.id}', '${apt.lecturerEmail}')" style="background:#6366f1;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:0.8rem;">
+                  <i class="fa fa-star"></i> Rate Appointment
+                </button>
+              </div>
+            ` : ''}
+            ${apt.rating ? `
+              <div style="margin-top:8px;padding:8px;background:#f8f9fa;border-radius:4px;">
+                <div style="font-size:0.85rem;color:#666;"><strong>Your Rating:</strong></div>
+                <div style="color:#f59e0b;margin:2px 0;">
+                  ${'★'.repeat(apt.rating)}${'☆'.repeat(5 - apt.rating)}
+                </div>
+                ${apt.ratingComment ? `<div style="font-size:0.8rem;color:#666;margin-top:4px;">"${apt.ratingComment}"</div>` : ''}
+              </div>
+            ` : ''}
+          </div>
+        `).join('');
+      }
+      
+      // Update days left for upcoming appointments
+      updateDaysLeft();
+    }
+
+    // Show days left for upcoming appointments
+    function updateDaysLeft() {
+      document.querySelectorAll('.consultation-item .upcoming-date').forEach(dateEl => {
+        const dateStr = dateEl.textContent.trim();
+        const today = new Date();
+        const apptDate = new Date(dateStr);
+        apptDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+        const diff = Math.round((apptDate - today) / (1000 * 60 * 60 * 24));
+        let msg = '';
+        if (diff > 1) msg = `in ${diff} days`;
+        else if (diff === 1) msg = 'in 1 day';
+        else if (diff === 0) msg = 'today';
+        else msg = 'passed';
+        const daysLeftEl = dateEl.closest('.consultation-item').querySelector('.days-left');
+        if (daysLeftEl) daysLeftEl.textContent = msg;
+      });
+    }
+    updateDaysLeft();
+
+    // Sort appointment items by date+time descending (latest first)
+    function sortAppointments(listId) {
+      const list = document.getElementById(listId);
+      if (!list) return;
+      const items = Array.from(list.querySelectorAll('.consultation-item'));
+      items.sort((a, b) => {
+        const aDate = a.getAttribute('data-date');
+        const aTime = a.getAttribute('data-time');
+        const bDate = b.getAttribute('data-date');
+        const bTime = b.getAttribute('data-time');
+        const aDT = new Date(`${aDate}T${aTime}`);
+        const bDT = new Date(`${bDate}T${bTime}`);
+        return bDT - aDT; // descending
+      });
+      items.forEach(item => list.appendChild(item));
+    }
+    sortAppointments('upcoming-list');
+    sortAppointments('pending-list');
+  </script>
+
+  <!-- Notification Service -->
+  <script src="notification-service.js"></script>
+
+  <script>
+    // Inquiry modal functions
+    function openInquiryModal() {
+      document.getElementById('inquiry-modal').style.display = 'flex';
+    }
+
+    function closeInquiryModal() {
+      document.getElementById('inquiry-modal').style.display = 'none';
+      document.getElementById('inquiry-form').reset();
+    }
+
+    // Make functions global
+    window.openInquiryModal = openInquiryModal;
+    window.closeInquiryModal = closeInquiryModal;
+    
+
+
+    // Handle inquiry form submission
+    document.getElementById('inquiry-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const subject = document.getElementById('inquiry-subject').value;
+      const message = document.getElementById('inquiry-message').value;
+      
+      // Here you would typically send to Firestore
+      // For now, just show a simple message
+      document.getElementById('inquiry-subject').value = '';
+      document.getElementById('inquiry-message').value = '';
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Submitted!';
+      submitBtn.style.background = '#10B981';
+      setTimeout(() => {
+        submitBtn.textContent = originalText;
+        submitBtn.style.background = '#10B981';
+      }, 2000);
+      closeInquiryModal();
+    });
+
+    // Rating system
+    let currentRating = 0;
+    let selectedAppointmentId = '';
+    let selectedLecturerEmail = '';
+
+    // Rating modal functions
+    function openRatingModal(appointmentId, lecturerEmail) {
+      selectedAppointmentId = appointmentId;
+      selectedLecturerEmail = lecturerEmail;
+      currentRating = 0;
+      updateStarDisplay();
+      document.getElementById('rating-comment').value = '';
+      document.getElementById('rating-modal').style.display = 'flex';
+    }
+
+    function closeRatingModal() {
+      document.getElementById('rating-modal').style.display = 'none';
+      selectedAppointmentId = '';
+      selectedLecturerEmail = '';
+      currentRating = 0;
+    }
+
+    function updateStarDisplay() {
+      const stars = document.querySelectorAll('#star-rating span');
+      stars.forEach((star, index) => {
+        if (index < currentRating) {
+          star.textContent = '★';
+          star.style.color = '#f59e0b';
+        } else {
+          star.textContent = '☆';
+          star.style.color = '#e5e7eb';
+        }
+      });
+    }
+
+    // Star rating click handlers
+    document.querySelectorAll('#star-rating span').forEach(star => {
+      star.addEventListener('click', () => {
+        currentRating = parseInt(star.dataset.rating);
+        updateStarDisplay();
+      });
+      
+      star.addEventListener('mouseover', () => {
+        const rating = parseInt(star.dataset.rating);
+        document.querySelectorAll('#star-rating span').forEach((s, index) => {
+          if (index < rating) {
+            s.style.color = '#f59e0b';
+          } else {
+            s.style.color = '#e5e7eb';
+          }
+        });
+      });
+    });
+
+    document.getElementById('star-rating').addEventListener('mouseleave', () => {
+      updateStarDisplay();
+    });
+
+    // Handle rating form submission
+    document.getElementById('rating-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      if (currentRating === 0) {
+        alert('Please select a rating');
+        return;
+      }
+      
+      const comment = document.getElementById('rating-comment').value;
+      
+      try {
+        // Update appointment with rating
+        await updateDoc(doc(db, 'appointments', selectedAppointmentId), {
+          rating: currentRating,
+          ratingComment: comment,
+          ratedAt: new Date().toISOString()
+        });
+
+        // Update lecturer's average rating
+        await updateLecturerRating(selectedLecturerEmail);
+        
+        closeRatingModal();
+        
+        // Show success message
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Submitted!';
+        submitBtn.style.background = '#10B981';
+        setTimeout(() => {
+          submitBtn.textContent = originalText;
+          submitBtn.style.background = '#f59e0b';
+        }, 2000);
+        
+        // Reload appointments to show the rating
+        await loadAppointments(currentStudentEmail);
+      } catch (error) {
+        console.error('Error submitting rating:', error);
+        alert('Failed to submit rating. Please try again.');
+      }
+    });
+
+    // Update lecturer's average rating
+    async function updateLecturerRating(lecturerEmail) {
+      try {
+        // Get all appointments for this lecturer that have ratings
+        const appointmentsSnapshot = await getDocs(query(
+          collection(db, 'appointments'),
+          where('lecturerEmail', '==', lecturerEmail)
+        ));
+        
+        const ratings = [];
+        appointmentsSnapshot.docs.forEach(doc => {
+          const data = doc.data();
+          if (data.rating) {
+            ratings.push(data.rating);
+          }
+        });
+        
+        if (ratings.length > 0) {
+          const averageRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+          const roundedRating = Math.round(averageRating * 10) / 10; // Round to 1 decimal place
+          
+          // Update lecturer document
+          await updateDoc(doc(db, 'lecturers', lecturerEmail), {
+            averageRating: roundedRating,
+            totalRatings: ratings.length
+          });
+        }
+      } catch (error) {
+        console.error('Error updating lecturer rating:', error);
+      }
+    }
+
+    // Avatar functionality
+    function changeAvatar() {
+      document.getElementById('avatar-input').click();
+    }
+
+    document.getElementById('avatar-input').addEventListener('change', async function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        showNotification('File size must be less than 5MB', 'error');
+        return;
+      }
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        showNotification('Please select an image file', 'error');
+        return;
+      }
+
+      // Show upload progress
+      showNotification('Uploading avatar...', 'progress');
+
+      try {
+        const userEmail = sessionStorage.getItem('userEmail');
+        const fileName = `avatar_${Date.now()}.${file.name.split('.').pop()}`;
+        
+        // Import Firebase functions dynamically
+        const { getStorage, ref: storageRef, uploadBytes, getDownloadURL } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js");
+        const { getFirestore, updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
+        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js");
+        
+        // Get Firebase app and services
+        const firebaseConfig = {
+          apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+          authDomain: "appointment-management-c2531.firebaseapp.com",
+          projectId: "appointment-management-c2531",
+          storageBucket: "appointment-management-c2531.firebasestorage.app",
+          messagingSenderId: "428786083628",
+          appId: "1:428786083628:web:d9d9576b12581cc697ee89",
+          measurementId: "G-9FM8F1WJMF"
+        };
+        const app = initializeApp(firebaseConfig);
+        const dynamicStorage = getStorage(app);
+        const dynamicDb = getFirestore(app);
+        
+        const fileRef = storageRef(dynamicStorage, `avatars/students/${userEmail}/${fileName}`);
+        
+        // Upload file
+        showNotification('Uploading to cloud storage...', 'progress');
+        const snapshot = await uploadBytes(fileRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        
+        // Update user profile
+        showNotification('Updating profile...', 'progress');
+        await updateDoc(doc(dynamicDb, 'students', userEmail), {
+          avatarUrl: downloadURL
+        });
+        
+        // Update avatar displays (both header and main profile picture)
+        document.getElementById('user-avatar').src = downloadURL;
+        const profilePic = document.querySelector('.profile-pic');
+        if (profilePic) {
+          profilePic.src = downloadURL;
+        }
+        
+        showNotification('Avatar updated successfully!', 'success');
+      } catch (error) {
+        console.error('Error uploading avatar:', error);
+        showNotification('Failed to upload avatar. Please try again.', 'error');
+      }
+    });
+
+    // Notification system (non-intrusive)
+    function showNotification(message, type = 'info') {
+      // Remove existing notification
+      const existing = document.getElementById('custom-notification');
+      if (existing) {
+        existing.remove();
+      }
+
+      // Find the Edit Avatar button to position notification relative to it
+      const editButton = document.querySelector('.welcome-card button');
+      const buttonRect = editButton ? editButton.getBoundingClientRect() : null;
+
+      // Create notification
+      const notification = document.createElement('div');
+      notification.id = 'custom-notification';
+      
+      let positionStyle;
+      if (buttonRect) {
+        // Position under the Edit Avatar button
+        positionStyle = `
+          position: absolute;
+          top: ${buttonRect.bottom + window.scrollY + 8}px;
+          left: ${buttonRect.left + window.scrollX}px;
+          transform: translateY(-10px);
+          opacity: 0;
+          transition: all 0.3s ease;
+        `;
+      } else {
+        // Fallback to top-right
+        positionStyle = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          transform: translateX(100%);
+          transition: transform 0.3s ease;
+        `;
+      }
+
+      notification.style.cssText = `
+        ${positionStyle}
+        padding: 12px 18px;
+        border-radius: 6px;
+        color: white;
+        font-weight: 600;
+        z-index: 10000;
+        max-width: 280px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        pointer-events: none;
+      `;
+
+      // Set color and icon based on type
+      let backgroundColor, icon;
+      switch (type) {
+        case 'success':
+          backgroundColor = '#10B981';
+          icon = '<i class="fa fa-check-circle"></i>';
+          break;
+        case 'error':
+          backgroundColor = '#EF4444';
+          icon = '<i class="fa fa-exclamation-circle"></i>';
+          break;
+        case 'progress':
+          backgroundColor = '#3B82F6';
+          icon = '<i class="fa fa-spinner fa-spin"></i>';
+          break;
+        default:
+          backgroundColor = '#6B7280';
+          icon = '<i class="fa fa-info-circle"></i>';
+      }
+
+      notification.style.backgroundColor = backgroundColor;
+      notification.innerHTML = `${icon} ${message}`;
+
+      document.body.appendChild(notification);
+
+      // Animate in
+      setTimeout(() => {
+        if (buttonRect) {
+          notification.style.transform = 'translateY(0)';
+          notification.style.opacity = '1';
+        } else {
+          notification.style.transform = 'translateX(0)';
+        }
+      }, 100);
+
+      // Auto remove (except for progress)
+      if (type !== 'progress') {
+        setTimeout(() => {
+          if (buttonRect) {
+            notification.style.transform = 'translateY(-10px)';
+            notification.style.opacity = '0';
+          } else {
+            notification.style.transform = 'translateX(100%)';
+          }
+          setTimeout(() => {
+            if (notification.parentNode) {
+              notification.remove();
+            }
+          }, 300);
+        }, 3000);
+      }
+    }
+
+    // Make functions global
+    window.openRatingModal = openRatingModal;
+    window.closeRatingModal = closeRatingModal;
+    window.changeAvatar = changeAvatar;
+  </script>
+</body>
+</html> 

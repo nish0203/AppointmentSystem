@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Login – Uni Bookings</title>
+  <style>
+    * { box-sizing:border-box; margin:0; padding:0 }
+    body {
+      font-family:'Segoe UI',sans-serif;
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      min-height:100vh;
+      display:flex; align-items:center; justify-content:center;
+      color:#333;
+    }
+    .main-wrapper {
+      background:#fff; border-radius:12px;
+      box-shadow:0 8px 24px rgba(0,0,0,.15);
+      display:flex; max-width:900px; width:100%; overflow:hidden;
+    }
+    .logo-section {
+      flex:1; display:flex; align-items:center; justify-content:center;
+      padding:2rem; border-right:1px solid #ddd;
+    }
+    .logo-section img { max-width:220px; height:auto }
+    .login-card {
+      flex:1; padding:2rem 2.5rem; text-align:center;
+    }
+    label { display:block; text-align:left; margin:.5rem 0 .2rem; font-size:.9rem; color:#555; }
+    input {
+      width:100%; padding:.6rem; border:1.5px solid #ccc;
+      border-radius:6px; margin-bottom:1rem; transition:border-color .3s;
+    }
+    input:focus { border-color:#667eea; outline:none }
+    .submit-btn {
+      width:100%; padding:.75rem; background:#667eea; color:#fff;
+      border:none; border-radius:6px; font-weight:600; cursor:pointer;
+      transition:background .3s;
+    }
+    .submit-btn:hover { background:#5a67d8 }
+    .error-msg {
+      background:#ffe0e0; color:#b00020; padding:.5rem;
+      border-radius:6px; margin-bottom:1rem; display:none;
+      font-size:.9rem;
+      margin-top: 5px;
+    }
+    .loading-msg { display:none; margin-top:1rem; font-weight:bold; color:#667eea; }
+        .hidden { display:none }
+    @media(max-width:768px) {
+      .main-wrapper { flex-direction:column }
+      .logo-section { border-right:none; border-bottom:1px solid #ddd }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-wrapper">
+    <div class="logo-section">
+      <img src="eBbook.png" alt="Uni Bookings Logo"/>
+    </div>
+    <div class="login-card">
+      <p style="font: 7px;">Sign in with</p>
+      <div id="error-msg" class="error-msg" aria-live="polite"></div>
+      <form id="login-form">
+        <label for="user-email">Email</label>
+        <input type="email" id="user-email" placeholder="Enter your email" required />
+        <label id="otp-label" class="hidden" for="otp">Enter OTP</label>
+        <input type="text" id="otp" class="hidden" placeholder="6-digit code" maxlength="6" />
+        <button type="submit" id="submit-btn" class="submit-btn">Send OTP</button>
+      </form>
+      <div id="loading-msg" class="loading-msg">Please wait…</div>
+    </div>
+  </div>
+
+  <!-- EmailJS v4 SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    // Initialize EmailJS with your public key
+    emailjs.init({ publicKey: "YOUR_PUBLIC_KEY" });
+  </script>
+
+
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain: "appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531",
+      storageBucket: "appointment-management-c2531.firebasestorage.app",
+      messagingSenderId: "428786083628",
+      appId: "1:428786083628:web:d9d9576b12581cc697ee89",
+      measurementId: "G-9FM8F1WJMF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const SERVICE_ID  = "service_mailgun";
+    const TEMPLATE_ID = "template_otp";
+    const PUBLIC_KEY  = "CO_25CIKuZ9YpYqQt";
+
+    const formEl = document.getElementById("login-form");
+    const eI     = document.getElementById("user-email");
+    const oI     = document.getElementById("otp");
+    const oL     = document.getElementById("otp-label");
+    const btn    = document.getElementById("submit-btn");
+    const errEl  = document.getElementById("error-msg");
+    const loadEl = document.getElementById("loading-msg");
+
+    function showError(msg) { errEl.textContent = msg; errEl.style.display = "block"; }
+    function clearError()   { errEl.style.display = "none"; }
+    function randomCode(len=6) { return Array.from({length:len},()=>Math.floor(Math.random()*10)).join(""); }
+
+    let step=1, otpCode="", userRole="", userEmail="";
+
+    formEl.addEventListener("submit", async ev => {
+      ev.preventDefault(); clearError();
+      if(step===1) {
+        userEmail = eI.value.trim().toLowerCase();
+        if(!userEmail) return showError("Please enter your email.");
+
+        // Determine role once
+        const cols=["admins","lecturers","students"];
+        for(let col of cols) {
+          if((await getDoc(doc(db,col,userEmail))).exists()) {
+            userRole = col; break;
+          }
+        }
+        if(!userRole) return showError("No account found for that email.");
+
+        // Generate OTP and expiry
+        otpCode = randomCode();
+        const expiry = new Date(Date.now()+15*60*1000).toLocaleString();
+
+        btn.disabled=true; eI.disabled=true; loadEl.style.display="block";
+        try {
+          const resp = await emailjs.send(SERVICE_ID, TEMPLATE_ID,
+            { email:userEmail, passcode:otpCode, time:expiry },
+            { publicKey:PUBLIC_KEY }
+          );
+          console.log("EmailJS success:",resp);
+          loadEl.style.display="none";
+          oL.classList.remove("hidden"); oI.classList.remove("hidden");
+          btn.textContent="Login"; btn.disabled=false; oI.focus(); step=2;
+        } catch(err) {
+          console.error("EmailJS error:",err);
+          showError("Failed to send OTP: "+(err.error||err.text||err.message));
+          btn.disabled=false; eI.disabled=false; loadEl.style.display="none";
+        }
+
+      } else {
+        const entered=oI.value.trim();
+        if(!entered) return showError("Please enter the 6-digit code.");
+        if(entered!==otpCode) return showError("Incorrect code.");
+
+        // Show simple logging in message
+        btn.disabled=true; oI.disabled=true; loadEl.style.display="block";
+        loadEl.textContent="Logging in...";
+
+        try {
+          // Store user session data immediately
+          sessionStorage.setItem('userEmail', userEmail);
+          
+          // Preload avatar for students/lecturers before redirect (silently)
+          if(userRole==="students" || userRole==="lecturers") {
+            try {
+              const userDoc = await getDoc(doc(db, userRole, userEmail));
+              if(userDoc.exists()) {
+                const userData = userDoc.data();
+                
+                // Store user data in session
+                sessionStorage.setItem('userName', userData.name || 'User');
+                if(userRole==="students") {
+                  sessionStorage.setItem('studentId', userData.id || '');
+                }
+                
+                // Preload and cache avatar if exists (silently in background)
+                if(userData.avatarUrl) {
+                  console.log('Preloading avatar in background:', userData.avatarUrl);
+                  
+                  await new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                      // Cache the avatar URL for instant display
+                      sessionStorage.setItem('userAvatarUrl', userData.avatarUrl);
+                      console.log('✅ Avatar cached successfully');
+                      resolve();
+                    };
+                    img.onerror = (error) => {
+                      console.warn('❌ Avatar failed to load:', error);
+                      resolve(); // Don't block redirect if avatar fails
+                    };
+                    // Shorter timeout for seamless experience
+                    setTimeout(() => {
+                      console.warn('⏰ Avatar loading timeout, proceeding');
+                      resolve();
+                    }, 2000);
+                    img.src = userData.avatarUrl;
+                  });
+                }
+              }
+            } catch(avatarError) {
+              console.warn('Error preloading user data:', avatarError);
+              // Don't block redirect for avatar errors
+            }
+          }
+
+          // Redirect based on pre-determined role
+          let target="";
+          if(userRole==="admins")    target="admin.html";
+          else if(userRole==="lecturers") target="lecturer.html";
+          else if(userRole==="students")  target="student.html";
+          
+          window.location.href=`${target}?email=${encodeURIComponent(userEmail)}`;
+          
+        } catch(error) {
+          console.error('Error during login:', error);
+          showError("Login error. Redirecting anyway...");
+          // Fallback redirect after brief delay
+          setTimeout(() => {
+            let target="";
+            if(userRole==="admins")    target="admin.html";
+            else if(userRole==="lecturers") target="lecturer.html";
+            else if(userRole==="students")  target="student.html";
+            window.location.href=`${target}?email=${encodeURIComponent(userEmail)}`;
+          }, 1000);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

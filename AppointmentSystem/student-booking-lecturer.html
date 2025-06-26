@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Book Appointment – Uni Bookings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: #f9fafb;
+      color: #222;
+      margin: 0;
+    }
+    .header {
+      background: #fff;
+      color: #222;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 70px;
+      border-bottom: 1px solid #e5e7eb;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    
+    .header .logo {
+      display: flex; align-items: center; gap: 18px;
+    }
+    .header .logo img {
+      height: 60px;
+      transition: height .2s;
+    }
+    .header nav {
+      display: flex; gap: 24px; align-items: center;
+    }
+    .header nav .nav-link {
+      color: #222;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.08rem;
+      transition: color .2s;
+      position: relative;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .header nav .nav-link:hover, .header nav .nav-link.active {
+      background: #f1f5f9;
+      color: #ef4444;
+    }
+    .header .avatar-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: #eee;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      margin-left: 18px;
+      cursor: pointer;
+      position: relative;
+      outline: none;
+      border: none;
+      padding: 0;
+    }
+    .header .avatar-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+    .logout-wrapper {
+      position: relative;
+    }
+    .logout-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      padding: 8px 0;
+      min-width: 120px;
+      z-index: 1100;
+      display: none;
+    }
+    .logout-dropdown button {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 12px 16px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logout-dropdown button:hover {
+      background: #f3f4f6;
+    }
+    .main-container {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 16px;
+    }
+    .lecturer-header {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #0001;
+      padding: 28px 24px;
+      margin-bottom: 32px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .lecturer-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 4px 12px #0002;
+    }
+    .lecturer-info h1 {
+      margin: 0 0 8px 0;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .lecturer-info p {
+      margin: 4px 0;
+      font-size: 1.05rem;
+      color: #666;
+    }
+    .back-btn {
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all .2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .back-btn:hover {
+      background: #e5e7eb;
+    }
+    .slots-container {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #0001;
+      padding: 24px;
+    }
+    .slots-container h2 {
+      margin: 0 0 24px 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .slots-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .slot-card {
+      background: #f8fafc;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 16px;
+      transition: transform .2s, box-shadow .2s, border-color .2s;
+      cursor: pointer;
+    }
+    .slot-card:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px #0002;
+      border-color: #10B981;
+    }
+    .slot-card.booked {
+      background: #fef2f2;
+      border-color: #fca5a5;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    .slot-card.booked:hover {
+      transform: none;
+      box-shadow: none;
+      border-color: #fca5a5;
+    }
+    .slot-date {
+      font-weight: 700;
+      color: #222;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+    .slot-time {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+    .slot-time .time {
+      font-weight: 600;
+      color: #374151;
+    }
+    .slot-status {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .slot-status.available {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    .slot-status.booked {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .book-btn {
+      width: 100%;
+      background: #10B981;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background .2s;
+      margin-top: 12px;
+    }
+    .book-btn:hover {
+      background: #059669;
+    }
+    .book-btn:disabled {
+      background: #d1d5db;
+      cursor: not-allowed;
+    }
+    .loading {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6b7280;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #6b7280;
+    }
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      color: #d1d5db;
+    }
+    /* Booking Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+    }
+    .modal-content h3 {
+      margin: 0 0 20px 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #222;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #374151;
+    }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #6b7280;
+    }
+    .close-btn:hover {
+      color: #374151;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .btn-cancel {
+      flex: 1;
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-confirm {
+      flex: 1;
+      background: #10B981;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-confirm:hover {
+      background: #059669;
+    }
+    @media (max-width: 700px) {
+      .main-container { 
+        padding: 0 4vw; 
+      }
+      .lecturer-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .lecturer-avatar {
+        width: 80px;
+        height: 80px;
+      }
+      .slots-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">
+      <img src="eBbook2.png" alt="Logo">
+    </div>
+    <nav>
+      <a href="student.html" class="nav-link">Dashboard</a>
+      <a href="student-lecturer-list.html" class="nav-link">Lecturers</a>
+      <a href="student-manage-appointments.html" class="nav-link">Manage Appointments</a>
+    </nav>
+    <div class="logout-wrapper">
+      <button class="avatar-btn" onclick="toggleLogoutDropdown()" id="avatarBtn">
+        <img src="placeholder.png" alt="Student Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
+      </button>
+      <div class="logout-dropdown" id="logout-dropdown">
+        <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <a href="student-lecturer-list.html" class="back-btn">
+      <i class="fa fa-arrow-left"></i> Back to Lecturers
+    </a>
+
+    <div class="lecturer-header">
+      <img src="placeholder.png" alt="Lecturer Profile" class="lecturer-profile-pic" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" />
+      <div class="lecturer-info">
+        <h1 id="lecturer-name">Loading...</h1>
+        <p><strong>Email:</strong> <span id="lecturer-email">-</span></p>
+        <p><strong>Faculty:</strong> <span id="lecturer-faculty">-</span></p>
+        <p><strong>Office:</strong> <span id="lecturer-office">-</span></p>
+        <p><strong>Specialization:</strong> <span id="lecturer-specialization">-</span></p>
+      </div>
+    </div>
+
+    <div class="slots-container">
+      <h2>Available Appointment Slots</h2>
+      <div id="slots-content">
+        <div class="loading">
+          <i class="fa fa-spinner fa-spin"></i>
+          <p>Loading available slots...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Request Slot Section -->
+    <div class="request-slot-container" style="margin-top: 24px; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #0001; padding: 24px;">
+      <h2 style="margin: 0 0 16px 0; font-size: 1.5rem; font-weight: 700; color: #222;">No Available Slots?</h2>
+      <p style="color: #666; margin-bottom: 20px;">If there are no available slots that suit your schedule, you can request this lecturer to create a new slot for you.</p>
+      <button class="btn-request-slot" onclick="openRequestSlotModal()" style="background: #6366f1; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 1rem;">
+        <i class="fa fa-calendar-plus"></i> Request New Slot
+      </button>
+    </div>
+  </div>
+
+  <!-- Booking Modal -->
+  <div id="booking-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeBookingModal()">&times;</span>
+      <h3>Book Appointment</h3>
+      <form id="booking-form">
+        <div class="form-group">
+          <label>Selected Slot:</label>
+          <p id="selected-slot-info" style="background: #f3f4f6; padding: 12px; border-radius: 6px; margin: 0;"></p>
+        </div>
+        <div class="form-group">
+          <label for="booking-purpose">Purpose of Meeting:</label>
+          <textarea id="booking-purpose" placeholder="Please describe the purpose of your appointment..." required></textarea>
+        </div>
+        <div class="form-group">
+          <label for="booking-notes">Additional Notes (optional):</label>
+          <textarea id="booking-notes" placeholder="Any additional information..."></textarea>
+                </div>
+        <div class="form-group">
+          <label for="booking-documents">Upload Documents (optional):</label>
+          <input type="file" id="booking-documents" multiple accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png" style="width: 100%; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px;">
+          <small style="color: #6b7280; font-size: 0.85rem;">Supported formats: PDF, DOC, DOCX, TXT, JPG, PNG (Max 5MB each)</small>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeBookingModal()">Cancel</button>
+          <button type="submit" class="btn-confirm">Book Appointment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="success-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 400px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center;">
+      <div style="margin-bottom: 20px;">
+        <i class="fa fa-check-circle" style="font-size: 3rem; color: #10B981; margin-bottom: 10px;"></i>
+        <h3 style="margin: 0; color: #222;" id="success-title">Success!</h3>
+        <p style="color: #666; margin: 10px 0;" id="success-message">Your request has been processed.</p>
+      </div>
+      <button onclick="closeSuccessModal()" style="background: #10B981; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+        OK
+      </button>
+    </div>
+  </div>
+
+  <!-- Request Slot Modal -->
+  <div id="request-slot-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
+      <span style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #999;" onclick="closeRequestSlotModal()">&times;</span>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <i class="fa fa-calendar-plus" style="font-size: 3rem; color: #6366f1; margin-bottom: 10px;"></i>
+        <h3 style="margin: 0; color: #222;">Request New Appointment Slot</h3>
+        <p style="color: #666; margin: 10px 0;">Ask the lecturer to create a slot that fits your schedule</p>
+      </div>
+      <form id="request-slot-form">
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Preferred Date <span style="color: #ef4444;">*</span>:</label>
+          <input type="date" id="request-preferred-date" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px;" required>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Preferred Time Range <span style="color: #ef4444;">*</span>:</label>
+          <div style="display: flex; gap: 12px;">
+            <input type="time" id="request-start-time" style="flex: 1; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px;" required>
+            <span style="display: flex; align-items: center; color: #666;">to</span>
+            <input type="time" id="request-end-time" style="flex: 1; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px;" required>
+          </div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Purpose of Meeting <span style="color: #ef4444;">*</span>:</label>
+          <textarea id="request-purpose" rows="3" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-family: inherit; resize: vertical;" placeholder="Please describe the purpose of your appointment..." required></textarea>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Additional Notes:</label>
+          <textarea id="request-notes" rows="2" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-family: inherit; resize: vertical;" placeholder="Any additional information or special requirements..."></textarea>
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button type="button" onclick="closeRequestSlotModal()" style="background: #6b7280; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            Cancel
+          </button>
+          <button type="submit" style="background: #6366f1; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+            Send Request
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Email Service - Mailtrap for appointments, EmailJS+Mailgun for OTP (PRESERVED) -->
+  <script src="email-service-mailtrap-only.js"></script>
+  
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import {
+      getFirestore, doc, getDoc, collection, getDocs, query, where, setDoc, addDoc, updateDoc
+    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+    import {
+      getStorage, ref, uploadBytes, getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain: "appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531",
+      storageBucket: "appointment-management-c2531.firebasestorage.app",
+      messagingSenderId: "428786083628",
+      appId: "1:428786083628:web:d9d9576b12581cc697ee89",
+      measurementId: "G-9FM8F1WJMF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    // Get lecturer info from URL params or sessionStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const lecturerEmail = urlParams.get('lecturer');
+    const lecturerName = urlParams.get('name');
+    
+    let selectedSlot = null;
+    let availableSlots = [];
+    let currentLecturer = null;
+
+    // Load lecturer info and slots
+    async function loadLecturerData() {
+      try {
+        // Get lecturer from sessionStorage if available
+        const storedLecturer = sessionStorage.getItem('selectedLecturer');
+        if (storedLecturer) {
+          currentLecturer = JSON.parse(storedLecturer);
+          displayLecturerInfo(currentLecturer);
+        } else if (lecturerName) {
+          // Fallback: use URL params
+          document.getElementById('lecturer-name').textContent = lecturerName;
+          document.getElementById('lecturer-email').textContent = lecturerEmail;
+        }
+
+        // Load available slots
+        await loadAvailableSlots();
+      } catch (error) {
+        console.error('Error loading lecturer data:', error);
+      }
+    }
+
+    function displayLecturerInfo(lecturer) {
+      document.getElementById('lecturer-name').textContent = lecturer.name || 'Lecturer';
+      document.getElementById('lecturer-email').textContent = lecturer.email || '-';
+      document.getElementById('lecturer-faculty').textContent = lecturer.faculty || '-';
+      document.getElementById('lecturer-office').textContent = lecturer.office || '-';
+      document.getElementById('lecturer-specialization').textContent = lecturer.specialization || '-';
+    }
+
+    async function loadAvailableSlots() {
+      try {
+        const slotsQuery = query(
+          collection(db, 'appointment_slots'),
+          where('lecturerEmail', '==', lecturerEmail)
+        );
+        const snapshot = await getDocs(slotsQuery);
+        
+        availableSlots = [];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        snapshot.docs.forEach(doc => {
+          const slotData = { id: doc.id, ...doc.data() };
+          const slotDate = new Date(slotData.date);
+          slotDate.setHours(0, 0, 0, 0);
+          
+          // Only include future slots
+          if (slotDate >= today) {
+            availableSlots.push(slotData);
+          }
+        });
+
+        // Sort by date and time
+        availableSlots.sort((a, b) => {
+          const dateCompare = new Date(a.date) - new Date(b.date);
+          if (dateCompare !== 0) return dateCompare;
+          return new Date(`2000-01-01T${a.startTime}`) - new Date(`2000-01-01T${b.startTime}`);
+        });
+
+        renderSlots();
+      } catch (error) {
+        console.error('Error loading slots:', error);
+        const container = document.getElementById('slots-content');
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fa fa-exclamation-circle"></i>
+            <h3>Error loading slots</h3>
+            <p>Please try again later</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderSlots() {
+      const container = document.getElementById('slots-content');
+      
+      if (availableSlots.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fa fa-calendar-times"></i>
+            <h3>No available slots</h3>
+            <p>This lecturer has no available appointment slots at the moment</p>
+          </div>
+        `;
+        return;
+      }
+
+      const availableCount = availableSlots.filter(slot => !slot.isBooked).length;
+      
+      container.innerHTML = `
+        <div class="slots-grid">
+          ${availableSlots.map(slot => `
+            <div class="slot-card ${slot.isBooked ? 'booked' : ''}" ${!slot.isBooked ? `onclick="selectSlot('${slot.id}')"` : ''}>
+              <div class="slot-date">${formatDate(slot.date)}</div>
+              <div class="slot-time">
+                <i class="fa fa-clock"></i>
+                <span class="time">${formatTime(slot.startTime)} - ${formatTime(slot.endTime)}</span>
+              </div>
+              <div class="slot-status ${slot.isBooked ? 'booked' : 'available'}">
+                ${slot.isBooked ? 'Booked' : 'Available'}
+              </div>
+              ${!slot.isBooked ? '<button class="book-btn">Book This Slot</button>' : ''}
+            </div>
+          `).join('')}
+        </div>
+        <p style="margin-top: 16px; color: #6b7280; font-size: 0.9rem;">
+          ${availableCount} of ${availableSlots.length} slots available
+        </p>
+      `;
+    }
+
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      return date.toLocaleDateString('en-US', { 
+        weekday: 'short', 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    }
+
+    function formatTime(timeStr) {
+      const [hours, minutes] = timeStr.split(':');
+      const hour = parseInt(hours);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      const displayHour = hour % 12 || 12;
+      return `${displayHour}:${minutes} ${ampm}`;
+    }
+
+    // Booking modal functions
+    window.selectSlot = function(slotId) {
+      selectedSlot = availableSlots.find(slot => slot.id === slotId);
+      if (selectedSlot && !selectedSlot.isBooked) {
+        const slotInfo = `${formatDate(selectedSlot.date)} at ${formatTime(selectedSlot.startTime)} - ${formatTime(selectedSlot.endTime)}`;
+        document.getElementById('selected-slot-info').textContent = slotInfo;
+        document.getElementById('booking-modal').style.display = 'flex';
+      }
+    };
+
+    window.closeBookingModal = function() {
+      document.getElementById('booking-modal').style.display = 'none';
+      document.getElementById('booking-form').reset();
+      selectedSlot = null;
+    };
+
+    // Success modal functions
+    function showSuccessModal(title, message) {
+      document.getElementById('success-title').textContent = title;
+      document.getElementById('success-message').textContent = message;
+      document.getElementById('success-modal').style.display = 'flex';
+    }
+
+    window.closeSuccessModal = function() {
+      document.getElementById('success-modal').style.display = 'none';
+    };
+
+    // Request slot modal functions
+    window.openRequestSlotModal = function() {
+      // Set minimum date to today
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('request-preferred-date').min = today;
+      document.getElementById('request-slot-modal').style.display = 'flex';
+    };
+
+    window.closeRequestSlotModal = function() {
+      document.getElementById('request-slot-modal').style.display = 'none';
+      document.getElementById('request-slot-form').reset();
+    };
+
+    // Handle request slot form submission
+    document.getElementById('request-slot-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const studentEmail = sessionStorage.getItem('userEmail');
+      const studentName = sessionStorage.getItem('userName') || 'Student';
+      if (!studentEmail) {
+        alert('Please log in to request slots');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const preferredDate = document.getElementById('request-preferred-date').value;
+      const startTime = document.getElementById('request-start-time').value;
+      const endTime = document.getElementById('request-end-time').value;
+      const purpose = document.getElementById('request-purpose').value;
+      const notes = document.getElementById('request-notes').value;
+
+      // Validate time range
+      if (startTime >= endTime) {
+        alert('End time must be after start time');
+        return;
+      }
+
+      try {
+        // Show loading state
+        const submitBtn = document.querySelector('#request-slot-form button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Sending Request...';
+        submitBtn.disabled = true;
+
+        // Create slot request
+        const requestData = {
+          studentEmail: studentEmail,
+          studentName: studentName,
+          studentId: sessionStorage.getItem('studentId') || 'N/A',
+          lecturerEmail: lecturerEmail,
+          lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
+          preferredDate: preferredDate,
+          startTime: startTime,
+          endTime: endTime,
+          purpose: purpose,
+          notes: notes,
+          status: 'pending',
+          requestedAt: new Date().toISOString()
+        };
+
+        await addDoc(collection(db, 'slot_requests'), requestData);
+        
+        // Add in-app notification for student
+        if (window.NotificationService) {
+          window.NotificationService.addSlotRequest({
+            studentName: studentName,
+            lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
+            preferredDate: preferredDate,
+            preferredTime: `${startTime} - ${endTime}`,
+            purpose: purpose
+          });
+        }
+        
+        console.log('Slot request created successfully');
+        showSuccessModal('Request Sent Successfully!', 'Your slot request has been sent to the lecturer. They will review it and create a slot if approved.');
+        closeRequestSlotModal();
+        
+      } catch (error) {
+        console.error('Error creating slot request:', error);
+        alert(`Failed to send request: ${error.message}`);
+      } finally {
+        // Reset loading state
+        const submitBtn = document.querySelector('#request-slot-form button[type="submit"]');
+        submitBtn.textContent = 'Send Request';
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Close request modal when clicking outside
+    document.getElementById('request-slot-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeRequestSlotModal();
+      }
+    });
+
+    // Handle booking form submission
+    document.getElementById('booking-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      if (!selectedSlot) return;
+
+      const studentEmail = sessionStorage.getItem('userEmail');
+      const studentName = sessionStorage.getItem('userName') || 'Student';
+      if (!studentEmail) {
+        alert('Please log in to book appointments');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const purpose = document.getElementById('booking-purpose').value;
+      const notes = document.getElementById('booking-notes').value;
+      const fileInput = document.getElementById('booking-documents');
+      const files = fileInput.files;
+
+      try {
+        // Show loading state
+        const submitBtn = document.querySelector('.btn-confirm');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Booking...';
+        submitBtn.disabled = true;
+        
+        console.log('Starting booking process...');
+        
+        // Add overall timeout for entire booking process
+        const bookingTimeout = setTimeout(() => {
+          throw new Error('Booking process timeout - taking too long');
+        }, 120000); // 2 minutes max
+
+        // Upload files if any
+        let documentUrls = [];
+        if (files.length > 0) {
+          console.log(`Uploading ${files.length} files...`);
+          submitBtn.textContent = `Uploading files... (0/${files.length})`;
+          
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            console.log(`Processing file ${i+1}: ${file.name} (${(file.size/1024/1024).toFixed(2)}MB)`);
+            
+            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+              throw new Error(`File ${file.name} is too large. Maximum size is 5MB.`);
+            }
+            
+            submitBtn.textContent = `Uploading files... (${i+1}/${files.length})`;
+            
+            const timestamp = new Date().getTime();
+            const fileName = `${timestamp}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+            const storageRef = ref(storage, `appointments/${studentEmail}/${fileName}`);
+            
+            try {
+              console.log(`Uploading ${file.name} to Firebase Storage...`);
+              
+              // Use different upload method to avoid CORS
+              const metadata = {
+                contentType: file.type,
+                customMetadata: {
+                  'originalName': file.name
+                }
+              };
+              
+              const snapshot = await uploadBytes(storageRef, file, metadata);
+              console.log(`Getting download URL for ${file.name}...`);
+              const downloadURL = await getDownloadURL(snapshot.ref);
+              console.log(`File ${file.name} uploaded successfully`);
+              
+              documentUrls.push({
+                name: file.name,
+                url: downloadURL,
+                type: file.type,
+                size: file.size
+              });
+            } catch (uploadError) {
+              console.error(`Failed to upload ${file.name}:`, uploadError);
+              // Continue with other files instead of failing completely
+              console.log(`Skipping file ${file.name} due to upload error`);
+            }
+          }
+          
+          submitBtn.textContent = 'Creating appointment...';
+        }
+
+        // Create appointment
+        console.log('Creating appointment in Firestore...');
+        const appointmentData = {
+          studentEmail: studentEmail,
+          studentName: studentName,
+          studentId: sessionStorage.getItem('studentId') || 'N/A',
+          lecturerEmail: lecturerEmail,
+          lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
+          slotId: selectedSlot.id,
+          date: selectedSlot.date,
+          startTime: selectedSlot.startTime,
+          endTime: selectedSlot.endTime,
+          purpose: purpose,
+          notes: notes,
+          documents: documentUrls,
+          status: 'pending',
+          bookedAt: new Date().toISOString()
+        };
+
+        const appointmentRef = await Promise.race([
+          addDoc(collection(db, 'appointments'), appointmentData),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Database timeout - appointment creation')), 30000)
+          )
+        ]);
+        console.log('Appointment created successfully');
+
+        // Mark slot as booked
+        console.log('Updating slot status...');
+        await Promise.race([
+          updateDoc(doc(db, 'appointment_slots', selectedSlot.id), {
+            isBooked: true,
+            bookedBy: studentEmail,
+            appointmentId: appointmentRef.id
+          }),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Database timeout - slot update')), 30000)
+          )
+        ]);
+        console.log('Slot updated successfully');
+
+        clearTimeout(bookingTimeout);
+        console.log('Booking completed successfully!');
+        
+        // Add in-app notification for student
+        if (window.NotificationService) {
+          window.NotificationService.addBookingConfirmation({
+            studentEmail: studentEmail,
+            studentName: studentName,
+            lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
+            lecturerEmail: lecturerEmail,
+            date: selectedSlot.date,
+            time: `${selectedSlot.startTime} - ${selectedSlot.endTime}`,
+            purpose: purpose,
+            bookingId: appointmentRef.id
+          });
+        }
+        
+        // Send email notifications
+        try {
+          console.log('Sending email notifications...');
+          
+          // Send booking confirmation to student
+          await EmailService.sendBookingConfirmation({
+            studentEmail: studentEmail,
+            studentName: studentName,
+            lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
+            lecturerEmail: lecturerEmail,
+            date: selectedSlot.date,
+            time: `${selectedSlot.startTime} - ${selectedSlot.endTime}`,
+            purpose: purpose,
+            bookingId: appointmentRef.id
+          });
+          
+          // Send slot booked alert to lecturer
+          await EmailService.sendSlotBookedAlert({
+            lecturerEmail: lecturerEmail,
+            lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
+            studentName: studentName,
+            studentEmail: studentEmail,
+            studentId: sessionStorage.getItem('studentId') || 'N/A',
+            date: selectedSlot.date,
+            time: `${selectedSlot.startTime} - ${selectedSlot.endTime}`,
+            purpose: purpose,
+            bookingId: appointmentRef.id
+          });
+          
+          console.log('✅ Email notifications sent successfully');
+        } catch (emailError) {
+          console.error('❌ Failed to send email notifications:', emailError);
+          // Don't fail the booking if email fails
+        }
+        
+        showSuccessModal('Appointment booked successfully!', 'Your appointment request has been submitted for approval. You and your lecturer will receive email notifications.');
+        closeBookingModal();
+        
+        // Reload slots to reflect changes
+        await loadAvailableSlots();
+        
+      } catch (error) {
+        clearTimeout(bookingTimeout);
+        console.error('Error booking appointment:', error);
+        alert(`Failed to book appointment: ${error.message}`);
+      } finally {
+        // Reset loading state
+        const submitBtn = document.querySelector('.btn-confirm');
+        submitBtn.textContent = 'Book Appointment';
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('booking-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeBookingModal();
+      }
+    });
+
+    // Logout dropdown functionality
+    document.getElementById('avatarBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      const dropdown = document.getElementById('logout-dropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', () => {
+      document.getElementById('logout-dropdown').style.display = 'none';
+    });
+
+    // Handle logout
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      sessionStorage.clear();
+      window.location.href = 'login.html';
+    });
+
+    // Load cached avatar instantly
+    const cachedAvatarUrl = sessionStorage.getItem('userAvatarUrl');
+    if (cachedAvatarUrl) {
+      console.log('📸 Loading cached avatar instantly:', cachedAvatarUrl);
+      const avatarImg = document.querySelector('#avatarBtn img');
+      if (avatarImg) {
+        avatarImg.src = cachedAvatarUrl;
+      }
+    }
+
+    // Load user avatar from Firebase (for updates)
+    (async () => {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (userEmail) {
+        try {
+          const userDoc = await getDoc(doc(db, 'students', userEmail));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            if (userData.avatarUrl) {
+              const cachedAvatar = sessionStorage.getItem('userAvatarUrl');
+              // Only update if avatar has changed
+              if (userData.avatarUrl !== cachedAvatar) {
+                console.log('🔄 Updating avatar from Firebase');
+                const avatarImg = document.querySelector('#avatarBtn img');
+                if (avatarImg) {
+                  avatarImg.src = userData.avatarUrl;
+                }
+                // Update cache
+                sessionStorage.setItem('userAvatarUrl', userData.avatarUrl);
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error loading user avatar:', error);
+        }
+      }
+    })();
+
+    // Initialize
+    loadLecturerData();
+  </script>
+
+  <!-- Notification Service -->
+  <script src="notification-service.js"></script>
+  
+  <script>
+    // Initialize notification service
+    document.addEventListener('DOMContentLoaded', function() {
+      const userEmail = sessionStorage.getItem('userEmail');
+      if (userEmail && window.NotificationService) {
+        window.NotificationService.setUser(userEmail, 'student');
+      }
+    });
+  </script>
+</body>
+</html> 

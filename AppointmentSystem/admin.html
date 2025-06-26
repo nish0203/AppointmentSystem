@@ -1,0 +1,2406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Uni Bookings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 0 2rem;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .logo img {
+      height: 40px;
+      width: 40px;
+      border-radius: 8px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 8px 16px;
+      border-radius: 50px;
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+
+    .logout-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .main-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+      display: grid;
+      gap: 2rem;
+    }
+
+    .welcome-section {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .welcome-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .stat-icon.blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+    .stat-icon.green { background: linear-gradient(135deg, #10b981, #059669); }
+    .stat-icon.yellow { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .stat-icon.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .stat-icon.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    .stat-icon.indigo { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+      color: #64748b;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .management-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .management-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .management-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .card-description {
+      color: #64748b;
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-action {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #3b82f6;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .search-tab {
+      padding: 8px 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .search-tab.active {
+      background: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
+    }
+
+    .search-error {
+      color: #dc2626;
+      font-size: 0.9rem;
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: #f8fafc;
+      border-radius: 8px;
+      border-left: 4px solid #e2e8f0;
+      margin-bottom: 1rem;
+    }
+
+    .activity-item.appointment { border-left-color: #3b82f6; }
+    .activity-item.user { border-left-color: #10b981; }
+    .activity-item.system { border-left-color: #f59e0b; }
+
+    .activity-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      color: white;
+    }
+
+    .activity-content {
+      flex: 1;
+    }
+
+    .activity-text {
+      font-size: 0.9rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .activity-time {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      position: relative;
+      box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #64748b;
+      padding: 4px;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      background: #f1f5f9;
+      color: #1e293b;
+    }
+
+    .profile-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: white;
+      font-weight: 700;
+    }
+
+    .profile-name {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .profile-role {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem;
+      background: #f8fafc;
+      border-radius: 8px;
+    }
+
+    .info-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: #3b82f6;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .info-content {
+      flex: 1;
+    }
+
+    .info-label {
+      font-size: 0.8rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .info-value {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .appointment-filter-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .appointment-filter-btn.active {
+      background: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
+    }
+
+    .appointment-filter-btn:hover {
+      background: #f1f5f9;
+    }
+
+    .appointment-filter-btn.active:hover {
+      background: #2563eb;
+    }
+
+    .appointment-item {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.2s;
+    }
+
+    .appointment-item:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .appointment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .appointment-status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .appointment-status.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .appointment-status.approved {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .appointment-status.rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .appointment-status.cancelled {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .announcement-item {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .announcement-priority {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .announcement-priority.normal {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .announcement-priority.important {
+      background: #fbbf24;
+      color: #92400e;
+    }
+
+    .announcement-priority.urgent {
+      background: #ef4444;
+      color: white;
+    }
+
+    .delete-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: background 0.2s;
+    }
+
+    .delete-btn:hover {
+      background: #dc2626;
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        padding: 1rem;
+      }
+      .stats-grid, .management-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="header">
+    <div class="logo">
+      <img src="eBbook2.png" alt="Logo">
+    </div>
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <div class="user-info" onclick="openProfileModal()">
+        <div class="avatar" id="avatar">A</div>
+        <span id="admin-name">Admin</span>
+      </div>
+      <a href="login.html" class="logout-btn" onclick="logout()">
+        <i class="fa fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <div class="welcome-section">
+      <h1 class="welcome-title">Welcome back, <span id="welcome-name">Admin</span>! 👋</h1>
+      <p style="color: #64748b;">Here's what's happening with your appointment management system today.</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon blue">
+            <i class="fa fa-calendar-check"></i>
+          </div>
+        </div>
+        <div class="stat-value" id="total-appointments">-</div>
+        <div class="stat-label">Total Appointments</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon green">
+            <i class="fa fa-check-circle"></i>
+          </div>
+        </div>
+        <div class="stat-value" id="approved-appointments">-</div>
+        <div class="stat-label">Approved Appointments</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon yellow">
+            <i class="fa fa-clock"></i>
+          </div>
+        </div>
+        <div class="stat-value" id="pending-appointments">-</div>
+        <div class="stat-label">Pending Appointments</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon purple">
+            <i class="fa fa-users"></i>
+          </div>
+        </div>
+        <div class="stat-value" id="total-students">-</div>
+        <div class="stat-label">Total Students</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon indigo">
+            <i class="fa fa-chalkboard-teacher"></i>
+          </div>
+        </div>
+        <div class="stat-value" id="total-lecturers">-</div>
+        <div class="stat-label">Total Lecturers</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon red">
+            <i class="fa fa-calendar-times"></i>
+          </div>
+        </div>
+        <div class="stat-value" id="cancelled-appointments">-</div>
+        <div class="stat-label">Cancelled Appointments</div>
+      </div>
+    </div>
+
+    <!-- Search Section -->
+    <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); margin-bottom: 2rem;">
+      <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">Search Users</h2>
+      <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+        <button class="search-tab active" onclick="switchSearchTab('students', this)">Students</button>
+        <button class="search-tab" onclick="switchSearchTab('lecturers', this)">Lecturers</button>
+      </div>
+      <div style="display: flex; gap: 1rem; align-items: end;">
+        <input type="text" id="search-input" style="flex: 1; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;" placeholder="Enter student name or email to search...">
+        <button onclick="performSearch()" style="background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500;">
+          <i class="fa fa-search"></i> Search
+        </button>
+      </div>
+      <div id="search-results" style="margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 6px; display: none;"></div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+      <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;">Recent Activity</h2>
+      <div id="activity-list">
+        <div style="display: inline-flex; align-items: center; gap: 8px; color: #64748b;">
+          <div style="width: 16px; height: 16px; border: 2px solid #e2e8f0; border-top: 2px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+          <span>Loading recent activity...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Manage Users Section -->
+    <div style="margin-bottom: 2rem;">
+      <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: #1e293b;">Manage Users</h2>
+      <div class="management-grid">
+        <a href="mngadmin.html" class="management-card">
+          <div class="card-header">
+            <div class="card-icon red">
+              <i class="fa fa-user-shield"></i>
+            </div>
+            <h3 class="card-title">Manage Admin</h3>
+          </div>
+          <p class="card-description">Add or remove admin accounts. Manage system administrator privileges and access.</p>
+          <div class="card-action">
+            <span>Manage Admins</span>
+            <i class="fa fa-arrow-right"></i>
+          </div>
+        </a>
+
+        <a href="mngstud.html" class="management-card">
+          <div class="card-header">
+            <div class="card-icon purple">
+              <i class="fa fa-graduation-cap"></i>
+            </div>
+            <h3 class="card-title">Manage Students</h3>
+          </div>
+          <p class="card-description">Add, edit, or remove student accounts. Manage student profiles and academic information.</p>
+          <div class="card-action">
+            <span>Manage Students</span>
+            <i class="fa fa-arrow-right"></i>
+          </div>
+        </a>
+
+        <a href="mnglect.html" class="management-card">
+          <div class="card-header">
+            <div class="card-icon indigo">
+              <i class="fa fa-chalkboard-teacher"></i>
+            </div>
+            <h3 class="card-title">Manage Lecturer</h3>
+          </div>
+          <p class="card-description">Add, edit, or remove lecturer accounts. Manage faculty information and specializations.</p>
+          <div class="card-action">
+            <span>Manage Lecturers</span>
+            <i class="fa fa-arrow-right"></i>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Manage Appointments Section -->
+    <div style="margin-bottom: 2rem;">
+      <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: #1e293b;">Manage Appointments</h2>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+        <div class="management-card" onclick="showAppointmentOverview()">
+          <div class="card-header">
+            <div class="card-icon blue">
+              <i class="fa fa-calendar-check"></i>
+            </div>
+            <h3 class="card-title">Appointment Overview</h3>
+          </div>
+          <p class="card-description">View all appointments, track status, and manage booking conflicts across the system.</p>
+          <div class="card-action">
+            <span>View Appointments</span>
+            <i class="fa fa-arrow-right"></i>
+          </div>
+        </div>
+
+        <div class="management-card" onclick="showAppointmentSlots()">
+          <div class="card-header">
+            <div class="card-icon green">
+              <i class="fa fa-calendar-alt"></i>
+            </div>
+            <h3 class="card-title">Appointment Slots</h3>
+          </div>
+          <p class="card-description">Manage available time slots, set schedules, and configure appointment availability.</p>
+          <div class="card-action">
+            <span>Manage Slots</span>
+            <i class="fa fa-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Announcements Section -->
+    <div style="margin-bottom: 2rem;">
+      <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: #1e293b;">Announcements</h2>
+      <div style="display: grid; grid-template-columns: 1fr; max-width: 400px;">
+        <div class="management-card" onclick="showAnnouncementManager()">
+          <div class="card-header">
+            <div class="card-icon yellow">
+              <i class="fa fa-bullhorn"></i>
+            </div>
+            <h3 class="card-title">Announcements</h3>
+          </div>
+          <p class="card-description">Create and manage system announcements. Send notifications to students and lecturers.</p>
+          <div class="card-action">
+            <span>Manage Announcements</span>
+            <i class="fa fa-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Support & Inquiries Section -->
+    <div style="margin-bottom: 2rem;">
+      <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: #1e293b;">Support & Inquiries</h2>
+      <div style="display: grid; grid-template-columns: 1fr; max-width: 400px;">
+        <div class="management-card" onclick="showInquiryManager()">
+          <div class="card-header">
+            <div class="card-icon orange">
+              <i class="fa fa-question-circle"></i>
+            </div>
+            <h3 class="card-title">Inquiry Management</h3>
+          </div>
+          <p class="card-description">Handle student and lecturer inquiries, provide support, and track resolution status.</p>
+          <div class="card-action">
+            <span>Manage Inquiries</span>
+            <i class="fa fa-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Modal -->
+  <div id="profile-modal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeProfileModal()">
+        <i class="fa fa-times"></i>
+      </button>
+      <div class="profile-header">
+        <div class="profile-avatar" id="profile-avatar">A</div>
+        <h2 class="profile-name" id="profile-name">Administrator</h2>
+        <p class="profile-role">System Administrator</p>
+      </div>
+      <div class="profile-info">
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="fa fa-envelope"></i>
+          </div>
+          <div class="info-content">
+            <div class="info-label">Email Address</div>
+            <div class="info-value" id="profile-email">admin@university.edu</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="fa fa-calendar"></i>
+          </div>
+          <div class="info-content">
+            <div class="info-label">Last Login</div>
+            <div class="info-value" id="profile-last-login">Today</div>
+          </div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">
+            <i class="fa fa-shield-alt"></i>
+          </div>
+          <div class="info-content">
+            <div class="info-label">Access Level</div>
+            <div class="info-value">Full Administrative Access</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appointment Overview Modal -->
+  <div id="appointment-modal" class="modal">
+    <div class="modal-content" style="max-width: 900px; max-height: 80vh; overflow-y: auto;">
+      <button class="modal-close" onclick="closeAppointmentModal()">
+        <i class="fa fa-times"></i>
+      </button>
+      <h2 style="margin-bottom: 1.5rem; color: #1e293b;">📅 Appointment Overview</h2>
+      
+      <div style="margin-bottom: 1.5rem;">
+        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+          <button class="appointment-filter-btn active" onclick="filterAppointments('all')">All</button>
+          <button class="appointment-filter-btn" onclick="filterAppointments('pending')">Pending</button>
+          <button class="appointment-filter-btn" onclick="filterAppointments('approved')">Approved</button>
+          <button class="appointment-filter-btn" onclick="filterAppointments('rejected')">Rejected</button>
+          <button class="appointment-filter-btn" onclick="filterAppointments('cancelled')">Cancelled</button>
+        </div>
+      </div>
+      
+      <div id="appointments-list">
+        <div style="display: flex; align-items: center; gap: 8px; color: #64748b; justify-content: center; padding: 2rem;">
+          <div style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-top: 2px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+          <span>Loading appointments...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Announcement Manager Modal -->
+  <div id="announcement-modal" class="modal">
+    <div class="modal-content" style="max-width: 700px; max-height: 80vh; overflow-y: auto;">
+      <button class="modal-close" onclick="closeAnnouncementModal()">
+        <i class="fa fa-times"></i>
+      </button>
+      <h2 style="margin-bottom: 1.5rem; color: #1e293b;">📢 Announcement Manager</h2>
+      
+      <!-- Create Announcement Form -->
+      <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+        <h3 style="margin-bottom: 1rem; color: #1e293b;">Create New Announcement</h3>
+        <form id="announcement-form">
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Title *</label>
+            <input type="text" id="announcement-title" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Content *</label>
+            <textarea id="announcement-content" required rows="4" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem; resize: vertical;"></textarea>
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Priority</label>
+            <select id="announcement-priority" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+              <option value="normal">Normal</option>
+              <option value="important">Important</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Picture (Optional)</label>
+            <input type="file" id="announcement-picture" accept="image/*" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+            <small style="color: #6b7280; font-size: 0.8rem;">Supported formats: JPG, PNG, GIF. Max size: 5MB</small>
+            <div id="picture-preview" style="margin-top: 1rem; display: none;">
+              <img id="preview-image" style="max-width: 200px; max-height: 150px; border-radius: 4px; border: 1px solid #e2e8f0;">
+              <button type="button" onclick="removePicturePreview()" style="display: block; margin-top: 0.5rem; background: #ef4444; color: white; padding: 0.25rem 0.5rem; border: none; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
+                Remove Picture
+              </button>
+            </div>
+          </div>
+          <button type="submit" id="create-announcement-btn" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 500; cursor: pointer;">
+            <i class="fa fa-plus"></i> Create Announcement
+          </button>
+        </form>
+      </div>
+      
+      <!-- Existing Announcements -->
+      <div>
+        <h3 style="margin-bottom: 1rem; color: #1e293b;">Existing Announcements</h3>
+        <div id="announcements-list">
+          <div style="display: flex; align-items: center; gap: 8px; color: #64748b; justify-content: center; padding: 2rem;">
+            <div style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-top: 2px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <span>Loading announcements...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Appointment Slots Manager Modal -->
+  <div id="slots-modal" class="modal">
+    <div class="modal-content" style="max-width: 1000px; max-height: 85vh; overflow-y: auto;">
+      <button class="modal-close" onclick="closeSlotsModal()">
+        <i class="fa fa-times"></i>
+      </button>
+      <h2 style="margin-bottom: 1.5rem; color: #1e293b;">🗓️ Appointment Slots Manager</h2>
+      
+      <!-- Create New Slot Section -->
+      <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+        <h3 style="margin-bottom: 1rem; color: #1e293b;">Create New Time Slot</h3>
+        <form id="slot-form">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+            <div>
+              <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Lecturer *</label>
+              <select id="slot-lecturer" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+                <option value="">Select Lecturer</option>
+              </select>
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Date *</label>
+              <input type="date" id="slot-date" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Start Time *</label>
+              <input type="time" id="slot-start-time" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">End Time *</label>
+              <input type="time" id="slot-end-time" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+            </div>
+          </div>
+          <div style="margin-bottom: 1rem;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Location</label>
+            <input type="text" id="slot-location" placeholder="e.g., Office Room 101, Online Meeting" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+          <div style="display: flex; gap: 1rem; align-items: center;">
+            <button type="submit" style="background: #10b981; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 500; cursor: pointer;">
+              <i class="fa fa-plus"></i> Create Slot
+            </button>
+            <button type="button" onclick="createBulkSlots()" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 500; cursor: pointer;">
+              <i class="fa fa-layer-group"></i> Create Multiple Slots
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Bulk Creation Section (Hidden by default) -->
+      <div id="bulk-creation" style="background: #eff6ff; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; display: none;">
+        <h3 style="margin-bottom: 1rem; color: #1e293b;">Bulk Slot Creation</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Start Date *</label>
+            <input type="date" id="bulk-start-date" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">End Date *</label>
+            <input type="date" id="bulk-end-date" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Duration (minutes) *</label>
+            <select id="bulk-duration" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+              <option value="30">30 minutes</option>
+              <option value="60">1 hour</option>
+              <option value="90">1.5 hours</option>
+              <option value="120">2 hours</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Days of Week</label>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" value="1"> Monday</label>
+            <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" value="2"> Tuesday</label>
+            <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" value="3"> Wednesday</label>
+            <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" value="4"> Thursday</label>
+            <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" value="5"> Friday</label>
+            <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" value="6"> Saturday</label>
+            <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" value="0"> Sunday</label>
+          </div>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+          <button type="button" onclick="generateBulkSlots()" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 500; cursor: pointer;">
+            <i class="fa fa-magic"></i> Generate Slots
+          </button>
+          <button type="button" onclick="hideBulkCreation()" style="background: #6b7280; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 500; cursor: pointer;">
+            Cancel
+          </button>
+        </div>
+      </div>
+      
+      <!-- Filter and Search Section -->
+      <div style="background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
+        <div style="display: flex; gap: 1rem; align-items: end; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 200px;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Filter by Lecturer</label>
+            <select id="filter-lecturer" onchange="filterSlots()" style="width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px;">
+              <option value="">All Lecturers</option>
+            </select>
+          </div>
+          <div style="flex: 1; min-width: 150px;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Filter by Status</label>
+            <select id="filter-status" onchange="filterSlots()" style="width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px;">
+              <option value="">All Statuses</option>
+              <option value="available">Available</option>
+              <option value="booked">Booked</option>
+            </select>
+          </div>
+          <div style="flex: 1; min-width: 150px;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Filter by Date</label>
+            <input type="date" id="filter-date" onchange="filterSlots()" style="width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px;">
+          </div>
+          <button onclick="clearFilters()" style="background: #f3f4f6; color: #374151; padding: 0.5rem 1rem; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer;">
+            <i class="fa fa-times"></i> Clear
+          </button>
+        </div>
+      </div>
+      
+      <!-- Existing Slots -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="color: #1e293b;">Existing Slots</h3>
+          <button onclick="deleteAllAvailableSlots()" style="background: #ef4444; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+            <i class="fa fa-trash"></i> Delete All Available
+          </button>
+        </div>
+        <div id="slots-list">
+          <div style="display: flex; align-items: center; gap: 8px; color: #64748b; justify-content: center; padding: 2rem;">
+            <div style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-top: 2px solid #10b981; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <span>Loading slots...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inquiry Management Modal -->
+  <div id="inquiry-modal" class="modal">
+    <div class="modal-content" style="max-width: 1200px; max-height: 85vh; overflow-y: auto;">
+      <button class="modal-close" onclick="closeInquiryModal()">
+        <i class="fa fa-times"></i>
+      </button>
+      <h2 style="margin-bottom: 1.5rem; color: #1e293b;">❓ Inquiry Management</h2>
+      
+      <!-- Statistics Cards -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="color: #92400e; font-size: 2rem; font-weight: bold;" id="total-inquiries">0</div>
+          <div style="color: #78350f; font-size: 0.9rem;">Total Inquiries</div>
+        </div>
+        <div style="background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="color: #991b1b; font-size: 2rem; font-weight: bold;" id="open-inquiries">0</div>
+          <div style="color: #7f1d1d; font-size: 0.9rem;">Open Inquiries</div>
+        </div>
+        <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="color: #166534; font-size: 2rem; font-weight: bold;" id="resolved-inquiries">0</div>
+          <div style="color: #14532d; font-size: 0.9rem;">Resolved</div>
+        </div>
+        <div style="background: #eff6ff; border: 1px solid #93c5fd; border-radius: 8px; padding: 1rem; text-align: center;">
+          <div style="color: #1d4ed8; font-size: 2rem; font-weight: bold;" id="high-priority">0</div>
+          <div style="color: #1e40af; font-size: 0.9rem;">High Priority</div>
+        </div>
+      </div>
+      
+      <!-- Filter Section -->
+      <div style="background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
+        <div style="display: flex; gap: 1rem; align-items: end; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 150px;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Filter by Status</label>
+            <select id="inquiry-status-filter" onchange="filterInquiries()" style="width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px;">
+              <option value="">All Statuses</option>
+              <option value="open">Open</option>
+              <option value="in-progress">In Progress</option>
+              <option value="resolved">Resolved</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+          <div style="flex: 1; min-width: 150px;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Filter by Priority</label>
+            <select id="inquiry-priority-filter" onchange="filterInquiries()" style="width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px;">
+              <option value="">All Priorities</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </div>
+          <div style="flex: 1; min-width: 150px;">
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Filter by User Type</label>
+            <select id="inquiry-type-filter" onchange="filterInquiries()" style="width: 100%; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px;">
+              <option value="">All Users</option>
+              <option value="student">Students</option>
+              <option value="lecturer">Lecturers</option>
+            </select>
+          </div>
+          <button onclick="clearInquiryFilters()" style="background: #f3f4f6; color: #374151; padding: 0.5rem 1rem; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer;">
+            <i class="fa fa-times"></i> Clear
+          </button>
+        </div>
+      </div>
+      
+      <!-- Inquiries List -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="color: #1e293b;">Inquiry List</h3>
+          <div style="display: flex; gap: 0.5rem;">
+            <button onclick="exportInquiries()" style="background: #10b981; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+              <i class="fa fa-download"></i> Export
+            </button>
+            <button onclick="refreshInquiries()" style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+              <i class="fa fa-refresh"></i> Refresh
+            </button>
+          </div>
+        </div>
+        <div id="inquiries-list">
+          <div style="display: flex; align-items: center; gap: 8px; color: #64748b; justify-content: center; padding: 2rem;">
+            <div style="width: 20px; height: 20px; border: 2px solid #e2e8f0; border-top: 2px solid #f59e0b; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <span>Loading inquiries...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inquiry Response Modal -->
+  <div id="inquiry-response-modal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+      <button class="modal-close" onclick="closeInquiryResponseModal()">
+        <i class="fa fa-times"></i>
+      </button>
+      <h2 style="margin-bottom: 1.5rem; color: #1e293b;">💬 Respond to Inquiry</h2>
+      
+      <div id="inquiry-details" style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+        <!-- Inquiry details will be populated here -->
+      </div>
+      
+      <form id="inquiry-response-form">
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Status</label>
+          <select id="response-status" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+            <option value="in-progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
+        
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Response Message</label>
+          <textarea id="response-message" required rows="5" placeholder="Enter your response to the inquiry..." style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; resize: vertical;"></textarea>
+        </div>
+        
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+          <button type="button" onclick="closeInquiryResponseModal()" style="background: #f3f4f6; color: #374151; padding: 0.75rem 1.5rem; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer;">
+            Cancel
+          </button>
+          <button type="submit" id="send-response-btn" style="background: #f59e0b; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; cursor: pointer;">
+            <i class="fa fa-paper-plane"></i> Send Response
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, getDoc, query, orderBy, limit, addDoc, deleteDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain: "appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531",
+      storageBucket: "appointment-management-c2531.firebasestorage.app",
+      messagingSenderId: "428786083628",
+      appId: "1:428786083628:web:d9d9576b12581cc697ee89",
+      measurementId: "G-9FM8F1WJMF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    let currentSearchTab = 'students';
+
+    window.addEventListener('DOMContentLoaded', async () => {
+      await loadAdminProfile();
+      await loadStatistics();
+      await loadRecentActivity();
+    });
+
+    async function loadAdminProfile() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const paramEmail = params.get('email');
+        const storedEmail = sessionStorage.getItem('userEmail');
+        const email = paramEmail || storedEmail;
+
+        if (email) {
+          const adminDoc = await getDoc(doc(db, 'admins', email));
+          if (adminDoc.exists()) {
+            const profile = adminDoc.data();
+            const name = profile.name || 'Administrator';
+            
+            updateProfileInfo(name, email);
+            
+            sessionStorage.setItem('userEmail', email);
+            sessionStorage.setItem('userName', name);
+          } else {
+            const storedName = sessionStorage.getItem('userName') || 'Administrator';
+            updateProfileInfo(storedName, email);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading admin profile:', error);
+      }
+    }
+
+    async function loadStatistics() {
+      try {
+        const appointmentsSnapshot = await getDocs(collection(db, 'appointments'));
+        const appointments = appointmentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        const totalAppointments = appointments.length;
+        const approvedAppointments = appointments.filter(apt => apt.status === 'approved').length;
+        const pendingAppointments = appointments.filter(apt => apt.status === 'pending').length;
+        const cancelledAppointments = appointments.filter(apt => apt.status === 'cancelled').length;
+
+        const studentsSnapshot = await getDocs(collection(db, 'students'));
+        const lecturersSnapshot = await getDocs(collection(db, 'lecturers'));
+        
+        const totalStudents = studentsSnapshot.size;
+        const totalLecturers = lecturersSnapshot.size;
+
+        document.getElementById('total-appointments').textContent = totalAppointments;
+        document.getElementById('approved-appointments').textContent = approvedAppointments;
+        document.getElementById('pending-appointments').textContent = pendingAppointments;
+        document.getElementById('cancelled-appointments').textContent = cancelledAppointments;
+        document.getElementById('total-students').textContent = totalStudents;
+        document.getElementById('total-lecturers').textContent = totalLecturers;
+
+      } catch (error) {
+        console.error('Error loading statistics:', error);
+        document.querySelectorAll('.stat-value').forEach(el => {
+          if (el.textContent === '-') el.textContent = '0';
+        });
+      }
+          }
+
+      function updateProfileInfo(name, email) {
+        document.getElementById('admin-name').textContent = name;
+        document.getElementById('welcome-name').textContent = name;
+        document.getElementById('profile-name').textContent = name;
+        document.getElementById('profile-email').textContent = email || 'admin@university.edu';
+        
+        const avatar = name.charAt(0).toUpperCase();
+        document.getElementById('avatar').textContent = avatar;
+        document.getElementById('profile-avatar').textContent = avatar;
+      }
+
+      async function loadRecentActivity() {
+        try {
+          const activityList = document.getElementById('activity-list');
+          
+          // Get recent appointments
+          let appointmentsQuery;
+          try {
+            appointmentsQuery = query(
+              collection(db, 'appointments'),
+              orderBy('bookedAt', 'desc'),
+              limit(5)
+            );
+          } catch (indexError) {
+            // Fallback without orderBy
+            appointmentsQuery = query(collection(db, 'appointments'));
+          }
+          
+          const appointmentsSnapshot = await getDocs(appointmentsQuery);
+          const recentAppointments = appointmentsSnapshot.docs.map(doc => ({ 
+            id: doc.id, 
+            ...doc.data(),
+            type: 'appointment'
+          }));
+
+          // Sort manually if needed and limit
+          recentAppointments.sort((a, b) => {
+            const aTime = a.bookedAt ? new Date(a.bookedAt) : new Date(0);
+            const bTime = b.bookedAt ? new Date(b.bookedAt) : new Date(0);
+            return bTime - aTime;
+          });
+
+          const limitedAppointments = recentAppointments.slice(0, 5);
+
+          if (limitedAppointments.length === 0) {
+            activityList.innerHTML = `
+              <div class="activity-item">
+                <div class="activity-icon" style="background: #64748b;">
+                  <i class="fa fa-info"></i>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-text">No recent activity found</div>
+                  <div class="activity-time">System is ready for new appointments</div>
+                </div>
+              </div>
+            `;
+            return;
+          }
+
+          activityList.innerHTML = limitedAppointments.map(activity => {
+            const timeAgo = getTimeAgo(activity.bookedAt);
+            const statusColor = getStatusColor(activity.status);
+            
+            return `
+              <div class="activity-item appointment">
+                <div class="activity-icon" style="background: ${statusColor};">
+                  <i class="fa fa-calendar"></i>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-text">
+                    <strong>${activity.studentName || 'Student'}</strong> ${getActionText(activity.status)} an appointment with <strong>${activity.lecturerName || 'Lecturer'}</strong>
+                  </div>
+                  <div class="activity-time">${timeAgo}</div>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+        } catch (error) {
+          console.error('Error loading recent activity:', error);
+          document.getElementById('activity-list').innerHTML = `
+            <div class="activity-item">
+              <div class="activity-icon" style="background: #ef4444;">
+                <i class="fa fa-exclamation"></i>
+              </div>
+              <div class="activity-content">
+                <div class="activity-text">Error loading recent activity</div>
+                <div class="activity-time">Please try refreshing the page</div>
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      // Helper functions
+      function getTimeAgo(timestamp) {
+        if (!timestamp) return 'Unknown time';
+        
+        const now = new Date();
+        const time = new Date(timestamp);
+        const diffInSeconds = Math.floor((now - time) / 1000);
+        
+        if (diffInSeconds < 60) return 'Just now';
+        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+        if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+        
+        return time.toLocaleDateString();
+      }
+
+      function getStatusColor(status) {
+        switch (status) {
+          case 'approved': return '#10b981';
+          case 'pending': return '#f59e0b';
+          case 'rejected': return '#ef4444';
+          case 'cancelled': return '#6b7280';
+          default: return '#3b82f6';
+        }
+      }
+
+      function getActionText(status) {
+        switch (status) {
+          case 'approved': return 'confirmed';
+          case 'pending': return 'requested';
+          case 'rejected': return 'had rejected';
+          case 'cancelled': return 'cancelled';
+          default: return 'booked';
+        }
+      }
+
+      // Search functionality
+      window.switchSearchTab = function(tab, element) {
+        currentSearchTab = tab;
+        
+        // Update tab appearance
+        document.querySelectorAll('.search-tab').forEach(t => t.classList.remove('active'));
+        element.classList.add('active');
+        
+        // Update placeholder
+        const input = document.getElementById('search-input');
+        input.placeholder = `Enter ${tab.slice(0, -1)} name or email to search...`;
+        input.value = '';
+        
+        // Clear results
+        document.getElementById('search-results').style.display = 'none';
+      };
+
+      window.performSearch = async function() {
+        const searchTerm = document.getElementById('search-input').value.trim().toLowerCase();
+        const resultsDiv = document.getElementById('search-results');
+        
+        if (!searchTerm) {
+          resultsDiv.innerHTML = '<div class="search-error">Please enter a search term</div>';
+          resultsDiv.style.display = 'block';
+          return;
+        }
+
+        resultsDiv.innerHTML = '<div style="display: inline-flex; align-items: center; gap: 8px; color: #64748b;"><div style="width: 16px; height: 16px; border: 2px solid #e2e8f0; border-top: 2px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;"></div><span>Searching...</span></div>';
+        resultsDiv.style.display = 'block';
+
+        try {
+          const collectionName = currentSearchTab;
+          const snapshot = await getDocs(collection(db, collectionName));
+          
+          const results = [];
+          snapshot.docs.forEach(doc => {
+            const data = doc.data();
+            const name = (data.name || '').toLowerCase();
+            const email = (data.email || '').toLowerCase();
+            
+            if (name.includes(searchTerm) || email.includes(searchTerm)) {
+              results.push({ id: doc.id, ...data });
+            }
+          });
+
+          if (results.length === 0) {
+            resultsDiv.innerHTML = `<div class="search-error">No ${currentSearchTab} found matching "${searchTerm}"</div>`;
+          } else {
+            resultsDiv.innerHTML = `
+              <h4 style="margin-bottom: 1rem; color: #1e293b;">Found ${results.length} result(s):</h4>
+              ${results.map(result => `
+                <div style="padding: 0.75rem; background: white; border-radius: 6px; margin-bottom: 0.5rem; border: 1px solid #e2e8f0;">
+                  <div style="font-weight: 600; color: #1e293b; margin-bottom: 0.25rem;">${result.name || 'Unnamed'}</div>
+                  <div style="color: #64748b; font-size: 0.9rem;">${result.email || 'No email'}</div>
+                  ${result.faculty ? `<div style="color: #64748b; font-size: 0.85rem;">Faculty: ${result.faculty}</div>` : ''}
+                  ${result.studentId ? `<div style="color: #64748b; font-size: 0.85rem;">Student ID: ${result.studentId}</div>` : ''}
+                  ${result.specialization ? `<div style="color: #64748b; font-size: 0.85rem;">Specialization: ${result.specialization}</div>` : ''}
+                </div>
+              `).join('')}
+            `;
+          }
+        } catch (error) {
+          console.error('Search error:', error);
+          resultsDiv.innerHTML = '<div class="search-error">Error performing search. Please try again.</div>';
+        }
+      };
+
+      // Profile modal functions
+      window.openProfileModal = function() {
+        document.getElementById('profile-modal').style.display = 'flex';
+        
+        // Set last login
+        document.getElementById('profile-last-login').textContent = new Date().toLocaleDateString();
+      };
+
+      window.closeProfileModal = function() {
+        document.getElementById('profile-modal').style.display = 'none';
+      };
+
+      // Logout function
+      window.logout = function() {
+        sessionStorage.clear();
+        window.location.href = 'login.html';
+      };
+
+      // Allow Enter key for search
+      document.getElementById('search-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          performSearch();
+        }
+      });
+
+             // Close modal when clicking outside
+       window.addEventListener('click', function(e) {
+         const profileModal = document.getElementById('profile-modal');
+         const appointmentModal = document.getElementById('appointment-modal');
+         const announcementModal = document.getElementById('announcement-modal');
+         const inquiryModal = document.getElementById('inquiry-modal');
+         const inquiryResponseModal = document.getElementById('inquiry-response-modal');
+         
+         if (e.target === profileModal) {
+           closeProfileModal();
+         } else if (e.target === appointmentModal) {
+           closeAppointmentModal();
+         } else if (e.target === announcementModal) {
+           closeAnnouncementModal();
+         } else if (e.target === inquiryModal) {
+           closeInquiryModal();
+         } else if (e.target === inquiryResponseModal) {
+           closeInquiryResponseModal();
+         }
+       });
+
+       // Appointment Management Functions
+       let allAppointments = [];
+       let currentFilter = 'all';
+
+       window.showAppointmentOverview = async function() {
+         document.getElementById('appointment-modal').style.display = 'flex';
+         await loadAppointments();
+       };
+
+       window.closeAppointmentModal = function() {
+         document.getElementById('appointment-modal').style.display = 'none';
+       };
+
+       async function loadAppointments() {
+         try {
+           const appointmentsSnapshot = await getDocs(collection(db, 'appointments'));
+           allAppointments = appointmentsSnapshot.docs.map(doc => ({
+             id: doc.id,
+             ...doc.data()
+           }));
+
+           // Sort by date
+           allAppointments.sort((a, b) => {
+             const aDate = new Date(a.bookedAt || a.date || 0);
+             const bDate = new Date(b.bookedAt || b.date || 0);
+             return bDate - aDate;
+           });
+
+           displayAppointments();
+         } catch (error) {
+           console.error('Error loading appointments:', error);
+           document.getElementById('appointments-list').innerHTML = `
+             <div style="text-align: center; color: #ef4444; padding: 2rem;">
+               <i class="fa fa-exclamation-triangle"></i>
+               <p>Error loading appointments. Please try again.</p>
+             </div>
+           `;
+         }
+       }
+
+       window.filterAppointments = function(status) {
+         currentFilter = status;
+         
+         // Update button states
+         document.querySelectorAll('.appointment-filter-btn').forEach(btn => {
+           btn.classList.remove('active');
+         });
+         event.target.classList.add('active');
+         
+         displayAppointments();
+       };
+
+       function displayAppointments() {
+         const appointmentsList = document.getElementById('appointments-list');
+         
+         let filteredAppointments = allAppointments;
+         if (currentFilter !== 'all') {
+           filteredAppointments = allAppointments.filter(app => app.status === currentFilter);
+         }
+
+         if (filteredAppointments.length === 0) {
+           appointmentsList.innerHTML = `
+             <div style="text-align: center; color: #64748b; padding: 2rem;">
+               <i class="fa fa-calendar"></i>
+               <p>No ${currentFilter === 'all' ? '' : currentFilter} appointments found.</p>
+             </div>
+           `;
+           return;
+         }
+
+         appointmentsList.innerHTML = filteredAppointments.map(appointment => {
+           const date = new Date(appointment.date || appointment.bookedAt).toLocaleDateString();
+           const time = appointment.time || 'Not specified';
+           
+           return `
+             <div class="appointment-item">
+               <div class="appointment-header">
+                 <h4 style="margin: 0; color: #1e293b;">${appointment.studentName || 'Student'} → ${appointment.lecturerName || 'Lecturer'}</h4>
+                 <span class="appointment-status ${appointment.status || 'pending'}">${(appointment.status || 'pending').toUpperCase()}</span>
+               </div>
+               <div style="color: #64748b; font-size: 0.9rem;">
+                 <p><i class="fa fa-calendar"></i> ${date} at ${time}</p>
+                 <p><i class="fa fa-envelope"></i> ${appointment.studentEmail || 'No email'}</p>
+                 ${appointment.purpose ? `<p><i class="fa fa-comment"></i> ${appointment.purpose}</p>` : ''}
+                 ${appointment.rejectionReason ? `<p style="color: #ef4444;"><i class="fa fa-times-circle"></i> Rejection Reason: ${appointment.rejectionReason}</p>` : ''}
+               </div>
+             </div>
+           `;
+         }).join('');
+       }
+
+       // Announcement Management Functions
+       window.showAnnouncementManager = async function() {
+         document.getElementById('announcement-modal').style.display = 'flex';
+         await loadAnnouncements();
+       };
+
+       window.closeAnnouncementModal = function() {
+         document.getElementById('announcement-modal').style.display = 'none';
+       };
+
+       async function loadAnnouncements() {
+         try {
+           const announcementsSnapshot = await getDocs(collection(db, 'announcements'));
+           const announcements = announcementsSnapshot.docs.map(doc => ({
+             id: doc.id,
+             ...doc.data()
+           }));
+
+           // Sort by date (newest first)
+           announcements.sort((a, b) => {
+             const aDate = new Date(a.createdAt?.toDate?.() || a.createdAt || 0);
+             const bDate = new Date(b.createdAt?.toDate?.() || b.createdAt || 0);
+             return bDate - aDate;
+           });
+
+           displayAnnouncements(announcements);
+         } catch (error) {
+           console.error('Error loading announcements:', error);
+           document.getElementById('announcements-list').innerHTML = `
+             <div style="text-align: center; color: #ef4444; padding: 2rem;">
+               <i class="fa fa-exclamation-triangle"></i>
+               <p>Error loading announcements. Please try again.</p>
+             </div>
+           `;
+         }
+       }
+
+       function displayAnnouncements(announcements) {
+         const announcementsList = document.getElementById('announcements-list');
+         
+         if (announcements.length === 0) {
+           announcementsList.innerHTML = `
+             <div style="text-align: center; color: #64748b; padding: 2rem;">
+               <i class="fa fa-bullhorn"></i>
+               <p>No announcements found.</p>
+             </div>
+           `;
+           return;
+         }
+
+         announcementsList.innerHTML = announcements.map(announcement => {
+           const date = new Date(announcement.createdAt?.toDate?.() || announcement.createdAt).toLocaleDateString();
+           
+           return `
+             <div class="announcement-item">
+               <div class="announcement-priority ${announcement.priority || 'normal'}">${(announcement.priority || 'normal').toUpperCase()}</div>
+               <h4 style="margin: 0 0 0.5rem 0; color: #1e293b; padding-right: 4rem;">${announcement.title}</h4>
+               ${announcement.pictureUrl ? `
+                 <div style="margin: 0.5rem 0 1rem 0;">
+                   <img src="${announcement.pictureUrl}" alt="Announcement Picture" style="width: 100%; height: auto; min-height: 150px; max-height: 400px; object-fit: contain; border-radius: 8px; border: 1px solid #e2e8f0; background: #f8fafc;">
+                 </div>
+               ` : ''}
+               <p style="color: #64748b; margin: 0 0 1rem 0; line-height: 1.5;">${announcement.content}</p>
+               <div style="display: flex; justify-content: space-between; align-items: center;">
+                 <small style="color: #9ca3af;">Created on ${date}</small>
+                 <button class="delete-btn" onclick="deleteAnnouncement('${announcement.id}')">
+                   <i class="fa fa-trash"></i> Delete
+                 </button>
+               </div>
+             </div>
+           `;
+         }).join('');
+       }
+
+       // Picture preview functionality
+       document.getElementById('announcement-picture').addEventListener('change', function(e) {
+         const file = e.target.files[0];
+         if (file) {
+           // Validate file size (5MB limit)
+           if (file.size > 5 * 1024 * 1024) {
+             alert('File size must be less than 5MB');
+             e.target.value = '';
+             return;
+           }
+
+           // Validate file type
+           if (!file.type.startsWith('image/')) {
+             alert('Please select a valid image file');
+             e.target.value = '';
+             return;
+           }
+
+           // Show preview
+           const reader = new FileReader();
+           reader.onload = function(e) {
+             document.getElementById('preview-image').src = e.target.result;
+             document.getElementById('picture-preview').style.display = 'block';
+           };
+           reader.readAsDataURL(file);
+         } else {
+           document.getElementById('picture-preview').style.display = 'none';
+         }
+       });
+
+       window.removePicturePreview = function() {
+         document.getElementById('announcement-picture').value = '';
+         document.getElementById('picture-preview').style.display = 'none';
+       };
+
+       // Create announcement with optional picture
+       document.getElementById('announcement-form').addEventListener('submit', async function(e) {
+         e.preventDefault();
+         
+         const title = document.getElementById('announcement-title').value.trim();
+         const content = document.getElementById('announcement-content').value.trim();
+         const priority = document.getElementById('announcement-priority').value;
+         const pictureFile = document.getElementById('announcement-picture').files[0];
+         
+         if (!title || !content) {
+           alert('Please fill in all required fields.');
+           return;
+         }
+
+         const createBtn = document.getElementById('create-announcement-btn');
+         createBtn.disabled = true;
+         createBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Creating...';
+
+         try {
+           let pictureUrl = null;
+
+           // Upload picture if provided
+           if (pictureFile) {
+             const pictureRef = ref(storage, `announcements/${Date.now()}_${pictureFile.name}`);
+             const snapshot = await uploadBytes(pictureRef, pictureFile);
+             pictureUrl = await getDownloadURL(snapshot.ref);
+           }
+
+           // Create announcement document
+           const announcementData = {
+             title,
+             content,
+             priority,
+             createdAt: serverTimestamp(),
+             createdBy: sessionStorage.getItem('userName') || 'Admin'
+           };
+
+           if (pictureUrl) {
+             announcementData.pictureUrl = pictureUrl;
+           }
+
+           await addDoc(collection(db, 'announcements'), announcementData);
+
+           // Clear form
+           document.getElementById('announcement-form').reset();
+           removePicturePreview();
+           
+           // Reload announcements
+           await loadAnnouncements();
+           
+           alert('Announcement created successfully!');
+         } catch (error) {
+           console.error('Error creating announcement:', error);
+           alert('Error creating announcement. Please try again.');
+         } finally {
+           createBtn.disabled = false;
+           createBtn.innerHTML = '<i class="fa fa-plus"></i> Create Announcement';
+         }
+       });
+
+       // Delete announcement
+       window.deleteAnnouncement = async function(announcementId) {
+         if (!confirm('Are you sure you want to delete this announcement?')) {
+           return;
+         }
+
+         try {
+           await deleteDoc(doc(db, 'announcements', announcementId));
+           await loadAnnouncements();
+           alert('Announcement deleted successfully!');
+         } catch (error) {
+           console.error('Error deleting announcement:', error);
+           alert('Error deleting announcement. Please try again.');
+         }
+       };
+
+       // Appointment Slots Management Functions
+       let allSlots = [];
+       let filteredSlots = [];
+
+       window.showAppointmentSlots = async function() {
+         document.getElementById('slots-modal').style.display = 'flex';
+         await loadLecturersForSlots();
+         await loadSlots();
+       };
+
+       window.closeSlotsModal = function() {
+         document.getElementById('slots-modal').style.display = 'none';
+       };
+
+       async function loadLecturersForSlots() {
+         try {
+           const lecturersSnapshot = await getDocs(collection(db, 'lecturers'));
+           const lecturers = lecturersSnapshot.docs.map(doc => ({
+             email: doc.id,
+             ...doc.data()
+           }));
+
+           // Populate lecturer dropdowns
+           const lecturerSelect = document.getElementById('slot-lecturer');
+           const filterLecturerSelect = document.getElementById('filter-lecturer');
+           
+           lecturerSelect.innerHTML = '<option value="">Select Lecturer</option>';
+           filterLecturerSelect.innerHTML = '<option value="">All Lecturers</option>';
+           
+           lecturers.forEach(lecturer => {
+             const option = `<option value="${lecturer.email}">${lecturer.name} (${lecturer.email})</option>`;
+             lecturerSelect.innerHTML += option;
+             filterLecturerSelect.innerHTML += option;
+           });
+         } catch (error) {
+           console.error('Error loading lecturers:', error);
+         }
+       }
+
+       async function loadSlots() {
+         try {
+           const slotsSnapshot = await getDocs(collection(db, 'appointmentSlots'));
+           allSlots = slotsSnapshot.docs.map(doc => ({
+             id: doc.id,
+             ...doc.data()
+           }));
+
+           // Check which slots are booked
+           const appointmentsSnapshot = await getDocs(collection(db, 'appointments'));
+           const bookedSlotIds = new Set();
+           
+           appointmentsSnapshot.docs.forEach(doc => {
+             const appointment = doc.data();
+             if (appointment.slotId && (appointment.status === 'pending' || appointment.status === 'approved')) {
+               bookedSlotIds.add(appointment.slotId);
+             }
+           });
+
+           // Add booking status to slots
+           allSlots = allSlots.map(slot => ({
+             ...slot,
+             isBooked: bookedSlotIds.has(slot.id)
+           }));
+
+           // Sort by date and time
+           allSlots.sort((a, b) => {
+             const aDateTime = new Date(`${a.date} ${a.startTime}`);
+             const bDateTime = new Date(`${b.date} ${b.startTime}`);
+             return aDateTime - bDateTime;
+           });
+
+           filterSlots();
+         } catch (error) {
+           console.error('Error loading slots:', error);
+           document.getElementById('slots-list').innerHTML = `
+             <div style="text-align: center; color: #ef4444; padding: 2rem;">
+               <i class="fa fa-exclamation-triangle"></i>
+               <p>Error loading slots. Please try again.</p>
+             </div>
+           `;
+         }
+       }
+
+       window.filterSlots = function() {
+         const lecturerFilter = document.getElementById('filter-lecturer').value;
+         const statusFilter = document.getElementById('filter-status').value;
+         const dateFilter = document.getElementById('filter-date').value;
+
+         filteredSlots = allSlots.filter(slot => {
+           if (lecturerFilter && slot.lecturerEmail !== lecturerFilter) return false;
+           if (statusFilter) {
+             if (statusFilter === 'available' && slot.isBooked) return false;
+             if (statusFilter === 'booked' && !slot.isBooked) return false;
+           }
+           if (dateFilter && slot.date !== dateFilter) return false;
+           return true;
+         });
+
+         displaySlots();
+       };
+
+       window.clearFilters = function() {
+         document.getElementById('filter-lecturer').value = '';
+         document.getElementById('filter-status').value = '';
+         document.getElementById('filter-date').value = '';
+         filterSlots();
+       };
+
+       function displaySlots() {
+         const slotsList = document.getElementById('slots-list');
+         
+         if (filteredSlots.length === 0) {
+           slotsList.innerHTML = `
+             <div style="text-align: center; color: #64748b; padding: 2rem;">
+               <i class="fa fa-calendar"></i>
+               <p>No slots found matching the filters.</p>
+             </div>
+           `;
+           return;
+         }
+
+         slotsList.innerHTML = filteredSlots.map(slot => {
+           const date = new Date(slot.date).toLocaleDateString();
+           const status = slot.isBooked ? 'booked' : 'available';
+           const statusColor = slot.isBooked ? '#ef4444' : '#10b981';
+           const statusIcon = slot.isBooked ? 'fa-user-check' : 'fa-calendar-check';
+           
+           return `
+             <div class="slot-item" style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 0.5rem;">
+               <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                 <div>
+                   <h4 style="margin: 0; color: #1e293b;">${slot.lecturerName || 'Unknown Lecturer'}</h4>
+                   <p style="margin: 0; color: #64748b; font-size: 0.9rem;">${slot.lecturerEmail}</p>
+                 </div>
+                 <span style="background: ${statusColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 500;">
+                   <i class="fa ${statusIcon}"></i> ${status.toUpperCase()}
+                 </span>
+               </div>
+               <div style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">
+                 <p style="margin: 0.25rem 0;"><i class="fa fa-calendar"></i> ${date}</p>
+                 <p style="margin: 0.25rem 0;"><i class="fa fa-clock"></i> ${slot.startTime} - ${slot.endTime}</p>
+                 ${slot.location ? `<p style="margin: 0.25rem 0;"><i class="fa fa-map-marker-alt"></i> ${slot.location}</p>` : ''}
+               </div>
+               <div style="display: flex; gap: 0.5rem;">
+                 <button onclick="deleteSlot('${slot.id}')" style="background: #ef4444; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+                   <i class="fa fa-trash"></i> Delete
+                 </button>
+               </div>
+             </div>
+           `;
+         }).join('');
+       }
+
+       // Create single slot
+       document.getElementById('slot-form').addEventListener('submit', async function(e) {
+         e.preventDefault();
+         
+         const lecturerEmail = document.getElementById('slot-lecturer').value;
+         const date = document.getElementById('slot-date').value;
+         const startTime = document.getElementById('slot-start-time').value;
+         const endTime = document.getElementById('slot-end-time').value;
+         const location = document.getElementById('slot-location').value;
+         
+         if (!lecturerEmail || !date || !startTime || !endTime) {
+           alert('Please fill in all required fields.');
+           return;
+         }
+
+         // Get lecturer name
+         const lecturerDoc = await getDoc(doc(db, 'lecturers', lecturerEmail));
+         const lecturerName = lecturerDoc.exists() ? lecturerDoc.data().name : 'Unknown';
+
+         try {
+           await addDoc(collection(db, 'appointmentSlots'), {
+             lecturerEmail,
+             lecturerName,
+             date,
+             startTime,
+             endTime,
+             location: location || '',
+             createdAt: serverTimestamp(),
+             createdBy: sessionStorage.getItem('userName') || 'Admin'
+           });
+
+           // Clear form
+           document.getElementById('slot-form').reset();
+           
+           // Reload slots
+           await loadSlots();
+           
+           alert('Slot created successfully!');
+         } catch (error) {
+           console.error('Error creating slot:', error);
+           alert('Error creating slot. Please try again.');
+         }
+       });
+
+       window.createBulkSlots = function() {
+         document.getElementById('bulk-creation').style.display = 'block';
+       };
+
+       window.hideBulkCreation = function() {
+         document.getElementById('bulk-creation').style.display = 'none';
+       };
+
+       window.generateBulkSlots = async function() {
+         const lecturerEmail = document.getElementById('slot-lecturer').value;
+         const startDate = document.getElementById('bulk-start-date').value;
+         const endDate = document.getElementById('bulk-end-date').value;
+         const duration = parseInt(document.getElementById('bulk-duration').value);
+         
+         const selectedDays = Array.from(document.querySelectorAll('#bulk-creation input[type="checkbox"]:checked'))
+           .map(cb => parseInt(cb.value));
+         
+         if (!lecturerEmail || !startDate || !endDate || selectedDays.length === 0) {
+           alert('Please fill in all required fields and select at least one day.');
+           return;
+         }
+
+         // Get lecturer name
+         const lecturerDoc = await getDoc(doc(db, 'lecturers', lecturerEmail));
+         const lecturerName = lecturerDoc.exists() ? lecturerDoc.data().name : 'Unknown';
+
+         const slots = [];
+         const start = new Date(startDate);
+         const end = new Date(endDate);
+         
+         // Generate slots for each day in the range
+         for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
+           if (selectedDays.includes(date.getDay())) {
+             const dateStr = date.toISOString().split('T')[0];
+             
+             // Create slots throughout the day (9 AM to 5 PM)
+             for (let hour = 9; hour <= 17 - (duration / 60); hour++) {
+               const startTime = `${hour.toString().padStart(2, '0')}:00`;
+               const endHour = hour + Math.floor(duration / 60);
+               const endMinute = (hour * 60 + duration) % 60;
+               const endTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
+               
+               if (endHour <= 17) {
+                 slots.push({
+                   lecturerEmail,
+                   lecturerName,
+                   date: dateStr,
+                   startTime,
+                   endTime,
+                   location: '',
+                   createdAt: serverTimestamp(),
+                   createdBy: sessionStorage.getItem('userName') || 'Admin'
+                 });
+               }
+             }
+           }
+         }
+
+         if (slots.length === 0) {
+           alert('No slots to create with the selected criteria.');
+           return;
+         }
+
+         if (!confirm(`This will create ${slots.length} slots. Continue?`)) {
+           return;
+         }
+
+         try {
+           // Create all slots
+           for (const slot of slots) {
+             await addDoc(collection(db, 'appointmentSlots'), slot);
+           }
+           
+           // Hide bulk creation form
+           hideBulkCreation();
+           
+           // Reload slots
+           await loadSlots();
+           
+           alert(`Successfully created ${slots.length} slots!`);
+         } catch (error) {
+           console.error('Error creating bulk slots:', error);
+           alert('Error creating slots. Please try again.');
+         }
+       };
+
+       window.deleteSlot = async function(slotId) {
+         if (!confirm('Are you sure you want to delete this slot?')) {
+           return;
+         }
+
+         try {
+           await deleteDoc(doc(db, 'appointmentSlots', slotId));
+           await loadSlots();
+           alert('Slot deleted successfully!');
+         } catch (error) {
+           console.error('Error deleting slot:', error);
+           alert('Error deleting slot. Please try again.');
+         }
+       };
+
+       window.deleteAllAvailableSlots = async function() {
+         const availableSlots = allSlots.filter(slot => !slot.isBooked);
+         
+         if (availableSlots.length === 0) {
+           alert('No available slots to delete.');
+           return;
+         }
+
+         if (!confirm(`This will delete ${availableSlots.length} available slots. This action cannot be undone. Continue?`)) {
+           return;
+         }
+
+         try {
+           for (const slot of availableSlots) {
+             await deleteDoc(doc(db, 'appointmentSlots', slot.id));
+           }
+           
+           await loadSlots();
+           alert(`Successfully deleted ${availableSlots.length} available slots!`);
+         } catch (error) {
+           console.error('Error deleting slots:', error);
+           alert('Error deleting slots. Please try again.');
+         }
+       };
+
+       // Inquiry Management Functions
+       let allInquiries = [];
+       let currentInquiry = null;
+
+       window.showInquiryManager = async function() {
+         document.getElementById('inquiry-modal').style.display = 'flex';
+         await loadInquiries();
+       };
+
+       window.closeInquiryModal = function() {
+         document.getElementById('inquiry-modal').style.display = 'none';
+       };
+
+       window.closeInquiryResponseModal = function() {
+         document.getElementById('inquiry-response-modal').style.display = 'none';
+         currentInquiry = null;
+       };
+
+       async function loadInquiries() {
+         try {
+           const inquiriesSnapshot = await getDocs(collection(db, 'inquiries'));
+           allInquiries = inquiriesSnapshot.docs.map(doc => ({
+             id: doc.id,
+             ...doc.data()
+           }));
+
+           // Sort by creation date (newest first)
+           allInquiries.sort((a, b) => {
+             const aDate = a.createdAt?.toDate?.() || new Date(a.createdAt) || new Date(0);
+             const bDate = b.createdAt?.toDate?.() || new Date(b.createdAt) || new Date(0);
+             return bDate - aDate;
+           });
+
+           updateInquiryStatistics();
+           displayInquiries();
+         } catch (error) {
+           console.error('Error loading inquiries:', error);
+           document.getElementById('inquiries-list').innerHTML = `
+             <div style="text-align: center; color: #ef4444; padding: 2rem;">
+               <i class="fa fa-exclamation-triangle"></i>
+               <p>Error loading inquiries. Please try again.</p>
+             </div>
+           `;
+         }
+       }
+
+       function updateInquiryStatistics() {
+         const total = allInquiries.length;
+         const open = allInquiries.filter(i => i.status === 'open').length;
+         const resolved = allInquiries.filter(i => i.status === 'resolved' || i.status === 'closed').length;
+         const highPriority = allInquiries.filter(i => i.priority === 'high').length;
+
+         document.getElementById('total-inquiries').textContent = total;
+         document.getElementById('open-inquiries').textContent = open;
+         document.getElementById('resolved-inquiries').textContent = resolved;
+         document.getElementById('high-priority').textContent = highPriority;
+       }
+
+       function displayInquiries() {
+         const inquiriesList = document.getElementById('inquiries-list');
+         
+         // Apply filters
+         let filteredInquiries = allInquiries;
+         
+         const statusFilter = document.getElementById('inquiry-status-filter').value;
+         const priorityFilter = document.getElementById('inquiry-priority-filter').value;
+         const typeFilter = document.getElementById('inquiry-type-filter').value;
+
+         if (statusFilter) {
+           filteredInquiries = filteredInquiries.filter(i => i.status === statusFilter);
+         }
+         if (priorityFilter) {
+           filteredInquiries = filteredInquiries.filter(i => i.priority === priorityFilter);
+         }
+         if (typeFilter) {
+           filteredInquiries = filteredInquiries.filter(i => i.userType === typeFilter);
+         }
+
+         if (filteredInquiries.length === 0) {
+           inquiriesList.innerHTML = `
+             <div style="text-align: center; color: #64748b; padding: 2rem;">
+               <i class="fa fa-inbox"></i>
+               <p>No inquiries found with the selected filters.</p>
+             </div>
+           `;
+           return;
+         }
+
+         inquiriesList.innerHTML = filteredInquiries.map(inquiry => {
+           const date = inquiry.createdAt?.toDate?.() || new Date(inquiry.createdAt) || new Date();
+           const formattedDate = date.toLocaleDateString();
+           const timeAgo = getTimeAgo(date);
+           
+           const statusColor = getInquiryStatusColor(inquiry.status);
+           const priorityColor = getPriorityColor(inquiry.priority);
+           const userTypeIcon = inquiry.userType === 'student' ? 'fa-graduation-cap' : 'fa-chalkboard-teacher';
+           const inquiryId = `INQ-${inquiry.id.slice(-8).toUpperCase()}`;
+
+           return `
+             <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem;">
+               <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                 <div style="flex: 1;">
+                   <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+                     <h4 style="margin: 0; color: #1e293b;">${inquiry.subject}</h4>
+                     <span style="background: ${statusColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 500;">
+                       ${(inquiry.status || 'open').toUpperCase()}
+                     </span>
+                     <span style="background: ${priorityColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 500;">
+                       ${(inquiry.priority || 'low').toUpperCase()}
+                     </span>
+                   </div>
+                   <div style="display: flex; align-items: center; gap: 1rem; color: #64748b; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                     <span><i class="fa ${userTypeIcon}"></i> ${inquiry.userName || 'Unknown User'}</span>
+                     <span><i class="fa fa-envelope"></i> ${inquiry.userEmail}</span>
+                     <span><i class="fa fa-tag"></i> ${inquiry.category || 'Other'}</span>
+                     <span><i class="fa fa-hashtag"></i> ${inquiryId}</span>
+                   </div>
+                   <p style="color: #374151; margin: 0; line-height: 1.5;">${inquiry.description}</p>
+                   ${inquiry.attachmentUrl ? `
+                     <div style="margin-top: 0.5rem;">
+                       <a href="${inquiry.attachmentUrl}" target="_blank" style="color: #3b82f6; text-decoration: none; font-size: 0.9rem;">
+                         <i class="fa fa-paperclip"></i> ${inquiry.attachmentName || 'View Attachment'}
+                       </a>
+                     </div>
+                   ` : ''}
+                 </div>
+                 <div style="text-align: right; color: #64748b; font-size: 0.9rem;">
+                   <div>${formattedDate}</div>
+                   <div style="font-size: 0.8rem;">${timeAgo}</div>
+                 </div>
+               </div>
+               
+               <div style="display: flex; gap: 0.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+                 <button onclick="respondToInquiry('${inquiry.id}')" style="background: #f59e0b; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+                   <i class="fa fa-reply"></i> Respond
+                 </button>
+                 <button onclick="markInquiryResolved('${inquiry.id}')" style="background: #10b981; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+                   <i class="fa fa-check"></i> Mark Resolved
+                 </button>
+                 <button onclick="deleteInquiry('${inquiry.id}')" style="background: #ef4444; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+                   <i class="fa fa-trash"></i> Delete
+                 </button>
+               </div>
+             </div>
+           `;
+         }).join('');
+       }
+
+       function getInquiryStatusColor(status) {
+         switch (status) {
+           case 'open': return '#ef4444';
+           case 'in-progress': return '#f59e0b';
+           case 'resolved': return '#10b981';
+           case 'closed': return '#6b7280';
+           default: return '#3b82f6';
+         }
+       }
+
+       function getPriorityColor(priority) {
+         switch (priority) {
+           case 'high': return '#dc2626';
+           case 'medium': return '#d97706';
+           case 'low': return '#059669';
+           default: return '#6b7280';
+         }
+       }
+
+       window.filterInquiries = function() {
+         displayInquiries();
+       };
+
+       window.clearInquiryFilters = function() {
+         document.getElementById('inquiry-status-filter').value = '';
+         document.getElementById('inquiry-priority-filter').value = '';
+         document.getElementById('inquiry-type-filter').value = '';
+         displayInquiries();
+       };
+
+       window.refreshInquiries = async function() {
+         await loadInquiries();
+       };
+
+       window.exportInquiries = function() {
+         const csv = [
+           ['ID', 'Subject', 'User', 'Email', 'Type', 'Category', 'Priority', 'Status', 'Created', 'Description'].join(','),
+           ...allInquiries.map(inquiry => {
+             const inquiryId = `INQ-${inquiry.id.slice(-8).toUpperCase()}`;
+             const date = inquiry.createdAt?.toDate?.() || new Date(inquiry.createdAt) || new Date();
+             return [
+               inquiryId,
+               inquiry.subject || '',
+               inquiry.userName || '',
+               inquiry.userEmail || '',
+               inquiry.userType || '',
+               inquiry.category || '',
+               inquiry.priority || '',
+               inquiry.status || '',
+               date.toLocaleDateString(),
+               `"${(inquiry.description || '').replace(/"/g, '""')}"`
+             ].join(',');
+           })
+         ].join('\\n');
+
+         const blob = new Blob([csv], { type: 'text/csv' });
+         const url = window.URL.createObjectURL(blob);
+         const a = document.createElement('a');
+         a.href = url;
+         a.download = `inquiries-${new Date().toISOString().split('T')[0]}.csv`;
+         a.click();
+         window.URL.revokeObjectURL(url);
+       };
+
+       window.respondToInquiry = function(inquiryId) {
+         currentInquiry = allInquiries.find(i => i.id === inquiryId);
+         if (!currentInquiry) return;
+
+         const inquiryIdDisplay = `INQ-${currentInquiry.id.slice(-8).toUpperCase()}`;
+         const date = currentInquiry.createdAt?.toDate?.() || new Date(currentInquiry.createdAt) || new Date();
+         
+         document.getElementById('inquiry-details').innerHTML = `
+           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+             <div><strong>Inquiry ID:</strong> ${inquiryIdDisplay}</div>
+             <div><strong>Status:</strong> ${(currentInquiry.status || 'open').toUpperCase()}</div>
+             <div><strong>Priority:</strong> ${(currentInquiry.priority || 'low').toUpperCase()}</div>
+             <div><strong>User:</strong> ${currentInquiry.userName || 'Unknown'} (${currentInquiry.userType || 'Unknown'})</div>
+             <div><strong>Email:</strong> ${currentInquiry.userEmail}</div>
+             <div><strong>Category:</strong> ${currentInquiry.category || 'Other'}</div>
+           </div>
+           <div style="margin-bottom: 1rem;">
+             <strong>Subject:</strong> ${currentInquiry.subject}
+           </div>
+           <div style="margin-bottom: 1rem;">
+             <strong>Description:</strong>
+             <div style="background: white; padding: 1rem; border-radius: 4px; border: 1px solid #e2e8f0; margin-top: 0.5rem;">
+               ${currentInquiry.description}
+             </div>
+           </div>
+           ${currentInquiry.attachmentUrl ? `
+             <div>
+               <strong>Attachment:</strong>
+               <a href="${currentInquiry.attachmentUrl}" target="_blank" style="color: #3b82f6; text-decoration: none; margin-left: 0.5rem;">
+                 <i class="fa fa-paperclip"></i> ${currentInquiry.attachmentName || 'View Attachment'}
+               </a>
+             </div>
+           ` : ''}
+         `;
+
+         document.getElementById('inquiry-response-modal').style.display = 'flex';
+       };
+
+       window.markInquiryResolved = async function(inquiryId) {
+         if (!confirm('Mark this inquiry as resolved?')) return;
+
+         try {
+           await updateDoc(doc(db, 'inquiries', inquiryId), {
+             status: 'resolved',
+             updatedAt: serverTimestamp(),
+             resolvedBy: sessionStorage.getItem('userName') || 'Admin'
+           });
+
+           await loadInquiries();
+           alert('Inquiry marked as resolved!');
+         } catch (error) {
+           console.error('Error updating inquiry:', error);
+           alert('Error updating inquiry. Please try again.');
+         }
+       };
+
+       window.deleteInquiry = async function(inquiryId) {
+         if (!confirm('Are you sure you want to delete this inquiry? This action cannot be undone.')) return;
+
+         try {
+           await deleteDoc(doc(db, 'inquiries', inquiryId));
+           await loadInquiries();
+           alert('Inquiry deleted successfully!');
+         } catch (error) {
+           console.error('Error deleting inquiry:', error);
+           alert('Error deleting inquiry. Please try again.');
+         }
+       };
+
+       // Handle inquiry response form submission
+       document.getElementById('inquiry-response-form').addEventListener('submit', async function(e) {
+         e.preventDefault();
+         
+         if (!currentInquiry) return;
+
+         const status = document.getElementById('response-status').value;
+         const message = document.getElementById('response-message').value.trim();
+
+         if (!message) {
+           alert('Please enter a response message.');
+           return;
+         }
+
+         const submitBtn = document.getElementById('send-response-btn');
+         const originalText = submitBtn.innerHTML;
+         
+         try {
+           submitBtn.disabled = true;
+           submitBtn.innerHTML = '<div style="width: 16px; height: 16px; border: 2px solid transparent; border-top: 2px solid currentColor; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; margin-right: 0.5rem;"></div> Sending...';
+
+           // Update inquiry with response
+           await updateDoc(doc(db, 'inquiries', currentInquiry.id), {
+             status: status,
+             response: message,
+             responseDate: serverTimestamp(),
+             respondedBy: sessionStorage.getItem('userName') || 'Admin',
+             updatedAt: serverTimestamp()
+           });
+
+           // Close modal and refresh
+           closeInquiryResponseModal();
+           await loadInquiries();
+           
+           alert('Response sent successfully!');
+         } catch (error) {
+           console.error('Error sending response:', error);
+           alert('Error sending response. Please try again.');
+         } finally {
+           submitBtn.disabled = false;
+           submitBtn.innerHTML = originalText;
+         }
+       });
+    </script>
+  </body>
+</html> 

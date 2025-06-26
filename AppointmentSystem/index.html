@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>eBwise Portal</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f3f6fc;
+    }
+
+    /* Top Navbar */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 2rem;
+      background-color: white;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .navbar-left img {
+      height: 60px;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+      font-size: 16px;
+    }
+
+    .nav-links a:hover {
+      color: #0056b3;
+    }
+
+    .login-btn {
+      padding: 0.4rem 1rem;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    
+    .login-btn:hover {
+      background-color: #0056b3;
+    }
+
+    /* Main content */
+    .main-container {
+      padding: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+
+
+    .site-announcements {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .site-announcements h2 {
+      margin-bottom: 1rem;
+      color: #333;
+      font-size: 20px;
+    }
+
+    .announcement-item {
+      padding: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background-color: #f9f9f9;
+    }
+
+    .announcement-item h3 {
+      font-size: 16px;
+      margin-bottom: 0.25rem;
+    }
+
+    .announcement-item p {
+      margin-top: 0.25rem;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .announcement-meta {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 0.5rem;
+    }
+
+    .announcement-item em {
+      color: #0056b3;
+      font-style: normal;
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .navbar-left {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .login-btn {
+        align-self: flex-end;
+      }
+    }
+
+    .priority-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .priority-badge.normal {
+      background: #e5e7eb;
+      color: #374151;
+    }
+
+    .priority-badge.important {
+      background: #fbbf24;
+      color: #92400e;
+    }
+
+    .priority-badge.urgent {
+      background: #ef4444;
+      color: white;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <nav class="navbar">
+    <div class="navbar-left">
+      <img src="eBbook2.png" alt="eBbook Logo">
+      <div class="nav-links">
+        <a href="#">eBbook Guide</a> &nbsp;&nbsp;
+        <a href="https://online.mmu.edu.my/home">Online Portal</a>
+      </div>
+    </div>
+    <button class="login-btn" onclick="window.location.href='login.html'">Log In</button>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="main-container">
+    <!-- Site Announcements -->
+    <div class="site-announcements">
+      <h2>📢 Site Announcements</h2>
+      <div class="announcement-item">
+        <h3>
+          <em>Invitation to Keysight in Campus – Career Opportunities & On-site Interviews (24 April 2025)</em>
+        </h3>
+        <div class="announcement-meta">
+          by Ms. Nurjehan Binti Abdul Rahman – Wednesday, 16 April 2025, 4:37 PM
+        </div>
+        <p>
+          Shape What’s Next with Keysight!<br><br>
+          Ready to shape the future of tech? Join us for an exciting session with Keysight Technologies – explore career opportunities and even interview on-site! 🎉✨
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain: "appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531",
+      storageBucket: "appointment-management-c2531.firebasestorage.app",
+      messagingSenderId: "428786083628",
+      appId: "1:428786083628:web:d9d9576b12581cc697ee89",
+      measurementId: "G-9FM8F1WJMF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Load announcements on page load
+    window.addEventListener('DOMContentLoaded', async () => {
+      await loadAnnouncements();
+    });
+
+    async function loadAnnouncements() {
+      try {
+        let announcementsQuery;
+        try {
+          announcementsQuery = query(
+            collection(db, 'announcements'),
+            orderBy('createdAt', 'desc')
+          );
+        } catch (error) {
+          // Fallback without orderBy if index doesn't exist
+          announcementsQuery = collection(db, 'announcements');
+        }
+
+        const announcementsSnapshot = await getDocs(announcementsQuery);
+        const announcements = announcementsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+
+        // Sort manually if needed
+        announcements.sort((a, b) => {
+          const aDate = new Date(a.createdAt?.toDate?.() || a.createdAt || 0);
+          const bDate = new Date(b.createdAt?.toDate?.() || b.createdAt || 0);
+          return bDate - aDate;
+        });
+
+        displayAnnouncements(announcements);
+      } catch (error) {
+        console.error('Error loading announcements:', error);
+        displayError();
+      }
+    }
+
+    function displayAnnouncements(announcements) {
+      const container = document.querySelector('.site-announcements');
+      
+      // Remove existing announcement items but keep the header
+      const existingItems = container.querySelectorAll('.announcement-item');
+      existingItems.forEach(item => item.remove());
+
+      if (announcements.length === 0) {
+        const noAnnouncementsDiv = document.createElement('div');
+        noAnnouncementsDiv.className = 'announcement-item';
+        noAnnouncementsDiv.innerHTML = `
+          <h3 style="text-align: center; color: #666;">📭 No announcements available</h3>
+          <p style="text-align: center; color: #999;">Check back later for updates!</p>
+        `;
+        container.appendChild(noAnnouncementsDiv);
+        return;
+      }
+
+      announcements.forEach(announcement => {
+        const announcementDiv = document.createElement('div');
+        announcementDiv.className = 'announcement-item';
+        announcementDiv.style.position = 'relative';
+        announcementDiv.style.marginBottom = '1rem';
+
+        const date = new Date(announcement.createdAt?.toDate?.() || announcement.createdAt).toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        const priorityClass = announcement.priority || 'normal';
+        
+        announcementDiv.innerHTML = `
+          <div class="priority-badge ${priorityClass}">${(announcement.priority || 'normal').toUpperCase()}</div>
+          <h3>
+            <em>${announcement.title}</em>
+          </h3>
+          <div class="announcement-meta">
+            by ${announcement.createdBy || 'Admin'} – ${date}
+          </div>
+          ${announcement.pictureUrl ? `
+            <div style="margin: 1rem 0;">
+              <img src="${announcement.pictureUrl}" alt="Announcement Picture" style="width: 100%; height: auto; min-height: 200px; max-height: 500px; object-fit: contain; border-radius: 8px; border: 1px solid #ddd; background: #f8f9fa;">
+            </div>
+          ` : ''}
+          <p>${announcement.content.replace(/\n/g, '<br>')}</p>
+        `;
+
+        container.appendChild(announcementDiv);
+      });
+    }
+
+    function displayError() {
+      const container = document.querySelector('.site-announcements');
+      
+      // Remove existing announcement items but keep the header
+      const existingItems = container.querySelectorAll('.announcement-item');
+      existingItems.forEach(item => item.remove());
+
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'announcement-item';
+      errorDiv.style.textAlign = 'center';
+      errorDiv.style.color = '#ef4444';
+      errorDiv.innerHTML = `
+        <h3>⚠️ Error Loading Announcements</h3>
+        <p>Unable to load announcements at this time. Please try refreshing the page.</p>
+      `;
+      container.appendChild(errorDiv);
+    }
+  </script>
+
+</body>
+</html>

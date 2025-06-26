@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Inquiry History - Student Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: #f9fafb;
+      color: #222;
+      margin: 0;
+    }
+
+    .header {
+      background: #fff;
+      color: #222;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      height: 70px;
+      border-bottom: 1px solid #e5e7eb;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    
+    .header .logo {
+      display: flex; 
+      align-items: center; 
+      gap: 18px;
+    }
+    
+    .header .logo img {
+      height: 60px;
+      transition: height .2s;
+    }
+    
+    .header nav {
+      display: flex; 
+      gap: 24px; 
+      align-items: center;
+    }
+    
+    .header nav .nav-link {
+      color: #222;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.08rem;
+      transition: color .2s;
+      position: relative;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    
+    .header nav .nav-link:hover, .header nav .nav-link.active {
+      background: #f1f5f9;
+      color: #ef4444;
+    }
+    
+    .header nav .dropdown {
+      position: relative;
+    }
+    
+    .header nav .dropdown-content {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 100%;
+      background: #fff;
+      min-width: 220px;
+      box-shadow: 0 4px 16px #0002;
+      border-radius: 8px;
+      z-index: 100;
+      flex-direction: column;
+      padding: 8px 0;
+    }
+    
+    .header nav .dropdown-content.show {
+      display: flex;
+    }
+    
+    .header nav .dropdown-content a {
+      color: #222;
+      text-decoration: none;
+      padding: 12px 22px;
+      font-size: 1rem;
+      border: none;
+      background: none;
+      text-align: left;
+      transition: background .2s, color .2s;
+      border-radius: 0;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    
+    .header nav .dropdown-content a:hover {
+      background: #f1f5f9;
+      color: #ef4444;
+    }
+    
+    .header .avatar-btn {
+      width: 44px; 
+      height: 44px;
+      border-radius: 50%;
+      background: #eee;
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      overflow: hidden;
+      margin-left: 18px;
+      cursor: pointer;
+      position: relative;
+      outline: none;
+      border: none;
+      padding: 0;
+    }
+    
+    .header .avatar-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      display: block;
+    }
+    
+    .logout-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    
+    .logout-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background: #fff;
+      box-shadow: 0 8px 24px #0003;
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      z-index: 200;
+      min-width: 160px;
+      padding: 8px 0;
+    }
+    
+    .logout-dropdown button {
+      width: 100%;
+      background: none;
+      border: none;
+      color: #ef4444;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 12px 24px;
+      text-align: left;
+      border-radius: 0;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+    }
+    
+    .logout-dropdown button:hover {
+      background: #f1f5f9;
+      color: #b91c1c;
+    }
+    
+    .logout-dropdown.show {
+      display: block;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 16px;
+    }
+
+    .page-header {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      padding: 28px 24px;
+      margin-bottom: 32px;
+    }
+
+    .page-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 8px;
+    }
+
+    .page-header p {
+      color: #64748b;
+      font-size: 1.05rem;
+    }
+
+    .content {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      padding: 28px 24px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      color: #222;
+      padding: 1.5rem;
+      border-radius: 12px;
+      text-align: center;
+      transition: all 0.2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      opacity: 0.9;
+    }
+
+    .inquiries-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .inquiry-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: all 0.2s;
+    }
+
+    .inquiry-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .inquiry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .inquiry-id {
+      font-weight: bold;
+      color: #1e293b;
+      font-size: 1.1rem;
+    }
+
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-open {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-in-progress {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .status-resolved {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-closed {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .priority-badge {
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+    }
+
+    .priority-low {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .priority-medium {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .priority-high {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .inquiry-content {
+      margin-bottom: 1rem;
+    }
+
+    .inquiry-subject {
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 0.5rem;
+    }
+
+    .inquiry-category {
+      color: #3b82f6;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .inquiry-description {
+      color: #64748b;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .inquiry-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      color: #64748b;
+      padding-top: 1rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .attachment {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #667eea;
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .attachment:hover {
+      color: #4f46e5;
+    }
+
+    .response-section {
+      background: #f0f9ff;
+      border: 1px solid #0ea5e9;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .response-header {
+      font-weight: 600;
+      color: #0369a1;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .response-content {
+      color: #075985;
+      line-height: 1.6;
+    }
+
+    .user-response-section {
+      background: #f0fdf4;
+      border: 1px solid #22c55e;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .user-response-header {
+      font-weight: 600;
+      color: #15803d;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .user-response-content {
+      color: #166534;
+      line-height: 1.6;
+    }
+
+    .inquiry-actions {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      width: 90%;
+      max-width: 600px;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      color: #1e293b;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6b7280;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+
+    .close-btn:hover {
+      background: #f3f4f6;
+      color: #374151;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-family: inherit;
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+
+    .btn-secondary {
+      background: #6b7280;
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #4b5563;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #64748b;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #cbd5e1;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #64748b;
+    }
+
+    .loading i {
+      font-size: 2rem;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 600;
+      transition: background 0.2s;
+      font-size: 1rem;
+    }
+
+    .btn:hover {
+      background: #dc2626;
+    }
+
+    .btn-small {
+      padding: 0.25rem 0.75rem;
+      font-size: 0.875rem;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .filter-btn {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      color: #64748b;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .filter-btn:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+
+    .filter-btn.active {
+      background: #ef4444;
+      border-color: #ef4444;
+      color: white;
+    }
+
+    .inquiry-content-collapsed {
+      display: none;
+    }
+
+    .view-details-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 600;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .view-details-btn:hover {
+      background: #dc2626;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      <img src="eBbook2.png" alt="Logo">
+    </div>
+    <nav>
+      <a href="student.html" class="nav-link">Dashboard</a>
+      <a href="student-lecturer-list.html" class="nav-link">Lecturers</a>
+      <a href="student-manage-appointments.html" class="nav-link">Manage Appointments</a>
+      <div class="dropdown nav-link active" tabindex="0" id="inquiry-dropdown">
+        Inquiry <i class="fa fa-caret-down" style="margin-left:6px;"></i>
+        <div class="dropdown-content" id="inquiry-dropdown-content">
+          <a href="inquirystud.html">Submit Inquiry</a>
+          <a href="viewinquirystud.html">View History</a>
+        </div>
+      </div>
+    </nav>
+    <div class="logout-wrapper">
+      <button class="avatar-btn" onclick="toggleLogoutDropdown()" id="avatarBtn">
+        <img src="placeholder.png" alt="Student Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
+      </button>
+      <div class="logout-dropdown" id="logoutDropdown">
+        <button onclick="logout()">
+          <i class="fa fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="page-header">
+      <h1><i class="fas fa-history"></i> My Inquiry History</h1>
+      <p>View and track your submitted inquiries and admin responses</p>
+    </div>
+
+    <div class="content">
+      <div class="stats" id="stats">
+        <div class="stat-card">
+          <div class="stat-number" id="total-count">0</div>
+          <div class="stat-label">Total Inquiries</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="open-count">0</div>
+          <div class="stat-label">Open</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="resolved-count">0</div>
+          <div class="stat-label">Resolved</div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="margin: 0; color: #1e293b;">Your Inquiries</h2>
+        <a href="inquirystud.html" class="btn btn-small">
+          <i class="fas fa-plus"></i>
+          Submit New Inquiry
+        </a>
+      </div>
+
+      <!-- Filter Buttons -->
+      <div class="filter-buttons" style="margin-bottom: 1.5rem;">
+        <button class="filter-btn active" onclick="filterInquiries('open')" id="open-filter">
+          <i class="fas fa-clock"></i> Open
+        </button>
+        <button class="filter-btn" onclick="filterInquiries('resolved')" id="resolved-filter">
+          <i class="fas fa-check-circle"></i> Resolved
+        </button>
+      </div>
+
+      <div class="inquiries-list" id="inquiries-list">
+        <div class="loading">
+          <i class="fas fa-spinner"></i>
+          <p>Loading your inquiries...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Response Modal -->
+  <div id="response-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Add Response to Inquiry</h3>
+        <button class="close-btn" onclick="closeResponseModal()">&times;</button>
+      </div>
+      
+      <div class="form-group">
+        <label>Inquiry ID:</label>
+        <p id="modal-inquiry-id" style="background: #f8fafc; padding: 12px; border-radius: 6px; margin: 0; font-weight: 600;"></p>
+      </div>
+
+      <form id="response-form">
+        <div class="form-group">
+          <label for="user-response">Your Response:</label>
+          <textarea id="user-response" placeholder="Provide additional information or clarification..." required></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeResponseModal()">Cancel</button>
+          <button type="submit" class="btn" id="submit-response-btn">Submit Response</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, collection, query, where, orderBy, getDocs, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain: "appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531",
+      storageBucket: "appointment-management-c2531.firebasestorage.app",
+      messagingSenderId: "428786083628",
+      appId: "1:428786083628:web:d9d9576b12581cc697ee89",
+      measurementId: "G-9FM8F1WJMF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Load inquiries on page load
+    window.addEventListener('DOMContentLoaded', async () => {
+      // Load cached avatar instantly
+      const cachedAvatarUrl = sessionStorage.getItem('userAvatarUrl');
+      if (cachedAvatarUrl) {
+        console.log('📸 Loading cached avatar instantly:', cachedAvatarUrl);
+        const avatarImg = document.querySelector('#avatarBtn img');
+        if (avatarImg) {
+          avatarImg.src = cachedAvatarUrl;
+        }
+      }
+
+      await loadUserAvatar();
+      await loadInquiries();
+    });
+
+    // Load user avatar
+    async function loadUserAvatar() {
+      try {
+        const userEmail = sessionStorage.getItem('userEmail');
+        if (userEmail) {
+          const userDoc = await getDoc(doc(db, 'students', userEmail));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            if (userData.avatarUrl) {
+              const cachedAvatar = sessionStorage.getItem('userAvatarUrl');
+              // Only update if avatar has changed
+              if (userData.avatarUrl !== cachedAvatar) {
+                console.log('🔄 Updating avatar from Firebase');
+                const avatarImg = document.querySelector('#avatarBtn img');
+                if (avatarImg) {
+                  avatarImg.src = userData.avatarUrl;
+                }
+                // Update cache
+                sessionStorage.setItem('userAvatarUrl', userData.avatarUrl);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user avatar:', error);
+      }
+    }
+
+    async function loadInquiries() {
+      try {
+        const userEmail = sessionStorage.getItem('userEmail');
+        if (!userEmail) {
+          window.location.href = 'login.html';
+          return;
+        }
+
+        // Try with orderBy first, fallback if index is missing
+        let inquiriesQuery;
+        try {
+          inquiriesQuery = query(
+            collection(db, 'inquiries'),
+            where('userEmail', '==', userEmail),
+            orderBy('createdAt', 'desc')
+          );
+        } catch (indexError) {
+          console.log('Falling back to query without orderBy');
+          inquiriesQuery = query(
+            collection(db, 'inquiries'),
+            where('userEmail', '==', userEmail)
+          );
+        }
+
+        const snapshot = await getDocs(inquiriesQuery);
+        inquiries = []; // Update global variable
+        
+        snapshot.docs.forEach(doc => {
+          const data = doc.data();
+          inquiries.push({
+            id: doc.id,
+            inquiryId: `INQ-${doc.id.slice(-8).toUpperCase()}`,
+            ...data
+          });
+        });
+
+        // Sort manually if we couldn't use orderBy
+        inquiries.sort((a, b) => {
+          const aTime = a.createdAt ? a.createdAt.toDate() : new Date(0);
+          const bTime = b.createdAt ? b.createdAt.toDate() : new Date(0);
+          return bTime - aTime;
+        });
+
+        renderInquiries(inquiries);
+        updateStats(inquiries);
+
+      } catch (error) {
+        console.error('Error loading inquiries:', error);
+        showError();
+      }
+    }
+
+    function generateConversationThreadStudent(inquiry) {
+      let conversationHtml = '';
+      
+      // Get all messages from the conversation thread
+      const messages = [];
+      
+      // Add initial admin response if exists
+      if (inquiry.response) {
+        messages.push({
+          type: 'admin',
+          message: inquiry.response,
+          date: inquiry.responseDate?.toDate?.() || new Date(inquiry.responseDate) || null,
+          author: inquiry.respondedBy || 'Admin'
+        });
+      }
+      
+      // Add user response if exists
+      if (inquiry.userResponse) {
+        messages.push({
+          type: 'user',
+          message: inquiry.userResponse,
+          date: inquiry.userResponseDate?.toDate?.() || new Date(inquiry.userResponseDate) || null,
+          author: 'You'
+        });
+      }
+      
+      // Add conversation thread if exists (new structure)
+      if (inquiry.conversation && Array.isArray(inquiry.conversation)) {
+        inquiry.conversation.forEach(msg => {
+                     messages.push({
+             type: msg.type || (msg.isAdmin ? 'admin' : 'user'),
+             message: msg.message || msg.response,
+             date: msg.timestamp?.toDate ? msg.timestamp.toDate() : (msg.timestamp instanceof Date ? msg.timestamp : new Date(msg.timestamp || Date.now())),
+             author: msg.isAdmin || msg.type === 'admin' ? (msg.author || 'Admin') : 'You'
+           });
+        });
+      }
+      
+      // Sort messages by date
+      messages.sort((a, b) => {
+        const dateA = a.date || new Date(0);
+        const dateB = b.date || new Date(0);
+        return dateA - dateB;
+      });
+      
+      // Generate HTML for each message
+      messages.forEach((msg, index) => {
+        const isAdmin = msg.type === 'admin';
+        const sectionClass = isAdmin ? 'response-section' : 'user-response-section';
+        const headerClass = isAdmin ? 'response-header' : 'user-response-header';
+        const contentClass = isAdmin ? 'response-content' : 'user-response-content';
+        const icon = isAdmin ? 'fa-user-shield' : 'fa-user';
+        const formattedDate = msg.date ? formatDate(msg.date) : '';
+        
+        conversationHtml += `
+          <div class="${sectionClass}">
+            <div class="${headerClass}">
+              <i class="fas ${icon}"></i>
+              ${msg.author}
+              ${formattedDate ? `(${formattedDate})` : ''}
+            </div>
+            <div class="${contentClass}">${msg.message}</div>
+          </div>
+        `;
+      });
+      
+      return conversationHtml;
+    }
+
+    let currentFilter = 'open';
+    let allInquiries = [];
+
+    function renderInquiries(inquiries) {
+      allInquiries = inquiries;
+      filterAndDisplayInquiries();
+    }
+
+    function filterAndDisplayInquiries() {
+      const container = document.getElementById('inquiries-list');
+      
+      // Filter inquiries based on current filter
+      let filteredInquiries = allInquiries;
+      if (currentFilter === 'open') {
+        filteredInquiries = allInquiries.filter(i => i.status === 'open' || i.status === 'in-progress');
+      } else if (currentFilter === 'resolved') {
+        filteredInquiries = allInquiries.filter(i => i.status === 'resolved' || i.status === 'closed');
+      }
+      
+      if (filteredInquiries.length === 0) {
+        const emptyMessage = currentFilter === 'open' ? 
+          "No open inquiries found." : 
+          "No resolved inquiries found.";
+        
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <h3>${emptyMessage}</h3>
+            <p>${currentFilter === 'open' ? "You don't have any open inquiries at the moment." : "You don't have any resolved inquiries yet."}</p>
+
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filteredInquiries.map(inquiry => {
+        const isResolved = inquiry.status === 'resolved' || inquiry.status === 'closed';
+        return `
+        <div class="inquiry-card">
+          <div class="inquiry-header">
+            <div>
+              <div class="inquiry-id">${inquiry.inquiryId}</div>
+              <span class="priority-badge priority-${inquiry.priority}">
+                ${inquiry.priority.toUpperCase()} PRIORITY
+              </span>
+            </div>
+            <span class="status-badge status-${inquiry.status}">
+              ${inquiry.status.replace('-', ' ')}
+            </span>
+          </div>
+
+          <div class="inquiry-content ${isResolved ? 'inquiry-content-collapsed' : ''}" id="content-${inquiry.id}">
+            <div class="inquiry-category">
+              <i class="fas fa-tag"></i> ${inquiry.category}
+            </div>
+            <div class="inquiry-subject">${inquiry.subject}</div>
+            <div class="inquiry-description">${inquiry.description}</div>
+            
+            ${inquiry.attachmentUrl ? `
+              <a href="${inquiry.attachmentUrl}" target="_blank" class="attachment">
+                <i class="fas fa-paperclip"></i>
+                ${inquiry.attachmentName || 'View Attachment'}
+              </a>
+            ` : ''}
+          </div>
+
+          ${!isResolved || currentFilter === 'open' ? generateConversationThreadStudent(inquiry) : `
+            <div class="inquiry-content-collapsed" id="conversation-${inquiry.id}">
+              ${generateConversationThreadStudent(inquiry)}
+            </div>
+          `}
+
+          ${isResolved && currentFilter === 'resolved' ? `
+            <div class="inquiry-actions" style="margin-bottom: 1rem;">
+              <button class="view-details-btn" onclick="toggleInquiryDetails('${inquiry.id}')">
+                <i class="fas fa-eye"></i>
+                <span id="toggle-text-${inquiry.id}">View Details</span>
+              </button>
+            </div>
+          ` : ''}
+
+          <div class="inquiry-actions">
+            ${inquiry.status === 'open' || inquiry.status === 'in-progress' ? `
+              <button class="btn btn-small" onclick="openResponseModal('${inquiry.id}', '${inquiry.inquiryId}')">
+                <i class="fas fa-reply"></i>
+                ${inquiry.userResponse ? 'Update Response' : 'Add Response'}
+              </button>
+            ` : ''}
+          </div>
+
+          <div class="inquiry-meta">
+            <span>
+              <i class="fas fa-calendar"></i>
+              Submitted: ${formatDate(inquiry.createdAt ? inquiry.createdAt.toDate() : new Date())}
+            </span>
+            ${inquiry.updatedAt && inquiry.updatedAt !== inquiry.createdAt ? `
+              <span>
+                <i class="fas fa-clock"></i>
+                Updated: ${formatDate(inquiry.updatedAt.toDate())}
+              </span>
+            ` : ''}
+          </div>
+        </div>
+        `;
+      }).join('');
+    }
+
+    function updateStats(inquiries) {
+      const total = inquiries.length;
+      const open = inquiries.filter(i => i.status === 'open' || i.status === 'in-progress').length;
+      const resolved = inquiries.filter(i => i.status === 'resolved' || i.status === 'closed').length;
+
+      document.getElementById('total-count').textContent = total;
+      document.getElementById('open-count').textContent = open;
+      document.getElementById('resolved-count').textContent = resolved;
+    }
+
+    function formatDate(date) {
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function showError() {
+      const container = document.getElementById('inquiries-list');
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>
+          <h3>Error Loading Inquiries</h3>
+          <p>There was a problem loading your inquiries. Please try refreshing the page.</p>
+          <button onclick="location.reload()" class="btn" style="margin-top: 1rem;">
+            <i class="fas fa-refresh"></i>
+            Refresh Page
+          </button>
+        </div>
+      `;
+    }
+
+    // Response modal functions
+    let currentInquiryId = null;
+
+    window.openResponseModal = function(inquiryId, inquiryDisplayId) {
+      currentInquiryId = inquiryId;
+      document.getElementById('modal-inquiry-id').textContent = inquiryDisplayId;
+      
+      // Always start with empty text area for new chat message
+      document.getElementById('user-response').value = '';
+      document.querySelector('#response-modal h3').textContent = 'Add Response to Inquiry';
+      
+      document.getElementById('response-modal').style.display = 'flex';
+    };
+
+    window.closeResponseModal = function() {
+      document.getElementById('response-modal').style.display = 'none';
+      document.getElementById('response-form').reset();
+      currentInquiryId = null;
+    };
+
+    // Handle response form submission
+    document.getElementById('response-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      if (!currentInquiryId) return;
+
+      const userResponse = document.getElementById('user-response').value.trim();
+      if (!userResponse) return;
+
+      const submitBtn = document.getElementById('submit-response-btn');
+      const originalText = submitBtn.textContent;
+      
+      try {
+        submitBtn.textContent = 'Submitting...';
+        submitBtn.disabled = true;
+
+        // Get current inquiry to check for existing conversation
+        const currentInquiry = inquiries.find(i => i.id === currentInquiryId);
+        const currentConversation = currentInquiry?.conversation || [];
+        
+        // Create new message object
+        const newMessage = {
+          type: 'user',
+          message: userResponse,
+          timestamp: new Date(),
+          author: sessionStorage.getItem('userName') || 'You',
+          isAdmin: false
+        };
+        
+        // Add new message to conversation thread
+        const updatedConversation = [...currentConversation, newMessage];
+        
+        // Update the inquiry with new conversation thread
+        const inquiryRef = doc(db, 'inquiries', currentInquiryId);
+        const updateData = {
+          conversation: updatedConversation,
+          updatedAt: serverTimestamp(),
+          lastResponseBy: 'user',
+          lastResponseDate: serverTimestamp()
+        };
+
+        // If this is the first user response, keep the legacy field for backward compatibility
+        if (!currentInquiry?.userResponse) {
+          updateData.userResponse = userResponse;
+          updateData.userResponseDate = serverTimestamp();
+        }
+
+        await updateDoc(inquiryRef, updateData);
+
+        // Show success and reload
+        alert('Response submitted successfully!');
+        closeResponseModal();
+        await loadInquiries(); // Reload to show updated data
+
+      } catch (error) {
+        console.error('Error submitting response:', error);
+        alert('Failed to submit response. Please try again.');
+      } finally {
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('response-modal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeResponseModal();
+      }
+    });
+
+    // Navigation functions (make them global)
+    const inquiryDropdown = document.getElementById('inquiry-dropdown');
+    const inquiryDropdownContent = document.getElementById('inquiry-dropdown-content');
+    inquiryDropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+      inquiryDropdownContent.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!inquiryDropdown.contains(e.target)) {
+        inquiryDropdownContent.classList.remove('show');
+      }
+    });
+
+    window.toggleLogoutDropdown = function() {
+      const dropdown = document.getElementById('logoutDropdown');
+      dropdown.classList.toggle('show');
+    };
+
+    window.logout = function() {
+      sessionStorage.clear();
+      window.location.href = 'login.html';
+    };
+
+    // Close logout dropdown when clicking outside
+    document.addEventListener('click', function(event) {
+      const logoutDropdown = document.getElementById('logoutDropdown');
+      
+      if (!event.target.closest('.logout-wrapper')) {
+        logoutDropdown.classList.remove('show');
+      }
+    });
+
+    // Store inquiries globally for modal access
+    let inquiries = [];
+
+    // Filter function
+    window.filterInquiries = function(filter) {
+      currentFilter = filter;
+      
+      // Update button states
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.getElementById(filter + '-filter').classList.add('active');
+      
+      // Re-render with new filter
+      filterAndDisplayInquiries();
+    };
+
+    // Toggle inquiry details function
+    window.toggleInquiryDetails = function(inquiryId) {
+      const content = document.getElementById('content-' + inquiryId);
+      const conversation = document.getElementById('conversation-' + inquiryId);
+      const toggleText = document.getElementById('toggle-text-' + inquiryId);
+      const button = toggleText.parentElement;
+      const icon = button.querySelector('i');
+      
+      if (content.classList.contains('inquiry-content-collapsed')) {
+        // Show details
+        content.classList.remove('inquiry-content-collapsed');
+        conversation.classList.remove('inquiry-content-collapsed');
+        toggleText.textContent = 'Hide Details';
+        icon.className = 'fas fa-eye-slash';
+      } else {
+        // Hide details
+        content.classList.add('inquiry-content-collapsed');
+        conversation.classList.add('inquiry-content-collapsed');
+        toggleText.textContent = 'View Details';
+        icon.className = 'fas fa-eye';
+      }
+    };
+  </script>
+</body>
+</html>
