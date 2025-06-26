@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     body {
       font-family: 'Inter', Arial, sans-serif;
@@ -510,6 +513,9 @@
     </div>
   </div>
 
+  <!-- Hybrid Email Service (Mailgun + Mailtrap) -->
+  <script src="email-service-hybrid.js"></script>
+  
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
@@ -910,7 +916,43 @@
 
         clearTimeout(bookingTimeout);
         console.log('Booking completed successfully!');
-        showSuccessModal('Appointment booked successfully!', 'Your appointment request has been submitted for approval. You can check its status in the Manage Appointments section.');
+        
+        // Send email notifications
+        try {
+          console.log('Sending email notifications...');
+          
+          // Send booking confirmation to student
+          await EmailService.sendBookingConfirmation({
+            studentEmail: studentEmail,
+            studentName: studentName,
+            lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
+            lecturerEmail: lecturerEmail,
+            date: selectedSlot.date,
+            time: `${selectedSlot.startTime} - ${selectedSlot.endTime}`,
+            purpose: purpose,
+            bookingId: appointmentRef.id
+          });
+          
+          // Send slot booked alert to lecturer
+          await EmailService.sendSlotBookedAlert({
+            lecturerEmail: lecturerEmail,
+            lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
+            studentName: studentName,
+            studentEmail: studentEmail,
+            studentId: sessionStorage.getItem('studentId') || 'N/A',
+            date: selectedSlot.date,
+            time: `${selectedSlot.startTime} - ${selectedSlot.endTime}`,
+            purpose: purpose,
+            bookingId: appointmentRef.id
+          });
+          
+          console.log('✅ Email notifications sent successfully');
+        } catch (emailError) {
+          console.error('❌ Failed to send email notifications:', emailError);
+          // Don't fail the booking if email fails
+        }
+        
+        showSuccessModal('Appointment booked successfully!', 'Your appointment request has been submitted for approval. You and your lecturer will receive email notifications.');
         closeBookingModal();
         
         // Reload slots to reflect changes
