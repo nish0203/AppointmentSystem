@@ -63,9 +63,46 @@ class EmailService {
         }
     }
 
-    // Appointment email methods (plain text versions)
+    // Appointment email methods (using proper templates)
     async sendBookingConfirmation(studentEmail, studentName, lecturerName, appointmentDate, appointmentTime, meetingLink = null) {
-        const message = `
+        try {
+            console.log(`📧 Sending booking confirmation to ${studentEmail} via EmailJS...`);
+            
+            // First try the new template, fallback to OTP template if not available
+            let templateId = 'booking_confirmation';
+            let templateParams = {
+                email: studentEmail,           // Required: recipient email
+                student_name: studentName,
+                lecturer_name: lecturerName,
+                appointment_date: appointmentDate,
+                appointment_time: appointmentTime,
+                meeting_link: meetingLink || ''
+            };
+            
+            console.log('📤 Template params:', templateParams);
+            console.log('📧 Using template ID:', templateId);
+            console.log('🔑 Using service ID:', this.serviceId);
+            console.log('🔑 Using public key:', this.publicKey);
+            
+            try {
+                const response = await emailjs.send(
+                    this.serviceId,
+                    templateId,
+                    templateParams,
+                    { publicKey: this.publicKey }
+                );
+
+                console.log('✅ Booking confirmation sent successfully via EmailJS');
+                return { success: true, result: response };
+                
+            } catch (templateError) {
+                console.warn('⚠️ booking_confirmation template not found, falling back to OTP template...');
+                console.error('❌ Detailed template error:', templateError);
+                console.log('🔍 Response status:', templateError.status);
+                console.log('🔍 Response text:', templateError.text);
+                
+                // Fallback to OTP template with formatted message
+                const fallbackMessage = `
 🎓 APPOINTMENT CONFIRMED!
 
 Dear ${studentName},
@@ -78,13 +115,33 @@ Time: ${appointmentTime}
 Lecturer: ${lecturerName}
 ${meetingLink ? `Meeting Link: ${meetingLink}` : ''}
 
-Please make sure to attend your appointment on time. If you need to reschedule or cancel, please contact your lecturer in advance.
+Please make sure to attend your appointment on time.
 
 This is an automated message from the University Booking System.
-Please do not reply to this email.
-        `.trim();
-        
-        return await this.sendPlainEmail(studentEmail, message);
+                `.trim();
+                
+                const fallbackParams = {
+                    email: studentEmail,
+                    passcode: '',
+                    time: fallbackMessage
+                };
+                
+                const fallbackResponse = await emailjs.send(
+                    this.serviceId,
+                    this.templateId, // Use OTP template
+                    fallbackParams,
+                    { publicKey: this.publicKey }
+                );
+
+                console.log('✅ Booking confirmation sent via fallback OTP template');
+                return { success: true, result: fallbackResponse, usedFallback: true };
+            }
+            
+        } catch (error) {
+            console.error('❌ Failed to send booking confirmation:', error);
+            console.error('❌ Error details:', error);
+            throw error;
+        }
     }
 
     async sendSlotBookedAlert(lecturerEmail, lecturerName, studentName, appointmentDate, appointmentTime, studentEmail = 'student@example.com', purpose = 'General consultation') {
@@ -122,42 +179,73 @@ Please do not reply to this email.
         }
     }
 
-    async sendCancellationNotification(email, name, appointmentDate, appointmentTime, reason = '') {
-        const message = `
-❌ APPOINTMENT CANCELLED
+    async sendCancellationNotification(email, name, appointmentDate, appointmentTime, reason = '', lecturerName = '', studentName = '') {
+        try {
+            console.log(`📧 Sending cancellation notification to ${email} via EmailJS...`);
+            
+            const templateParams = {
+                email: email,                      // Required: recipient email
+                recipient_name: name,              // Name of recipient (student or lecturer)
+                student_name: studentName || name, // Student's name
+                lecturer_name: lecturerName || 'Lecturer', // Lecturer's name
+                appointment_date: appointmentDate,
+                appointment_time: appointmentTime,
+                cancellation_reason: reason || ''
+            };
+            
+            console.log('📤 Template params:', templateParams);
+            console.log('📧 Using template ID: cancellation_notification');
+            
+            const response = await emailjs.send(
+                this.serviceId,
+                'cancellation_notification',
+                templateParams,
+                { publicKey: this.publicKey }
+            );
 
-Dear ${name},
-
-Your appointment scheduled for ${appointmentDate} at ${appointmentTime} has been cancelled.
-
-${reason ? `Reason: ${reason}` : ''}
-
-Please book a new appointment if needed.
-
-This is an automated message from the University Booking System.
-        `.trim();
-        
-        return await this.sendPlainEmail(email, message);
+            console.log('✅ Cancellation notification sent successfully via EmailJS');
+            return { success: true, result: response };
+            
+        } catch (error) {
+            console.error('❌ Failed to send cancellation notification:', error);
+            console.error('❌ Error details:', error);
+            throw error;
+        }
     }
 
-    async sendAppointmentReminder(email, name, appointmentDate, appointmentTime, lecturerName) {
-        const message = `
-⏰ APPOINTMENT REMINDER
+    async sendAppointmentReminder(email, recipientName, reminderTiming, appointmentDate, appointmentTime, otherPartyName, purpose = 'General consultation') {
+        try {
+            console.log(`📧 Sending appointment reminder to ${email} via EmailJS...`);
+            
+            const templateParams = {
+                email: email,                    // Required: recipient email
+                recipient_name: recipientName,  // Name of recipient
+                reminder_timing: reminderTiming, // Flexible timing message
+                appointment_date: appointmentDate,
+                appointment_time: appointmentTime,
+                other_party_name: otherPartyName,
+                purpose: purpose                 // Simple purpose field
+            };
+            
+            console.log('📤 Template params:', templateParams);
+            console.log('📧 Using template ID: appointment_reminder');
+            console.log('⏰ Reminder timing:', reminderTiming);
+            
+            const response = await emailjs.send(
+                this.serviceId,
+                'appointment_reminder',
+                templateParams,
+                { publicKey: this.publicKey }
+            );
 
-Dear ${name},
-
-This is a friendly reminder about your upcoming appointment:
-
-Date: ${appointmentDate}
-Time: ${appointmentTime}
-Lecturer: ${lecturerName}
-
-Please be on time. Thank you!
-
-This is an automated reminder from the University Booking System.
-        `.trim();
-        
-        return await this.sendPlainEmail(email, message);
+            console.log('✅ Appointment reminder sent successfully via EmailJS');
+            return { success: true, result: response };
+            
+        } catch (error) {
+            console.error('❌ Failed to send appointment reminder:', error);
+            console.error('❌ Error details:', error);
+            throw error;
+        }
     }
 }
 

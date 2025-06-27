@@ -15,7 +15,7 @@
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
       min-height: 100vh;
       padding: 2rem;
     }
@@ -51,7 +51,7 @@
     .header-title h1 {
       font-size: 2.5rem;
       font-weight: 700;
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -60,7 +60,7 @@
     .header-title .icon {
       width: 3rem;
       height: 3rem;
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
       border-radius: 12px;
       display: flex;
       align-items: center;
@@ -119,9 +119,9 @@
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
       color: white;
-      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+      box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
     }
 
     .btn-primary:hover {
@@ -217,7 +217,7 @@
     }
 
     .table thead {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
       color: white;
     }
 
@@ -286,12 +286,12 @@
     }
 
     .btn-delete {
-      background: #ef4444;
+      background: #06b6d4;
       color: white;
     }
 
     .btn-delete:hover {
-      background: #dc2626;
+      background: #0891b2;
     }
 
     .modal {
@@ -516,6 +516,7 @@
               <th>Name</th>
               <th>Email</th>
               <th>Faculty</th>
+              <th>Office</th>
               <th>Contact</th>
               <th>Created By</th>
               <th>Actions</th>
@@ -523,7 +524,7 @@
           </thead>
           <tbody>
             <tr>
-              <td colspan="8" class="loading">
+              <td colspan="9" class="loading">
                 <i class="fas fa-spinner"></i>
                 Loading lecturers...
               </td>
@@ -574,6 +575,15 @@
             <option value="FOM">Faculty of Management (FOM)</option>
             <option value="FOE">Faculty of Engineering (FOE)</option>
           </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Office Number</label>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="officePrefix" style="background: #f1f5f9; padding: 0.75rem 1rem; border: 1px solid #e2e8f0; border-radius: 8px 0 0 8px; font-weight: 600; color: #374151; min-width: 60px; text-align: center;">-</span>
+            <input type="text" id="lecturerOffice" class="form-input" placeholder="Enter 4 digits" maxlength="4" pattern="[0-9]{4}" style="border-radius: 0 8px 8px 0; border-left: none; flex: 1;" required>
+          </div>
+          <small style="color: #6b7280; font-size: 0.85rem; margin-top: 4px; display: block;">Office number will be automatically formatted based on faculty (e.g., FCI1234)</small>
         </div>
 
         <div class="form-group">
@@ -631,6 +641,8 @@
     const lecturerNameInput = document.getElementById('lecturerName');
     const lecturerEmailInput = document.getElementById('lecturerEmail');
     const lecturerFacultyInput = document.getElementById('lecturerFaculty');
+    const lecturerOfficeInput = document.getElementById('lecturerOffice');
+    const officePrefixSpan = document.getElementById('officePrefix');
     const lecturerContactInput = document.getElementById('lecturerContact');
     const lecturerCreatedByInput = document.getElementById('lecturerCreatedBy');
     const modalTitle = document.getElementById('modalTitle');
@@ -647,6 +659,31 @@
       'FOM': 'Faculty of Management',
       'FOE': 'Faculty of Engineering'
     };
+
+    const facultyPrefixes = {
+      'FCM': 'FCM',
+      'FCA': 'FCA',
+      'FAC': 'FAC',
+      'FCI': 'FCI',
+      'FOM': 'FOM',
+      'FOE': 'FOE'
+    };
+
+    // Update office prefix when faculty changes
+    lecturerFacultyInput.addEventListener('change', function() {
+      const selectedFaculty = this.value;
+      const prefix = facultyPrefixes[selectedFaculty] || '-';
+      officePrefixSpan.textContent = prefix;
+      
+      // Clear office input when faculty changes
+      lecturerOfficeInput.value = '';
+      lecturerOfficeInput.placeholder = prefix ? `Enter 4 digits (${prefix}XXXX)` : 'Enter 4 digits';
+    });
+
+    // Validate office number input (only allow 4 digits)
+    lecturerOfficeInput.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '').substring(0, 4);
+    });
 
     // Load lecturers
     async function loadLecturers() {
@@ -694,7 +731,7 @@
       if (lecturersToShow.length === 0) {
         tableBody.innerHTML = `
           <tr>
-            <td colspan="8" class="empty-state">
+            <td colspan="9" class="empty-state">
               <i class="fas fa-chalkboard-teacher"></i>
               <p>No lecturers found</p>
             </td>
@@ -714,6 +751,7 @@
             <td>${lecturer.name || 'N/A'}</td>
             <td>${lecturer.email || 'N/A'}</td>
             <td><span class="badge ${badgeClass}">${faculty}</span></td>
+            <td><strong>${lecturer.office || 'N/A'}</strong></td>
             <td>${lecturer.contact || 'N/A'}</td>
             <td>${lecturer.createdBy || 'Unknown'}</td>
             <td>
@@ -767,6 +805,10 @@
       modal.style.display = 'none';
       form.reset();
       editingDocId = null;
+      
+      // Reset office prefix
+      officePrefixSpan.textContent = '-';
+      lecturerOfficeInput.placeholder = 'Enter 4 digits';
     }
 
     // Show error message
@@ -792,6 +834,7 @@
         (lecturer.email || '').toLowerCase().includes(searchTerm) ||
         (lecturer.id || '').toLowerCase().includes(searchTerm) ||
         (lecturer.faculty || '').toLowerCase().includes(searchTerm) ||
+        (lecturer.office || '').toLowerCase().includes(searchTerm) ||
         (lecturer.contact || '').toLowerCase().includes(searchTerm)
       );
       displayLecturers(filteredLecturers);
@@ -814,6 +857,27 @@
           lecturerNameInput.value = lecturer.name || '';
           lecturerEmailInput.value = lecturer.email || '';
           lecturerFacultyInput.value = lecturer.faculty || '';
+          
+          // Handle office number - extract digits from full office (e.g., FCI1234 -> 1234)
+          if (lecturer.office) {
+            const officeMatch = lecturer.office.match(/([A-Z]+)(\d{4})/);
+            if (officeMatch) {
+              const prefix = officeMatch[1];
+              const digits = officeMatch[2];
+              officePrefixSpan.textContent = prefix;
+              lecturerOfficeInput.value = digits;
+              lecturerOfficeInput.placeholder = `Enter 4 digits (${prefix}XXXX)`;
+            } else {
+              lecturerOfficeInput.value = lecturer.office;
+            }
+          } else {
+            lecturerOfficeInput.value = '';
+          }
+          
+          // Update office prefix based on faculty
+          const prefix = facultyPrefixes[lecturer.faculty] || '-';
+          officePrefixSpan.textContent = prefix;
+          
           lecturerContactInput.value = lecturer.contact || '';
           lecturerCreatedByInput.value = lecturer.createdBy || 'AD001';
           showModal(true);
@@ -840,13 +904,24 @@
       const name = lecturerNameInput.value.trim();
       const email = lecturerEmailInput.value.trim();
       const faculty = lecturerFacultyInput.value;
+      const officeDigits = lecturerOfficeInput.value.trim();
       const contact = lecturerContactInput.value.trim();
       const createdBy = lecturerCreatedByInput.value.trim();
 
-      if (!id || !name || !email || !faculty || !contact) {
+      if (!id || !name || !email || !faculty || !officeDigits || !contact) {
         showError('Please fill in all required fields');
         return;
       }
+
+      // Validate office number (must be exactly 4 digits)
+      if (!/^\d{4}$/.test(officeDigits)) {
+        showError('Office number must be exactly 4 digits');
+        return;
+      }
+
+      // Create full office number with faculty prefix
+      const officePrefix = facultyPrefixes[faculty];
+      const fullOfficeNumber = officePrefix + officeDigits;
 
       // Check for duplicates
       if (await checkDuplicate(id, email)) {
@@ -866,6 +941,7 @@
           name,
           email,
           faculty,
+          office: fullOfficeNumber,
           contact,
           createdBy,
           role: 'lecturer'

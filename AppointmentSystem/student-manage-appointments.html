@@ -89,12 +89,12 @@
       color: #ef4444;
     }
     .header .avatar-btn {
-      width: 44px; height: 44px;
+      width: 32px; height: 32px;
       border-radius: 50%;
       background: #eee;
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
-      margin-left: 18px;
+      margin-left: 0px;
       cursor: pointer;
       position: relative;
       outline: none;
@@ -108,10 +108,230 @@
       border-radius: 50%;
       display: block;
     }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
     .logout-wrapper {
       position: relative;
       display: flex;
       align-items: center;
+      margin-left: 0px;
+    }
+
+    /* Notification System Styles */
+    .notification-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-right: 0px;
+    }
+    .notification-btn {
+      position: relative;
+      background: none;
+      border: none;
+      color: #374151;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 50%;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      margin: 0;
+    }
+    .notification-btn:hover {
+      background: #f3f4f6;
+      color: #ef4444;
+    }
+    .notification-badge {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .notification-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      z-index: 200;
+      width: 380px;
+      max-height: 500px;
+      overflow: hidden;
+    }
+    .notification-dropdown.show {
+      display: block;
+    }
+    .notification-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9fafb;
+    }
+    .notification-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #374151;
+    }
+    .notification-controls {
+      display: flex;
+      gap: 8px;
+    }
+    .notification-controls button {
+      background: none;
+      border: none;
+      color: #6b7280;
+      font-size: 0.8rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    .notification-controls button:hover {
+      background: #e5e7eb;
+      color: #374151;
+    }
+    .notifications-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .notification-item {
+      display: flex;
+      padding: 16px 20px;
+      border-bottom: 1px solid #f3f4f6;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .notification-item:hover {
+      background: #f9fafb;
+    }
+    .notification-item.unread {
+      background: #fef3f2;
+      border-left: 3px solid #ef4444;
+    }
+    .notification-item.read {
+      opacity: 0.8;
+    }
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+    .notification-item.unread .notification-icon {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+    .notification-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .notification-content h4 {
+      margin: 0 0 4px 0;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #374151;
+    }
+    .notification-content p {
+      margin: 0 0 8px 0;
+      font-size: 0.85rem;
+      color: #6b7280;
+      line-height: 1.4;
+    }
+    .notification-time {
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+    .notification-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .mark-read-btn, .delete-btn {
+      background: none;
+      border: 1px solid #d1d5db;
+      color: #6b7280;
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mark-read-btn:hover {
+      background: #ecfdf5;
+      border-color: #10b981;
+      color: #10b981;
+    }
+    .delete-btn:hover {
+      background: #fef2f2;
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+    .no-notifications {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9ca3af;
+    }
+    .no-notifications i {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .no-notifications p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+
+    /* Toast Notifications */
+    .notification-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #374151;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      max-width: 300px;
+    }
+    .notification-toast.show {
+      transform: translateX(0);
+    }
+    .notification-toast i {
+      color: #10b981;
     }
     .logout-dropdown {
       display: none;
@@ -420,12 +640,14 @@
         </div>
       </div>
     </nav>
-    <div class="logout-wrapper">
-      <button class="avatar-btn" id="avatar-btn">
-        <img src="placeholder.png" alt="Student Profile" style="width: 40px; height: 40px; border-radius: 50%; cursor: pointer;" />
-      </button>
-      <div class="logout-dropdown" id="logout-dropdown">
-        <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
+    <div class="header-right">
+      <div class="logout-wrapper">
+        <button class="avatar-btn" id="avatar-btn">
+          <img src="placeholder.png" alt="Student Profile" style="width: 32px; height: 32px; border-radius: 50%; cursor: pointer;" />
+        </button>
+        <div class="logout-dropdown" id="logout-dropdown">
+          <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
+        </div>
       </div>
     </div>
   </div>
@@ -764,10 +986,33 @@
         console.log('Found', snapshot.size, 'appointments');
         
         const appointments = [];
-        snapshot.docs.forEach(doc => {
-          const data = doc.data();
-          appointments.push({ id: doc.id, ...data });
-        });
+        // Fetch lecturer data for avatar URLs
+        const lecturerAvatars = new Map();
+        
+        for (const docSnap of snapshot.docs) {
+          const data = docSnap.data();
+          const appointmentData = { id: docSnap.id, ...data };
+          
+          // Fetch lecturer avatar if not already cached
+          if (data.lecturerEmail && !lecturerAvatars.has(data.lecturerEmail)) {
+            try {
+              const lecturerDoc = await getDoc(doc(db, 'lecturers', data.lecturerEmail));
+              if (lecturerDoc.exists()) {
+                const lecturerData = lecturerDoc.data();
+                lecturerAvatars.set(data.lecturerEmail, lecturerData.avatarUrl);
+              }
+            } catch (error) {
+              console.error('Error fetching lecturer data:', error);
+            }
+          }
+          
+          // Add lecturer avatar URL to appointment data
+          if (data.lecturerEmail && lecturerAvatars.has(data.lecturerEmail)) {
+            appointmentData.lecturerAvatarUrl = lecturerAvatars.get(data.lecturerEmail);
+          }
+          
+          appointments.push(appointmentData);
+        }
         
         // Load pending requests to check cancellation status
         const requestsSnapshot = await getDocs(collection(db, 'appointment_requests'));
@@ -822,13 +1067,34 @@
           console.log('Trying fallback query...');
           const allAppointments = await getDocs(collection(db, 'appointments'));
           const appointments = [];
+          const lecturerAvatars = new Map();
           
-          allAppointments.docs.forEach(doc => {
-            const data = doc.data();
+          for (const docSnap of allAppointments.docs) {
+            const data = docSnap.data();
             if (data.studentEmail === studentEmail) {
-              appointments.push({ id: doc.id, ...data });
+              const appointmentData = { id: docSnap.id, ...data };
+              
+              // Fetch lecturer avatar if not already cached
+              if (data.lecturerEmail && !lecturerAvatars.has(data.lecturerEmail)) {
+                try {
+                  const lecturerDoc = await getDoc(doc(db, 'lecturers', data.lecturerEmail));
+                  if (lecturerDoc.exists()) {
+                    const lecturerData = lecturerDoc.data();
+                    lecturerAvatars.set(data.lecturerEmail, lecturerData.avatarUrl);
+                  }
+                } catch (error) {
+                  console.error('Error fetching lecturer data:', error);
+                }
+              }
+              
+              // Add lecturer avatar URL to appointment data
+              if (data.lecturerEmail && lecturerAvatars.has(data.lecturerEmail)) {
+                appointmentData.lecturerAvatarUrl = lecturerAvatars.get(data.lecturerEmail);
+              }
+              
+              appointments.push(appointmentData);
             }
-          });
+          }
           
           console.log('Fallback found', appointments.length, 'appointments');
           currentAppointments = appointments; // Store for reference
@@ -996,7 +1262,7 @@
         <div class="appointment-card">
           <div class="appointment-header">
             <div class="lecturer-profile" style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
-              <img src="placeholder.png" alt="Lecturer Avatar" style="width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0;" />
+                              <img src="${appointment.lecturerAvatarUrl || 'placeholder.png'}" alt="Lecturer Avatar" style="width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0;" />
               <div>
                 <h3 style="margin: 0; font-size: 1.1rem; color: #374151;">${appointment.lecturerName || appointment.lecturerEmail || 'Lecturer'}</h3>
                 <div style="font-size: 0.85rem; color: #6b7280; margin-top: 2px;">Lecturer</div>
@@ -1581,6 +1847,20 @@
     // Make functions global
     window.openInquiryModal = openInquiryModal;
     window.closeInquiryModal = closeInquiryModal;
+  </script>
+
+  <!-- Notification Service -->
+  <script src="notification-service.js"></script>
+  <script>
+    // Initialize notification system for student
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.NotificationService) {
+        const userEmail = sessionStorage.getItem('userEmail') || 'student@example.com';
+        window.NotificationService = new NotificationService(userEmail, 'student');
+        
+
+      }
+    });
   </script>
 </body>
 </html> 
