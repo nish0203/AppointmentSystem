@@ -89,12 +89,12 @@
       color: #ef4444;
     }
     .header .avatar-btn {
-      width: 44px; height: 44px;
+      width: 32px; height: 32px;
       border-radius: 50%;
       background: #eee;
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
-      margin-left: 18px;
+      margin-left: 0px;
       cursor: pointer;
       position: relative;
       outline: none;
@@ -108,10 +108,16 @@
       border-radius: 50%;
       display: block;
     }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
     .logout-wrapper {
       position: relative;
       display: flex;
       align-items: center;
+      margin-left: 0px;
     }
     .logout-dropdown {
       display: none;
@@ -145,6 +151,231 @@
     }
     .logout-dropdown.show {
       display: block;
+    }
+
+    /* Notification System Styles */
+    .notification-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-right: 0px;
+    }
+    .notification-btn {
+      position: relative;
+      background: none;
+      border: none;
+      color: #374151;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 50%;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      margin: 0;
+    }
+    .notification-btn:hover {
+      background: #f3f4f6;
+      color: #ef4444;
+    }
+    .notification-badge {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .notification-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      z-index: 200;
+      width: 380px;
+      max-height: 500px;
+      overflow: hidden;
+    }
+    .notification-dropdown.show {
+      display: block;
+    }
+    .notification-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9fafb;
+    }
+    .notification-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #374151;
+    }
+    .notification-controls {
+      display: flex;
+      gap: 8px;
+    }
+    .notification-controls button {
+      background: none;
+      border: none;
+      color: #6b7280;
+      font-size: 0.8rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    .notification-controls button:hover {
+      background: #e5e7eb;
+      color: #374151;
+    }
+    .notifications-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .notification-item {
+      display: flex;
+      padding: 16px 20px;
+      border-bottom: 1px solid #f3f4f6;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .notification-item:hover {
+      background: #f9fafb;
+    }
+    .notification-item.unread {
+      background: #fef3f2;
+      border-left: 3px solid #ef4444;
+    }
+    .notification-item.read {
+      opacity: 0.8;
+    }
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+    .notification-item.unread .notification-icon {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+    .notification-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .notification-item .notification-header {
+      padding: 0;
+      border: none;
+      background: none;
+      margin-bottom: 4px;
+    }
+    .notification-title {
+      font-weight: 600;
+      color: #374151;
+      font-size: 0.9rem;
+    }
+    .notification-time {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      white-space: nowrap;
+    }
+    .notification-message {
+      margin: 0;
+      color: #6b7280;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+    .notification-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .notification-actions button {
+      background: none;
+      border: 1px solid #e5e7eb;
+      color: #6b7280;
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .notification-actions button:hover {
+      background: #f3f4f6;
+      border-color: #d1d5db;
+    }
+    .mark-read-btn:hover {
+      background: #ecfdf5;
+      border-color: #10b981;
+      color: #10b981;
+    }
+    .delete-btn:hover {
+      background: #fef2f2;
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+    .no-notifications {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9ca3af;
+    }
+    .no-notifications i {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .no-notifications p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+
+    /* Toast Notifications */
+    .notification-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #374151;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      max-width: 300px;
+    }
+    .notification-toast.show {
+      transform: translateX(0);
+    }
+    .notification-toast i {
+      color: #10b981;
     }
     .dashboard-container {
       max-width: 1200px;
@@ -290,12 +521,14 @@
         </div>
       </div>
     </nav>
-    <div class="logout-wrapper">
-      <button class="avatar-btn" id="avatar-btn">
-        <img id="user-avatar" src="placeholder.png" alt="Lecturer Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
-      </button>
-      <div class="logout-dropdown" id="logout-dropdown">
-        <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
+    <div class="header-right">
+      <div class="logout-wrapper">
+        <button class="avatar-btn" id="avatar-btn">
+          <img id="user-avatar" src="placeholder.png" alt="Lecturer Profile" style="width: 32px; height: 32px; border-radius: 50%;" />
+        </button>
+        <div class="logout-dropdown" id="logout-dropdown">
+          <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
+        </div>
       </div>
     </div>
   </div>
@@ -423,6 +656,22 @@
     const app  = initializeApp(firebaseConfig);
     const db   = getFirestore(app);
     const storage = getStorage(app);
+
+    // Make Firebase functions globally available
+    window.db = db;
+    window.addDoc = addDoc;
+    window.collection = collection;
+    window.doc = doc;
+    window.updateDoc = updateDoc;
+    window.getDoc = getDoc;
+    window.getDocs = getDocs;
+    window.query = query;
+    window.where = where;
+    window.orderBy = orderBy;
+    
+    // Make data loading functions globally available (needed by global functions)
+    window.loadAppointments = loadAppointments;
+    window.loadStudentRequests = loadStudentRequests;
 
     // --- Minimal working avatar/logout dropdown logic ---
     const avatarBtn = document.getElementById('avatar-btn');
@@ -595,10 +844,8 @@
       const pending = appointments.filter(apt => apt.status === 'pending');
       
       const history = appointments.filter(apt => {
-        if (apt.status === 'pending' || apt.status === 'rejected') return false;
-        const aptDate = new Date(apt.date);
-        aptDate.setHours(0, 0, 0, 0);
-        return aptDate < today || apt.status === 'done';
+        // Only show completed appointments, exclude pending, rejected, and rescheduled
+        return apt.status === 'done';
       });
       
       console.log('Categorized appointments:', { upcoming, pending, history });
@@ -758,10 +1005,10 @@
         today.setHours(0,0,0,0);
         const diff = Math.round((apptDate - today) / (1000*60*60*24));
         let msg = '';
-        if (diff > 1) msg = `in ${diff} days`;
-        else if (diff === 1) msg = 'in 1 day';
-        else if (diff === 0) msg = 'today';
-        else msg = 'passed';
+        if (diff > 1) msg = `Days left: ${diff} days`;
+        else if (diff === 1) msg = 'Days left: 1 day';
+        else if (diff === 0) msg = 'Days left: Today';
+        else msg = 'Days left: Passed';
         const daysLeftEl = dateEl.closest('.consultation-item').querySelector('.days-left');
         if (daysLeftEl) daysLeftEl.textContent = msg;
       });
@@ -1126,12 +1373,7 @@
       if (userEmail && window.NotificationService) {
         window.NotificationService.setUser(userEmail, 'lecturer');
         
-        // Add welcome notification after a short delay
-        setTimeout(() => {
-          window.NotificationService.addSystemUpdate({
-            message: 'Welcome to your lecturer dashboard!'
-          });
-        }, 2000);
+
       }
     });
   </script>

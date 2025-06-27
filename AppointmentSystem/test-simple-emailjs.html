@@ -50,14 +50,15 @@
         <h1>🧪 Ultra Simple EmailJS Test (Plain Text Only!)</h1>
         
         <div class="info">
-            <strong>✅ 100% Guaranteed to Work!</strong>
-            <p>This uses your <strong>exact same OTP template</strong> - just sends plain text emails!</p>
+            <strong>🎨 Professional Email Templates Test!</strong>
+            <p>Testing the new <strong>HTML email templates</strong> for your appointment system!</p>
             <ul>
-                <li>✅ No new templates to create</li>
-                <li>✅ No servers to run</li>
-                <li>✅ No domain verification</li>
-                <li>✅ Uses EXACTLY your existing working OTP setup</li>
-                <li>✅ Plain text emails (still professional!)</li>
+                <li>✅ Professional HTML email designs</li>
+                <li>✅ Mobile-responsive templates</li>
+                <li>✅ Consistent university branding</li>
+                <li>✅ Template: booking_confirmation (NEW!)</li>
+                <li>✅ Template: slot_booked_alert (working)</li>
+                <li>⚠️ Other templates need to be created in EmailJS first</li>
             </ul>
         </div>
 
@@ -71,8 +72,11 @@
             <button onclick="testBookingConfirmation()">📧 Test Booking Confirmation</button>
             <button onclick="testSlotBookedAlert()">📚 Test Slot Booked Alert</button>
             <button onclick="testCancellation()">❌ Test Cancellation</button>
-            <button onclick="testReminder()">⏰ Test Reminder</button>
+            <button onclick="testReminder()">⏰ Test 24h Reminder</button>
+            <button onclick="test1HourReminder()">⏰ Test 1h Reminder</button>
+            <button onclick="test15MinReminder()">⏰ Test 15min Reminder</button>
             <button onclick="testOTP()">🔑 Test OTP (Original)</button>
+            <button onclick="debugBookingTemplate()">🔍 Debug Booking Template</button>
         </div>
 
         <div id="results"></div>
@@ -104,20 +108,29 @@
             }
 
             try {
-                addResult('📧 Sending booking confirmation...');
+                addResult('📧 Sending booking confirmation (trying NEW template first...)');
+                addResult('🎯 Primary attempt: booking_confirmation template', true);
                 
-                await emailService.sendBookingConfirmation(
-                    email,
-                    'John Doe',
-                    'Dr. Smith',
-                    '2024-01-15',
-                    '10:00 AM',
-                    'https://meet.google.com/abc-123'
+                const result = await emailService.sendBookingConfirmation(
+                    email,                                    // studentEmail
+                    'John Doe',                              // studentName  
+                    'Dr. Sarah Smith',                       // lecturerName
+                    'Monday, January 15, 2024',             // appointmentDate
+                    '10:00 AM - 11:00 AM',                  // appointmentTime
+                    'https://meet.google.com/abc-123-def'   // meetingLink
                 );
                 
-                addResult('✅ Booking confirmation sent! Check your email inbox.');
+                if (result.usedFallback) {
+                    addResult('⚠️ booking_confirmation template not found - used fallback OTP template');
+                    addResult('✅ Booking confirmation sent via fallback method! Check your email (plain text format).');
+                    addResult('💡 Create the "booking_confirmation" template in EmailJS for HTML formatting', true);
+                } else {
+                    addResult('✅ Booking confirmation sent with professional HTML template! Check your email inbox.');
+                    addResult('📋 Template used: booking_confirmation with proper HTML formatting', true);
+                }
             } catch (error) {
                 addResult(`❌ Failed: ${error.message}`, false);
+                console.error('Detailed error:', error);
             }
         }
 
@@ -155,19 +168,24 @@
             }
 
             try {
-                addResult('❌ Sending cancellation notification...');
+                addResult('❌ Sending cancellation notification using HTML template...');
+                addResult('🎯 Testing Template ID: cancellation_notification', true);
                 
                 await emailService.sendCancellationNotification(
-                    email,
-                    'John Doe',
-                    '2024-01-15',
-                    '10:00 AM',
-                    'Lecturer unavailable'
+                    email,                           // email
+                    'John Doe',                      // name (recipient)
+                    'Monday, January 15, 2024',     // appointmentDate  
+                    '10:00 AM - 11:00 AM',          // appointmentTime
+                    'Lecturer unavailable due to emergency', // reason
+                    'Dr. Sarah Smith',              // lecturerName
+                    'John Doe'                      // studentName
                 );
                 
-                addResult('✅ Cancellation notification sent! Check your email inbox.');
+                addResult('✅ Cancellation notification sent with professional template! Check your email inbox.');
+                addResult('📋 Template used: cancellation_notification with HTML formatting', true);
             } catch (error) {
                 addResult(`❌ Failed: ${error.message}`, false);
+                addResult('💡 Make sure to create the "cancellation_notification" template in EmailJS first', false);
             }
         }
 
@@ -179,19 +197,24 @@
             }
 
             try {
-                addResult('⏰ Sending reminder...');
+                addResult('⏰ Testing flexible reminder template...');
+                addResult('🎯 Testing Template ID: appointment_reminder (universal template)', true);
                 
                 await emailService.sendAppointmentReminder(
-                    email,
-                    'John Doe',
-                    'Tomorrow',
-                    '10:00 AM',
-                    'Dr. Smith'
+                    email,                                              // email
+                    'John Doe',                                        // recipientName
+                    'Your appointment is in 24 hours',                // reminderTiming (flexible!)
+                    'Tomorrow, January 16, 2024',                     // appointmentDate
+                    '10:00 AM - 11:00 AM',                           // appointmentTime
+                    'Dr. Sarah Smith',                                // otherPartyName
+                    'Project discussion and thesis review'           // purpose
                 );
                 
-                addResult('✅ Reminder sent! Check your email inbox.');
+                addResult('✅ 24-hour reminder sent with flexible template! Check your email inbox.');
+                addResult('💡 This same template can be used for any timing (1 hour, 15 minutes, etc.)', true);
             } catch (error) {
                 addResult(`❌ Failed: ${error.message}`, false);
+                addResult('💡 Make sure to create the "appointment_reminder" template in EmailJS first', false);
             }
         }
 
@@ -210,6 +233,99 @@
                 addResult('✅ OTP sent! This proves your EmailJS is working.');
             } catch (error) {
                 addResult(`❌ Failed: ${error.message}`, false);
+            }
+        }
+
+        async function test1HourReminder() {
+            const email = document.getElementById('testEmail').value;
+            if (!email) {
+                addResult('Please enter an email address', false);
+                return;
+            }
+
+            try {
+                addResult('⏰ Testing 1-hour reminder...');
+                
+                await emailService.sendAppointmentReminder(
+                    email,                                              // email
+                    'Dr. Sarah Smith',                                 // recipientName (lecturer this time)
+                    'Your appointment is starting in 1 hour',         // reminderTiming (1 hour)
+                    'Today, January 15, 2024',                       // appointmentDate
+                    '2:00 PM - 3:00 PM',                             // appointmentTime
+                    'John Doe',                                       // otherPartyName (student)
+                    'Thesis consultation'                             // purpose
+                );
+                
+                addResult('✅ 1-hour reminder sent! Same template, different timing.');
+            } catch (error) {
+                addResult(`❌ Failed: ${error.message}`, false);
+            }
+        }
+
+        async function test15MinReminder() {
+            const email = document.getElementById('testEmail').value;
+            if (!email) {
+                addResult('Please enter an email address', false);
+                return;
+            }
+
+            try {
+                addResult('⏰ Testing 15-minute reminder...');
+                
+                await emailService.sendAppointmentReminder(
+                    email,                                              // email
+                    'John Doe',                                        // recipientName (student)
+                    'Your appointment is starting in 15 minutes',     // reminderTiming (15 min)
+                    'Today',                                          // appointmentDate
+                    '10:00 AM - 11:00 AM',                          // appointmentTime
+                    'Dr. Sarah Smith',                               // otherPartyName (lecturer)
+                    'General consultation'                           // purpose
+                );
+                
+                addResult('✅ 15-minute reminder sent! Urgent timing, minimal details.');
+            } catch (error) {
+                addResult(`❌ Failed: ${error.message}`, false);
+            }
+        }
+
+        async function debugBookingTemplate() {
+            const email = document.getElementById('testEmail').value;
+            if (!email) {
+                addResult('Please enter an email address', false);
+                return;
+            }
+
+            try {
+                addResult('🔍 Testing direct template call to booking_confirmation...');
+                
+                // Test with minimal parameters first
+                const response = await emailjs.send(
+                    'service_mailgun',
+                    'booking_confirmation',
+                    {
+                        email: email,              // Required: recipient email
+                        student_name: 'Test Student',
+                        lecturer_name: 'Test Lecturer',
+                        appointment_date: 'Today',
+                        appointment_time: '10:00 AM'
+                    },
+                    { publicKey: 'CO_25CIKuZ9YpYqQt' }
+                );
+                
+                addResult('✅ Direct template call worked! Template exists and parameters are correct.');
+                console.log('✅ Direct template response:', response);
+                
+            } catch (error) {
+                addResult(`❌ Direct template call failed: ${error.message}`, false);
+                console.error('❌ Direct template error details:', error);
+                
+                // Try to get more info about the error
+                if (error.status) {
+                    addResult(`Status: ${error.status}`, false);
+                }
+                if (error.text) {
+                    addResult(`Response: ${error.text}`, false);
+                }
             }
         }
     </script>

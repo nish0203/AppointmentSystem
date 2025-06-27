@@ -20,61 +20,69 @@
     }
 
     .header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
+      background: white;
+      color: #222;
       padding: 0 2rem;
       height: 70px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-bottom: 1px solid #e5e7eb;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     }
 
     .logo {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 18px;
       font-size: 1.5rem;
       font-weight: 700;
     }
 
     .logo img {
-      height: 40px;
-      width: 40px;
-      border-radius: 8px;
+      height: 60px;
+      transition: height .2s;
     }
 
     .user-info {
       display: flex;
       align-items: center;
       gap: 8px;
-      background: rgba(255, 255, 255, 0.1);
+      background: #f1f5f9;
       padding: 8px 16px;
       border-radius: 50px;
       cursor: pointer;
+      color: #222;
     }
 
     .avatar {
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
+      background: #e5e7eb;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 600;
+      color: #374151;
     }
 
     .logout-btn {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: white;
+      background: #f1f5f9;
+      border: 1px solid #e5e7eb;
+      color: #ef4444;
       padding: 8px 16px;
       border-radius: 6px;
       text-decoration: none;
       display: flex;
       align-items: center;
       gap: 6px;
+      font-weight: 600;
+    }
+
+    .logout-btn:hover {
+      background: #e2e8f0;
+      color: #dc2626;
     }
 
     .main-container {
@@ -134,12 +142,12 @@
       color: white;
     }
 
-    .stat-icon.blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-    .stat-icon.green { background: linear-gradient(135deg, #10b981, #059669); }
-    .stat-icon.yellow { background: linear-gradient(135deg, #f59e0b, #d97706); }
-    .stat-icon.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
-    .stat-icon.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
-    .stat-icon.indigo { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+    .stat-icon.blue { background: linear-gradient(135deg, #60a5fa, #3b82f6); }
+    .stat-icon.green { background: linear-gradient(135deg, #34d399, #10b981); }
+    .stat-icon.yellow { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+    .stat-icon.red { background: linear-gradient(135deg, #f87171, #ef4444); }
+    .stat-icon.purple { background: linear-gradient(135deg, #a78bfa, #8b5cf6); }
+    .stat-icon.indigo { background: linear-gradient(135deg, #818cf8, #6366f1); }
 
     .stat-value {
       font-size: 2rem;
@@ -192,6 +200,14 @@
       font-size: 1.5rem;
       color: white;
     }
+
+    /* Soft color variations for card icons */
+    .card-icon.soft-blue { background: linear-gradient(135deg, #93c5fd, #60a5fa); }
+    .card-icon.soft-teal { background: linear-gradient(135deg, #5eead4, #2dd4bf); }
+    .card-icon.soft-emerald { background: linear-gradient(135deg, #6ee7b7, #34d399); }
+    .card-icon.soft-cyan { background: linear-gradient(135deg, #67e8f9, #22d3ee); }
+    .card-icon.soft-sky { background: linear-gradient(135deg, #7dd3fc, #38bdf8); }
+    .card-icon.soft-indigo { background: linear-gradient(135deg, #a5b4fc, #818cf8); }
 
     .card-title {
       font-size: 1.25rem;
@@ -528,7 +544,7 @@
 <body>
   <header class="header">
     <div class="logo">
-      <img src="eBbook2.png" alt="Logo">
+      <img src="eBbook.png" alt="Logo">
     </div>
     <div style="display: flex; gap: 1rem; align-items: center;">
       <div class="user-info" onclick="openProfileModal()">
@@ -581,12 +597,12 @@
 
       <div class="stat-card">
         <div class="stat-header">
-          <div class="stat-icon purple">
-            <i class="fa fa-users"></i>
+          <div class="stat-icon red">
+            <i class="fa fa-calendar-times"></i>
           </div>
         </div>
-        <div class="stat-value" id="total-students">-</div>
-        <div class="stat-label">Total Students</div>
+        <div class="stat-value" id="cancelled-appointments">-</div>
+        <div class="stat-label">Cancelled Appointments</div>
       </div>
 
       <div class="stat-card">
@@ -601,12 +617,12 @@
 
       <div class="stat-card">
         <div class="stat-header">
-          <div class="stat-icon red">
-            <i class="fa fa-calendar-times"></i>
+          <div class="stat-icon purple">
+            <i class="fa fa-users"></i>
           </div>
         </div>
-        <div class="stat-value" id="cancelled-appointments">-</div>
-        <div class="stat-label">Cancelled Appointments</div>
+        <div class="stat-value" id="total-students">-</div>
+        <div class="stat-label">Total Students</div>
       </div>
     </div>
 
@@ -643,7 +659,7 @@
       <div class="management-grid">
         <a href="mngadmin.html" class="management-card">
           <div class="card-header">
-            <div class="card-icon red">
+            <div class="card-icon soft-blue">
               <i class="fa fa-user-shield"></i>
             </div>
             <h3 class="card-title">Manage Admin</h3>
@@ -657,12 +673,12 @@
 
         <a href="mngstud.html" class="management-card">
           <div class="card-header">
-            <div class="card-icon purple">
+            <div class="card-icon soft-cyan">
               <i class="fa fa-graduation-cap"></i>
             </div>
             <h3 class="card-title">Manage Students</h3>
           </div>
-          <p class="card-description">Add, edit, or remove student accounts. Manage student profiles and academic information.</p>
+          <p class="card-description">Add, edit, or remove student accounts.</p>
           <div class="card-action">
             <span>Manage Students</span>
             <i class="fa fa-arrow-right"></i>
@@ -671,12 +687,12 @@
 
         <a href="mnglect.html" class="management-card">
           <div class="card-header">
-            <div class="card-icon indigo">
+            <div class="card-icon soft-emerald">
               <i class="fa fa-chalkboard-teacher"></i>
             </div>
             <h3 class="card-title">Manage Lecturer</h3>
           </div>
-          <p class="card-description">Add, edit, or remove lecturer accounts. Manage faculty information and specializations.</p>
+          <p class="card-description">Add, edit, or remove lecturer accounts.</p>
           <div class="card-action">
             <span>Manage Lecturers</span>
             <i class="fa fa-arrow-right"></i>
@@ -691,7 +707,7 @@
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
         <div class="management-card" onclick="showAppointmentOverview()">
           <div class="card-header">
-            <div class="card-icon blue">
+            <div class="card-icon soft-cyan">
               <i class="fa fa-calendar-check"></i>
             </div>
             <h3 class="card-title">Appointment Overview</h3>
@@ -705,7 +721,7 @@
 
         <div class="management-card" onclick="showAppointmentSlots()">
           <div class="card-header">
-            <div class="card-icon green">
+            <div class="card-icon soft-sky">
               <i class="fa fa-calendar-alt"></i>
             </div>
             <h3 class="card-title">Appointment Slots</h3>
@@ -725,7 +741,7 @@
       <div style="display: grid; grid-template-columns: 1fr; max-width: 400px;">
         <div class="management-card" onclick="showAnnouncementManager()">
           <div class="card-header">
-            <div class="card-icon yellow">
+            <div class="card-icon soft-indigo">
               <i class="fa fa-bullhorn"></i>
             </div>
             <h3 class="card-title">Announcements</h3>
@@ -745,7 +761,7 @@
       <div style="display: grid; grid-template-columns: 1fr; max-width: 400px;">
         <div class="management-card" onclick="showInquiryManager()">
           <div class="card-header">
-            <div class="card-icon orange">
+            <div class="card-icon soft-blue">
               <i class="fa fa-question-circle"></i>
             </div>
             <h3 class="card-title">Inquiry Management</h3>
@@ -769,7 +785,7 @@
       <div class="profile-header">
         <div class="profile-avatar" id="profile-avatar">A</div>
         <h2 class="profile-name" id="profile-name">Administrator</h2>
-        <p class="profile-role">System Administrator</p>
+        <p class="profile-role" id="profile-role">System Administrator</p>
       </div>
       <div class="profile-info">
         <div class="info-item">
@@ -796,10 +812,59 @@
           </div>
           <div class="info-content">
             <div class="info-label">Access Level</div>
-            <div class="info-value">Full Administrative Access</div>
+            <div class="info-value" id="profile-access-level">Full Administrative Access</div>
           </div>
         </div>
       </div>
+      
+      <!-- Edit Profile Button (Only visible for Super Admins) -->
+      <div id="super-admin-actions" style="display: none; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+        <button onclick="openEditProfileModal()" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; width: 100%;">
+          <i class="fa fa-edit"></i> Edit Profile
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal (For Super Admins) -->
+  <div id="edit-profile-modal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+      <button class="modal-close" onclick="closeEditProfileModal()">
+        <i class="fa fa-times"></i>
+      </button>
+      <h2 style="margin-bottom: 1.5rem; color: #1e293b;">✏️ Edit Super Admin Profile</h2>
+      
+      <form id="edit-profile-form">
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Full Name *</label>
+          <input type="text" id="edit-name" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+        </div>
+        
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Email Address</label>
+          <input type="email" id="edit-email" disabled style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem; background: #f8fafc; color: #64748b;">
+          <small style="color: #6b7280; font-size: 0.8rem;">Email cannot be changed as it's used as the unique identifier</small>
+        </div>
+        
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Phone Number</label>
+          <input type="tel" id="edit-phone" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+        </div>
+        
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Department</label>
+          <input type="text" id="edit-department" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+        </div>
+        
+        <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+          <button type="submit" id="save-profile-btn" style="flex: 1; background: #10b981; color: white; padding: 0.75rem; border: none; border-radius: 6px; font-weight: 500; cursor: pointer;">
+            <i class="fa fa-save"></i> Save Changes
+          </button>
+          <button type="button" onclick="closeEditProfileModal()" style="flex: 1; background: #6b7280; color: white; padding: 0.75rem; border: none; border-radius: 6px; font-weight: 500; cursor: pointer;">
+            <i class="fa fa-times"></i> Cancel
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -1034,19 +1099,19 @@
       
       <!-- Statistics Cards -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
-        <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 1rem; text-align: center;">
+        <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; padding: 1rem; text-align: left;">
           <div style="color: #92400e; font-size: 2rem; font-weight: bold;" id="total-inquiries">0</div>
           <div style="color: #78350f; font-size: 0.9rem;">Total Inquiries</div>
         </div>
-        <div style="background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 1rem; text-align: center;">
+        <div style="background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px; padding: 1rem; text-align: left;">
           <div style="color: #991b1b; font-size: 2rem; font-weight: bold;" id="open-inquiries">0</div>
           <div style="color: #7f1d1d; font-size: 0.9rem;">Open Inquiries</div>
         </div>
-        <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 1rem; text-align: center;">
+        <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 1rem; text-align: left;">
           <div style="color: #166534; font-size: 2rem; font-weight: bold;" id="resolved-inquiries">0</div>
           <div style="color: #14532d; font-size: 0.9rem;">Resolved</div>
         </div>
-        <div style="background: #eff6ff; border: 1px solid #93c5fd; border-radius: 8px; padding: 1rem; text-align: center;">
+        <div style="background: #eff6ff; border: 1px solid #93c5fd; border-radius: 8px; padding: 1rem; text-align: left;">
           <div style="color: #1d4ed8; font-size: 2rem; font-weight: bold;" id="high-priority">0</div>
           <div style="color: #1e40af; font-size: 0.9rem;">High Priority</div>
         </div>
@@ -1062,7 +1127,6 @@
               <option value="open">Open</option>
               <option value="in-progress">In Progress</option>
               <option value="resolved">Resolved</option>
-              <option value="closed">Closed</option>
             </select>
           </div>
           <div style="flex: 1; min-width: 150px;">
@@ -1129,7 +1193,6 @@
           <select id="response-status" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px;">
             <option value="in-progress">In Progress</option>
             <option value="resolved">Resolved</option>
-            <option value="closed">Closed</option>
           </select>
         </div>
         
@@ -1189,14 +1252,16 @@
           if (adminDoc.exists()) {
             const profile = adminDoc.data();
             const name = profile.name || 'Administrator';
+            const isSuper = profile.isSuper || false;
             
-            updateProfileInfo(name, email);
+            updateProfileInfo(name, email, profile);
             
             sessionStorage.setItem('userEmail', email);
             sessionStorage.setItem('userName', name);
+            sessionStorage.setItem('isSuper', isSuper.toString());
           } else {
             const storedName = sessionStorage.getItem('userName') || 'Administrator';
-            updateProfileInfo(storedName, email);
+            updateProfileInfo(storedName, email, {});
           }
         }
       } catch (error) {
@@ -1235,7 +1300,7 @@
       }
           }
 
-      function updateProfileInfo(name, email) {
+      function updateProfileInfo(name, email, profile = {}) {
         document.getElementById('admin-name').textContent = name;
         document.getElementById('welcome-name').textContent = name;
         document.getElementById('profile-name').textContent = name;
@@ -1244,6 +1309,25 @@
         const avatar = name.charAt(0).toUpperCase();
         document.getElementById('avatar').textContent = avatar;
         document.getElementById('profile-avatar').textContent = avatar;
+        
+        // Update role and access level based on super admin status
+        const isSuper = profile.isSuper || false;
+        const roleElement = document.getElementById('profile-role');
+        const accessElement = document.getElementById('profile-access-level');
+        
+        if (isSuper) {
+          roleElement.innerHTML = '<i class="fa fa-crown" style="color: #f59e0b; margin-right: 0.5rem;"></i>Super Administrator';
+          accessElement.textContent = 'Full System Administrative Access';
+          
+          // Show edit profile button for super admins
+          document.getElementById('super-admin-actions').style.display = 'block';
+        } else {
+          roleElement.textContent = 'System Administrator';
+          accessElement.textContent = 'Administrative Access';
+          
+          // Hide edit profile button for regular admins
+          document.getElementById('super-admin-actions').style.display = 'none';
+        }
       }
 
       async function loadRecentActivity() {
@@ -1444,6 +1528,43 @@
         document.getElementById('profile-modal').style.display = 'none';
       };
 
+      // Edit Profile modal functions (Super Admin only)
+      window.openEditProfileModal = async function() {
+        // Check if user is super admin
+        const isSuper = sessionStorage.getItem('isSuper') === 'true';
+        if (!isSuper) {
+          alert('Access denied. Only Super Administrators can edit profiles.');
+          return;
+        }
+
+        document.getElementById('edit-profile-modal').style.display = 'flex';
+        
+        // Load current profile data
+        try {
+          const email = sessionStorage.getItem('userEmail');
+          if (email) {
+            const adminDoc = await getDoc(doc(db, 'admins', email));
+            if (adminDoc.exists()) {
+              const profile = adminDoc.data();
+              
+              document.getElementById('edit-name').value = profile.name || '';
+              document.getElementById('edit-email').value = email;
+              document.getElementById('edit-phone').value = profile.phone || '';
+              document.getElementById('edit-department').value = profile.department || '';
+            }
+          }
+        } catch (error) {
+          console.error('Error loading profile for editing:', error);
+        }
+      };
+
+      window.closeEditProfileModal = function() {
+        document.getElementById('edit-profile-modal').style.display = 'none';
+        
+        // Reset form
+        document.getElementById('edit-profile-form').reset();
+      };
+
       // Logout function
       window.logout = function() {
         sessionStorage.clear();
@@ -1460,6 +1581,7 @@
              // Close modal when clicking outside
        window.addEventListener('click', function(e) {
          const profileModal = document.getElementById('profile-modal');
+         const editProfileModal = document.getElementById('edit-profile-modal');
          const appointmentModal = document.getElementById('appointment-modal');
          const announcementModal = document.getElementById('announcement-modal');
          const inquiryModal = document.getElementById('inquiry-modal');
@@ -1467,6 +1589,8 @@
          
          if (e.target === profileModal) {
            closeProfileModal();
+         } else if (e.target === editProfileModal) {
+           closeEditProfileModal();
          } else if (e.target === appointmentModal) {
            closeAppointmentModal();
          } else if (e.target === announcementModal) {
@@ -1499,6 +1623,20 @@
              ...doc.data()
            }));
 
+           // Fetch lecturer names for appointments that don't have them
+           for (let appointment of allAppointments) {
+             if (!appointment.lecturerName && appointment.lecturerEmail) {
+               try {
+                 const lecturerDoc = await getDoc(doc(db, 'lecturers', appointment.lecturerEmail));
+                 if (lecturerDoc.exists()) {
+                   appointment.lecturerName = lecturerDoc.data().name;
+                 }
+               } catch (error) {
+                 console.log('Could not fetch lecturer name for:', appointment.lecturerEmail);
+               }
+             }
+           }
+
            // Sort by date
            allAppointments.sort((a, b) => {
              const aDate = new Date(a.bookedAt || a.date || 0);
@@ -1510,7 +1648,7 @@
          } catch (error) {
            console.error('Error loading appointments:', error);
            document.getElementById('appointments-list').innerHTML = `
-             <div style="text-align: center; color: #ef4444; padding: 2rem;">
+             <div style="text-align: left; color: #ef4444; padding: 2rem;">
                <i class="fa fa-exclamation-triangle"></i>
                <p>Error loading appointments. Please try again.</p>
              </div>
@@ -1540,7 +1678,7 @@
 
          if (filteredAppointments.length === 0) {
            appointmentsList.innerHTML = `
-             <div style="text-align: center; color: #64748b; padding: 2rem;">
+             <div style="text-align: left; color: #64748b; padding: 2rem;">
                <i class="fa fa-calendar"></i>
                <p>No ${currentFilter === 'all' ? '' : currentFilter} appointments found.</p>
              </div>
@@ -1550,12 +1688,14 @@
 
          appointmentsList.innerHTML = filteredAppointments.map(appointment => {
            const date = new Date(appointment.date || appointment.bookedAt).toLocaleDateString();
-           const time = appointment.time || 'Not specified';
+           const time = appointment.startTime && appointment.endTime 
+             ? `${appointment.startTime} - ${appointment.endTime}` 
+             : (appointment.time || 'Time not specified');
            
            return `
              <div class="appointment-item">
                <div class="appointment-header">
-                 <h4 style="margin: 0; color: #1e293b;">${appointment.studentName || 'Student'} → ${appointment.lecturerName || 'Lecturer'}</h4>
+                 <h4 style="margin: 0; color: #1e293b;">${appointment.studentName || 'Student'} → ${appointment.lecturerName || appointment.lecturerEmail || 'Lecturer'}</h4>
                  <span class="appointment-status ${appointment.status || 'pending'}">${(appointment.status || 'pending').toUpperCase()}</span>
                </div>
                <div style="color: #64748b; font-size: 0.9rem;">
@@ -1598,7 +1738,7 @@
          } catch (error) {
            console.error('Error loading announcements:', error);
            document.getElementById('announcements-list').innerHTML = `
-             <div style="text-align: center; color: #ef4444; padding: 2rem;">
+             <div style="text-align: left; color: #ef4444; padding: 2rem;">
                <i class="fa fa-exclamation-triangle"></i>
                <p>Error loading announcements. Please try again.</p>
              </div>
@@ -1611,7 +1751,7 @@
          
          if (announcements.length === 0) {
            announcementsList.innerHTML = `
-             <div style="text-align: center; color: #64748b; padding: 2rem;">
+             <div style="text-align: left; color: #64748b; padding: 2rem;">
                <i class="fa fa-bullhorn"></i>
                <p>No announcements found.</p>
              </div>
@@ -1795,11 +1935,25 @@
 
        async function loadSlots() {
          try {
-           const slotsSnapshot = await getDocs(collection(db, 'appointmentSlots'));
+           const slotsSnapshot = await getDocs(collection(db, 'appointment_slots'));
            allSlots = slotsSnapshot.docs.map(doc => ({
              id: doc.id,
              ...doc.data()
            }));
+
+           // Fetch lecturer names for slots that don't have them
+           for (let slot of allSlots) {
+             if (!slot.lecturerName && slot.lecturerEmail) {
+               try {
+                 const lecturerDoc = await getDoc(doc(db, 'lecturers', slot.lecturerEmail));
+                 if (lecturerDoc.exists()) {
+                   slot.lecturerName = lecturerDoc.data().name;
+                 }
+               } catch (error) {
+                 console.log('Could not fetch lecturer name for:', slot.lecturerEmail);
+               }
+             }
+           }
 
            // Check which slots are booked
            const appointmentsSnapshot = await getDocs(collection(db, 'appointments'));
@@ -1829,7 +1983,7 @@
          } catch (error) {
            console.error('Error loading slots:', error);
            document.getElementById('slots-list').innerHTML = `
-             <div style="text-align: center; color: #ef4444; padding: 2rem;">
+             <div style="text-align: left; color: #ef4444; padding: 2rem;">
                <i class="fa fa-exclamation-triangle"></i>
                <p>Error loading slots. Please try again.</p>
              </div>
@@ -1867,7 +2021,7 @@
          
          if (filteredSlots.length === 0) {
            slotsList.innerHTML = `
-             <div style="text-align: center; color: #64748b; padding: 2rem;">
+             <div style="text-align: left; color: #64748b; padding: 2rem;">
                <i class="fa fa-calendar"></i>
                <p>No slots found matching the filters.</p>
              </div>
@@ -1885,7 +2039,7 @@
              <div class="slot-item" style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 0.5rem;">
                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
                  <div>
-                   <h4 style="margin: 0; color: #1e293b;">${slot.lecturerName || 'Unknown Lecturer'}</h4>
+                   <h4 style="margin: 0; color: #1e293b;">${slot.lecturerName || slot.lecturerEmail || 'Unknown Lecturer'}</h4>
                    <p style="margin: 0; color: #64748b; font-size: 0.9rem;">${slot.lecturerEmail}</p>
                  </div>
                  <span style="background: ${statusColor}; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 500;">
@@ -1927,7 +2081,7 @@
          const lecturerName = lecturerDoc.exists() ? lecturerDoc.data().name : 'Unknown';
 
          try {
-           await addDoc(collection(db, 'appointmentSlots'), {
+           await addDoc(collection(db, 'appointment_slots'), {
              lecturerEmail,
              lecturerName,
              date,
@@ -2021,7 +2175,7 @@
          try {
            // Create all slots
            for (const slot of slots) {
-             await addDoc(collection(db, 'appointmentSlots'), slot);
+             await addDoc(collection(db, 'appointment_slots'), slot);
            }
            
            // Hide bulk creation form
@@ -2043,7 +2197,7 @@
          }
 
          try {
-           await deleteDoc(doc(db, 'appointmentSlots', slotId));
+           await deleteDoc(doc(db, 'appointment_slots', slotId));
            await loadSlots();
            alert('Slot deleted successfully!');
          } catch (error) {
@@ -2066,7 +2220,7 @@
 
          try {
            for (const slot of availableSlots) {
-             await deleteDoc(doc(db, 'appointmentSlots', slot.id));
+             await deleteDoc(doc(db, 'appointment_slots', slot.id));
            }
            
            await loadSlots();
@@ -2115,7 +2269,7 @@
          } catch (error) {
            console.error('Error loading inquiries:', error);
            document.getElementById('inquiries-list').innerHTML = `
-             <div style="text-align: center; color: #ef4444; padding: 2rem;">
+             <div style="text-align: left; color: #ef4444; padding: 2rem;">
                <i class="fa fa-exclamation-triangle"></i>
                <p>Error loading inquiries. Please try again.</p>
              </div>
@@ -2157,7 +2311,7 @@
 
          if (filteredInquiries.length === 0) {
            inquiriesList.innerHTML = `
-             <div style="text-align: center; color: #64748b; padding: 2rem;">
+             <div style="text-align: left; color: #64748b; padding: 2rem;">
                <i class="fa fa-inbox"></i>
                <p>No inquiries found with the selected filters.</p>
              </div>
@@ -2203,7 +2357,7 @@
                      </div>
                    ` : ''}
                  </div>
-                 <div style="text-align: right; color: #64748b; font-size: 0.9rem;">
+                 <div style="text-align: left; color: #64748b; font-size: 0.9rem;">
                    <div>${formattedDate}</div>
                    <div style="font-size: 0.8rem;">${timeAgo}</div>
                  </div>
@@ -2230,7 +2384,6 @@
            case 'open': return '#ef4444';
            case 'in-progress': return '#f59e0b';
            case 'resolved': return '#10b981';
-           case 'closed': return '#6b7280';
            default: return '#3b82f6';
          }
        }
@@ -2396,6 +2549,64 @@
          } catch (error) {
            console.error('Error sending response:', error);
            alert('Error sending response. Please try again.');
+         } finally {
+           submitBtn.disabled = false;
+           submitBtn.innerHTML = originalText;
+         }
+       });
+
+       // Handle edit profile form submission
+       document.getElementById('edit-profile-form').addEventListener('submit', async function(e) {
+         e.preventDefault();
+         
+         // Double-check super admin status
+         const isSuper = sessionStorage.getItem('isSuper') === 'true';
+         if (!isSuper) {
+           alert('Access denied. Only Super Administrators can edit profiles.');
+           return;
+         }
+
+         const name = document.getElementById('edit-name').value.trim();
+         const phone = document.getElementById('edit-phone').value.trim();
+         const department = document.getElementById('edit-department').value.trim();
+         const email = sessionStorage.getItem('userEmail');
+
+         if (!name) {
+           alert('Please enter your full name.');
+           return;
+         }
+
+         const submitBtn = document.getElementById('save-profile-btn');
+         const originalText = submitBtn.innerHTML;
+         
+         try {
+           submitBtn.disabled = true;
+           submitBtn.innerHTML = '<div style="width: 16px; height: 16px; border: 2px solid transparent; border-top: 2px solid currentColor; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; margin-right: 0.5rem;"></div> Saving...';
+
+           // Update admin profile in Firebase
+           const updateData = {
+             name: name,
+             phone: phone || null,
+             department: department || null,
+             updatedAt: serverTimestamp(),
+             updatedBy: email
+           };
+
+           await updateDoc(doc(db, 'admins', email), updateData);
+
+           // Update session storage and UI
+           sessionStorage.setItem('userName', name);
+           
+           // Reload profile data to reflect changes
+           await loadAdminProfile();
+           
+           // Close modal
+           closeEditProfileModal();
+           
+           alert('Profile updated successfully!');
+         } catch (error) {
+           console.error('Error updating profile:', error);
+           alert('Error updating profile. Please try again.');
          } finally {
            submitBtn.disabled = false;
            submitBtn.innerHTML = originalText;

@@ -89,12 +89,12 @@
       color: #ef4444;
     }
     .header .avatar-btn {
-      width: 44px; height: 44px;
+      width: 32px; height: 32px;
       border-radius: 50%;
       background: #eee;
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
-      margin-left: 18px;
+      margin-left: 0px;
       cursor: pointer;
       position: relative;
       outline: none;
@@ -108,6 +108,13 @@
       border-radius: 50%;
       display: block;
     }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
     .logout-wrapper {
       position: relative;
       display: flex;
@@ -145,6 +152,190 @@
     }
     .logout-dropdown.show {
       display: block;
+    }
+    /* Notification System Styles */
+    .notification-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-right: 0px;
+    }
+    .notification-btn {
+      position: relative;
+      background: none;
+      border: none;
+      color: #374151;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 50%;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      margin: 0;
+    }
+    .notification-btn:hover {
+      background: #f3f4f6;
+      color: #ef4444;
+    }
+    .notification-badge {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .notification-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      z-index: 200;
+      width: 380px;
+      max-height: 500px;
+      overflow: hidden;
+    }
+    .notification-dropdown.show {
+      display: block;
+    }
+    .notification-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9fafb;
+    }
+    .notification-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #374151;
+    }
+    .notification-controls {
+      display: flex;
+      gap: 8px;
+    }
+    .notification-controls button {
+      background: none;
+      border: none;
+      color: #6b7280;
+      font-size: 0.8rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    .notification-controls button:hover {
+      background: #e5e7eb;
+      color: #374151;
+    }
+    .notifications-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .notification-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid #f3f4f6;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .notification-item:hover {
+      background: #f9fafb;
+    }
+    .notification-item.unread {
+      background: #fef7f0;
+      border-left: 4px solid #ef4444;
+    }
+    .notification-item.unread:hover {
+      background: #fef3f0;
+    }
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .notification-icon.appointment { background: #dbeafe; color: #1d4ed8; }
+    .notification-icon.inquiry { background: #f3e8ff; color: #7c3aed; }
+    .notification-icon.system { background: #ecfdf5; color: #059669; }
+    .notification-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .notification-title {
+      font-weight: 600;
+      color: #374151;
+      margin: 0 0 4px 0;
+      font-size: 0.95rem;
+    }
+    .notification-message {
+      color: #6b7280;
+      margin: 0 0 8px 0;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    .notification-time {
+      color: #9ca3af;
+      font-size: 0.8rem;
+    }
+    .notification-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .notification-actions button {
+      background: none;
+      border: 1px solid #d1d5db;
+      color: #374151;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .notification-actions button:hover {
+      background: #f3f4f6;
+    }
+    .notification-actions button.delete {
+      color: #ef4444;
+      border-color: #fecaca;
+    }
+    .notification-actions button.delete:hover {
+      background: #fef2f2;
+    }
+    .notifications-empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9ca3af;
+    }
+    .notifications-empty i {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      opacity: 0.5;
     }
     .main-container {
       max-width: 1200px;
@@ -361,20 +552,22 @@
       <a href="#" class="nav-link active">Lecturers</a>
       <a href="student-manage-appointments.html" class="nav-link">Manage Appointments</a>
       <div class="dropdown nav-link" tabindex="0" id="inquiry-dropdown">
-        Inquiry <i class="fa fa-caret-down" style="margin-left:6px;"></i>
+        Inquiry <i class="fa fa-caret-down" style="margin-left:0px;"></i>
         <div class="dropdown-content" id="inquiry-dropdown-content">
           <a href="inquirystud.html">Submit Inquiry</a>
           <a href="viewinquirystud.html">Inquiry History</a>
         </div>
       </div>
     </nav>
+    <div class="header-right">
     <div class="logout-wrapper">
       <button class="avatar-btn" onclick="toggleLogoutDropdown()" id="avatarBtn">
-        <img src="placeholder.png" alt="Student Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
+        <img src="placeholder.png" alt="Student Profile" style="width: 32px; height: 32px; border-radius: 50%;" />
       </button>
       <div class="logout-dropdown" id="logout-dropdown">
         <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
       </div>
+    </div>
     </div>
   </div>
 
@@ -547,7 +740,7 @@
           ${lecturers.map(lecturer => `
             <div class="lecturer-card" onclick="viewLecturerSlots('${lecturer.email}', '${lecturer.name}')">
               <div class="lecturer-header">
-                <img src="placeholder.png" alt="Lecturer Avatar" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #e5e7eb;" />
+                <img src="${lecturer.avatarUrl || 'placeholder.png'}" alt="Lecturer Avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 3px solid #e5e7eb;" />
                 <div class="lecturer-info">
                   <h3>${lecturer.name || 'Lecturer'}</h3>
                   <p>${lecturer.title || 'Faculty Member'}</p>
@@ -630,6 +823,20 @@
 
     // Initialize
     loadLecturers();
+  </script>
+
+  <!-- Notification Service -->
+  <script src="notification-service.js"></script>
+  <script>
+    // Initialize notification system for student
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.NotificationService) {
+        const userEmail = sessionStorage.getItem('userEmail') || 'student@example.com';
+        window.NotificationService = new NotificationService(userEmail, 'student');
+        
+
+      }
+    });
   </script>
 </body>
 </html> 

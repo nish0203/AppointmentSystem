@@ -55,13 +55,49 @@
       background: #f1f5f9;
       color: #ef4444;
     }
+    .header nav .dropdown {
+      position: relative;
+    }
+    .header nav .dropdown-content {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 110%;
+      background: #fff;
+      min-width: 220px;
+      box-shadow: 0 4px 16px #0002;
+      border-radius: 8px;
+      z-index: 100;
+      flex-direction: column;
+      padding: 8px 0;
+    }
+    .header nav .dropdown-content.show {
+      display: flex;
+    }
+    .header nav .dropdown-content a {
+      color: #222;
+      text-decoration: none;
+      padding: 12px 22px;
+      font-size: 1rem;
+      border: none;
+      background: none;
+      text-align: left;
+      transition: background .2s, color .2s;
+      border-radius: 0;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .header nav .dropdown-content a:hover {
+      background: #f1f5f9;
+      color: #ef4444;
+    }
     .header .avatar-btn {
-      width: 44px; height: 44px;
+      width: 32px; height: 32px;
       border-radius: 50%;
       background: #eee;
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
-      margin-left: 18px;
+      margin-left: 0px;
       cursor: pointer;
       position: relative;
       outline: none;
@@ -75,8 +111,14 @@
       border-radius: 50%;
       display: block;
     }
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
     .logout-wrapper {
       position: relative;
+      margin-left: 0px;
     }
     .logout-dropdown {
       position: absolute;
@@ -106,6 +148,231 @@
     }
     .logout-dropdown button:hover {
       background: #f3f4f6;
+    }
+
+    /* Notification System Styles */
+    .notification-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-right: 0px;
+    }
+    .notification-btn {
+      position: relative;
+      background: none;
+      border: none;
+      color: #374151;
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 50%;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      margin: 0;
+    }
+    .notification-btn:hover {
+      background: #f3f4f6;
+      color: #ef4444;
+    }
+    .notification-badge {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      font-size: 0.65rem;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .notification-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      z-index: 200;
+      width: 380px;
+      max-height: 500px;
+      overflow: hidden;
+    }
+    .notification-dropdown.show {
+      display: block;
+    }
+    .notification-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9fafb;
+    }
+    .notification-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #374151;
+    }
+    .notification-controls {
+      display: flex;
+      gap: 8px;
+    }
+    .notification-controls button {
+      background: none;
+      border: none;
+      color: #6b7280;
+      font-size: 0.8rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    .notification-controls button:hover {
+      background: #e5e7eb;
+      color: #374151;
+    }
+    .notifications-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .notification-item {
+      display: flex;
+      padding: 16px 20px;
+      border-bottom: 1px solid #f3f4f6;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .notification-item:hover {
+      background: #f9fafb;
+    }
+    .notification-item.unread {
+      background: #fef3f2;
+      border-left: 3px solid #ef4444;
+    }
+    .notification-item.read {
+      opacity: 0.8;
+    }
+    .notification-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+    .notification-item.unread .notification-icon {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+    .notification-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .notification-item .notification-header {
+      padding: 0;
+      border: none;
+      background: none;
+      margin-bottom: 4px;
+    }
+    .notification-title {
+      font-weight: 600;
+      color: #374151;
+      font-size: 0.9rem;
+    }
+    .notification-time {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      white-space: nowrap;
+    }
+    .notification-message {
+      margin: 0;
+      color: #6b7280;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+    .notification-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .notification-actions button {
+      background: none;
+      border: 1px solid #e5e7eb;
+      color: #6b7280;
+      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .notification-actions button:hover {
+      background: #f3f4f6;
+      border-color: #d1d5db;
+    }
+    .mark-read-btn:hover {
+      background: #ecfdf5;
+      border-color: #10b981;
+      color: #10b981;
+    }
+    .delete-btn:hover {
+      background: #fef2f2;
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+    .no-notifications {
+      text-align: center;
+      padding: 40px 20px;
+      color: #9ca3af;
+    }
+    .no-notifications i {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .no-notifications p {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+
+    /* Toast Notifications */
+    .notification-toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #374151;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      max-width: 300px;
+    }
+    .notification-toast.show {
+      transform: translateX(0);
+    }
+    .notification-toast i {
+      color: #10b981;
     }
     .main-container {
       max-width: 1200px;
@@ -379,13 +646,22 @@
       <a href="student.html" class="nav-link">Dashboard</a>
       <a href="student-lecturer-list.html" class="nav-link">Lecturers</a>
       <a href="student-manage-appointments.html" class="nav-link">Manage Appointments</a>
+      <div class="dropdown nav-link" tabindex="0" id="inquiry-dropdown">
+        Inquiry <i class="fa fa-caret-down" style="margin-left:6px;"></i>
+        <div class="dropdown-content" id="inquiry-dropdown-content">
+          <a href="inquirystud.html">Submit Inquiry</a>
+          <a href="viewinquirystud.html">Inquiry History</a>
+        </div>
+      </div>
     </nav>
-    <div class="logout-wrapper">
-      <button class="avatar-btn" onclick="toggleLogoutDropdown()" id="avatarBtn">
-        <img src="placeholder.png" alt="Student Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
-      </button>
-      <div class="logout-dropdown" id="logout-dropdown">
-        <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
+    <div class="header-right">
+      <div class="logout-wrapper">
+        <button class="avatar-btn" onclick="toggleLogoutDropdown()" id="avatarBtn">
+          <img src="placeholder.png" alt="Student Profile" style="width: 32px; height: 32px; border-radius: 50%;" />
+        </button>
+        <div class="logout-dropdown" id="logout-dropdown">
+          <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
+        </div>
       </div>
     </div>
   </div>
@@ -396,7 +672,7 @@
     </a>
 
     <div class="lecturer-header">
-      <img src="placeholder.png" alt="Lecturer Profile" class="lecturer-profile-pic" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" />
+      <img src="placeholder.png" alt="Lecturer Profile" class="lecturer-profile-pic" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" id="lecturer-avatar" />
       <div class="lecturer-info">
         <h1 id="lecturer-name">Loading...</h1>
         <p><strong>Email:</strong> <span id="lecturer-email">-</span></p>
@@ -514,7 +790,7 @@
   </div>
 
   <!-- Email Service - Mailtrap for appointments, EmailJS+Mailgun for OTP (PRESERVED) -->
-  <script src="email-service-mailtrap-only.js"></script>
+  <script src="email-service-ultra-simple.js"></script>
   
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
@@ -575,6 +851,12 @@
       document.getElementById('lecturer-faculty').textContent = lecturer.faculty || '-';
       document.getElementById('lecturer-office').textContent = lecturer.office || '-';
       document.getElementById('lecturer-specialization').textContent = lecturer.specialization || '-';
+      
+      // Update lecturer avatar if available
+      const avatarElement = document.getElementById('lecturer-avatar');
+      if (avatarElement && lecturer.avatarUrl) {
+        avatarElement.src = lecturer.avatarUrl;
+      }
     }
 
     async function loadAvailableSlots() {
@@ -768,12 +1050,12 @@
         
         // Add in-app notification for student
         if (window.NotificationService) {
-          window.NotificationService.addSlotRequest({
-            studentName: studentName,
-            lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
-            preferredDate: preferredDate,
-            preferredTime: `${startTime} - ${endTime}`,
-            purpose: purpose
+          window.NotificationService.addNotification({
+            type: 'slot_request',
+            title: 'Slot Request Sent',
+            message: `Your request for a slot with ${currentLecturer?.name || lecturerName || 'Lecturer'} has been sent successfully.`,
+            icon: 'fa-clock',
+            category: 'Appointments'
           });
         }
         
@@ -930,15 +1212,12 @@
         
         // Add in-app notification for student
         if (window.NotificationService) {
-          window.NotificationService.addBookingConfirmation({
-            studentEmail: studentEmail,
-            studentName: studentName,
-            lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
-            lecturerEmail: lecturerEmail,
-            date: selectedSlot.date,
-            time: `${selectedSlot.startTime} - ${selectedSlot.endTime}`,
-            purpose: purpose,
-            bookingId: appointmentRef.id
+          window.NotificationService.addNotification({
+            type: 'appointment_booked',
+            title: 'Appointment Booked',
+            message: `Your appointment with ${currentLecturer?.name || lecturerName || 'Lecturer'} on ${selectedSlot.date} at ${selectedSlot.startTime} - ${selectedSlot.endTime} has been submitted for approval.`,
+            icon: 'fa-calendar-check',
+            category: 'Appointments'
           });
         }
         
@@ -1073,6 +1352,23 @@
         window.NotificationService.setUser(userEmail, 'student');
       }
     });
+
+    // Inquiry dropdown functionality
+    const inquiryDropdown = document.getElementById('inquiry-dropdown');
+    const inquiryDropdownContent = document.getElementById('inquiry-dropdown-content');
+    
+    if (inquiryDropdown && inquiryDropdownContent) {
+      inquiryDropdown.addEventListener('click', (e) => {
+        e.stopPropagation();
+        inquiryDropdownContent.classList.toggle('show');
+      });
+      
+      document.addEventListener('click', (e) => {
+        if (!inquiryDropdown.contains(e.target)) {
+          inquiryDropdownContent.classList.remove('show');
+        }
+      });
+    }
   </script>
 </body>
 </html> 

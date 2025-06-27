@@ -91,12 +91,12 @@
       color: #ef4444;
     }
     .header .avatar-btn {
-      width: 44px; height: 44px;
+      width: 32px; height: 32px;
       border-radius: 50%;
       background: #eee;
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
-      margin-left: 18px;
+      margin-left: 0px;
       cursor: pointer;
       position: relative;
       outline: none;
@@ -110,6 +110,13 @@
       border-radius: 50%;
       display: block;
     }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
     .logout-wrapper {
       position: relative;
       display: flex;
@@ -194,7 +201,7 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 4px;
+      height: 32px;
       background: linear-gradient(135deg, #2563eb 0%, #ef4444 100%);
     }
     
@@ -405,7 +412,7 @@
       font-size: 1.1rem !important;
       font-weight: 600 !important;
       color: white !important;
-      margin-left: 8px !important;
+      margin-left: 0px !important;
       user-select: none !important;
     }
     
@@ -413,7 +420,7 @@
     .flatpickr-prev-month,
     .flatpickr-next-month {
       position: relative !important;
-      width: 28px !important;
+      width: 32px !important;
       height: 28px !important;
       background: rgba(255, 255, 255, 0.2) !important;
       border-radius: 6px !important;
@@ -698,7 +705,7 @@
       color: #222;
     }
     .slots-list {
-      max-height: 500px;
+      max-height: 32px;
       overflow-y: auto;
       padding-right: 8px;
     }
@@ -874,23 +881,24 @@
     <nav>
       <a href="lecturer.html" class="nav-link">Dashboard</a>
       <div class="dropdown nav-link active" tabindex="0" id="slot-dropdown">
-        Slot Management <i class="fa fa-caret-down" style="margin-left:6px;"></i>
+        Slot Management <i class="fa fa-caret-down" style="margin-left:0px;"></i>
         <div class="dropdown-content" id="slot-dropdown-content">
           <a href="lecturer-appointment-slots.html">Set Appointment Slots</a>
           <a href="lecturer-manage-slots.html">Manage Booked Appointments</a>
         </div>
       </div>
       <div class="dropdown nav-link" tabindex="0" id="inquiry-dropdown">
-        Inquiry <i class="fa fa-caret-down" style="margin-left:6px;"></i>
+        Inquiry <i class="fa fa-caret-down" style="margin-left:0px;"></i>
         <div class="dropdown-content" id="inquiry-dropdown-content">
           <a href="inquirylect.html">Submit Inquiry</a>
           <a href="viewinquirylect.html">Inquiry History</a>
         </div>
       </div>
     </nav>
+    <div class="header-right">
     <div class="logout-wrapper">
       <button class="avatar-btn" onclick="toggleLogoutDropdown()" id="avatarBtn">
-        <img src="placeholder.png" alt="Lecturer Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
+        <img src="placeholder.png" alt="Lecturer Profile" style="width: 32px; height: 32px; border-radius: 50%;" />
       </button>
       <div class="logout-dropdown" id="logout-dropdown">
         <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
@@ -1026,7 +1034,7 @@
                   font-size: 1.1rem !important;
                   font-weight: 600 !important;
                   color: white !important;
-                  margin-left: 8px !important;
+                  margin-left: 0px !important;
                 `;
                 
                 currentMonthContainer.appendChild(yearSpan);
@@ -1686,6 +1694,20 @@
       
       alert('Inquiry submitted successfully!');
       closeInquiryModal();
+    });
+  </script>
+
+  <!-- Notification Service -->
+  <script src="notification-service.js"></script>
+  <script>
+    // Initialize notification system for lecturer
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.NotificationService) {
+        const userEmail = sessionStorage.getItem('userEmail') || 'lecturer@example.com';
+        window.NotificationService = new NotificationService(userEmail, 'lecturer');
+        
+
+      }
     });
   </script>
 </body>
