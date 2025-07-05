@@ -3,43 +3,109 @@ class NotificationService {
     this.notifications = [];
     this.currentUser = null;
     this.userType = null;
-    this.loadNotifications();
+    this.db = null;
+    this.initialized = false;
+  }
+
+  async initialize(db) {
+    this.db = db;
+    this.initialized = true;
+    if (this.currentUser) {
+      await this.loadNotifications();
+    }
   }
 
   setUser(email, type) {
     this.currentUser = email;
     this.userType = type;
-    this.loadNotifications();
+    if (this.initialized) {
+      this.loadNotifications();
+    }
   }
 
-  loadNotifications() {
-    if (!this.currentUser) return;
-    const stored = localStorage.getItem(`notifications_${this.currentUser}`);
-    this.notifications = stored ? JSON.parse(stored) : [];
-    this.updateUI();
+  async loadNotifications() {
+    if (!this.currentUser || !this.db) return;
+    
+    try {
+      // Import Firebase functions dynamically
+      const { collection, query, where, orderBy, getDocs, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
+      
+      const notificationsRef = collection(this.db, 'notifications');
+      const q = query(
+        notificationsRef,
+        where('userEmail', '==', this.currentUser),
+        orderBy('timestamp', 'desc')
+      );
+      
+      const snapshot = await getDocs(q);
+      this.notifications = [];
+      
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        this.notifications.push({
+          id: doc.id,
+          ...data,
+          timestamp: data.timestamp?.toDate ? data.timestamp.toDate().toISOString() : data.timestamp
+        });
+      });
+      
+      this.updateUI();
+    } catch (error) {
+      console.error('Error loading notifications:', error);
+      // Fallback to empty array
+      this.notifications = [];
+      this.updateUI();
+    }
   }
 
-  saveNotifications() {
-    if (!this.currentUser) return;
-    localStorage.setItem(`notifications_${this.currentUser}`, JSON.stringify(this.notifications));
-    this.updateUI();
+  async saveNotifications() {
+    if (!this.currentUser || !this.db) return;
+    
+    try {
+      // Import Firebase functions dynamically
+      const { collection, addDoc, updateDoc, deleteDoc, doc } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
+      
+      // For now, we'll just update the UI since notifications are loaded from Firebase
+      this.updateUI();
+    } catch (error) {
+      console.error('Error saving notifications:', error);
+    }
   }
 
-  addNotification(notification) {
-    const newNotification = {
-      id: Date.now() + Math.random(),
-      ...notification,
-      timestamp: new Date().toISOString(),
-      read: false
-    };
-    this.notifications.unshift(newNotification);
-    this.saveNotifications();
-    this.updateUI();
+  async addNotification(notification) {
+    if (!this.currentUser || !this.db) return;
+    
+    try {
+      // Import Firebase functions dynamically
+      const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
+      
+      const newNotification = {
+        userEmail: this.currentUser,
+        userType: this.userType,
+        ...notification,
+        timestamp: serverTimestamp(),
+        read: false,
+        createdAt: serverTimestamp()
+      };
+      
+      const docRef = await addDoc(collection(this.db, 'notifications'), newNotification);
+      
+      // Add to local array with the document ID
+      this.notifications.unshift({
+        id: docRef.id,
+        ...newNotification,
+        timestamp: new Date().toISOString()
+      });
+      
+      this.updateUI();
+    } catch (error) {
+      console.error('Error adding notification:', error);
+    }
   }
 
   // Appointment-related notifications
-  addAppointmentBooked(data) {
-    this.addNotification({
+  async addAppointmentBooked(data) {
+    await this.addNotification({
       type: 'appointment_booked',
       title: 'Appointment Booked',
       message: `Your appointment with ${data.lecturerName} has been booked for ${data.date} at ${data.time}`,
@@ -48,8 +114,8 @@ class NotificationService {
     });
   }
 
-  addAppointmentApproved(data) {
-    this.addNotification({
+  async addAppointmentApproved(data) {
+    await this.addNotification({
       type: 'appointment_approved',
       title: 'Appointment Approved',
       message: `Your appointment with ${data.lecturerName} on ${data.date} has been approved`,
@@ -58,8 +124,8 @@ class NotificationService {
     });
   }
 
-  addAppointmentRejected(data) {
-    this.addNotification({
+  async addAppointmentRejected(data) {
+    await this.addNotification({
       type: 'appointment_rejected',
       title: 'Appointment Rejected',
       message: `Your appointment request with ${data.lecturerName} has been rejected. Reason: ${data.reason || 'Not specified'}`,
@@ -68,8 +134,8 @@ class NotificationService {
     });
   }
 
-  addAppointmentCancelled(data) {
-    this.addNotification({
+  async addAppointmentCancelled(data) {
+    await this.addNotification({
       type: 'appointment_cancelled',
       title: 'Appointment Cancelled',
       message: `Your appointment with ${data.lecturerName} on ${data.date} has been cancelled`,
@@ -78,8 +144,8 @@ class NotificationService {
     });
   }
 
-  addAppointmentReminder(data) {
-    this.addNotification({
+  async addAppointmentReminder(data) {
+    await this.addNotification({
       type: 'appointment_reminder',
       title: 'Appointment Reminder',
       message: `You have an appointment with ${data.lecturerName} ${data.timing}`,
@@ -89,8 +155,8 @@ class NotificationService {
   }
 
   // For lecturers
-  addSlotBookedAlert(data) {
-    this.addNotification({
+  async addSlotBookedAlert(data) {
+    await this.addNotification({
       type: 'slot_booked',
       title: 'New Appointment Request',
       message: `${data.studentName} has booked your slot on ${data.date} at ${data.time}`,
@@ -99,8 +165,8 @@ class NotificationService {
     });
   }
 
-  addInquiryReceived(data) {
-    this.addNotification({
+  async addInquiryReceived(data) {
+    await this.addNotification({
       type: 'inquiry_received',
       title: 'New Inquiry Received',
       message: `You have received a new inquiry from ${data.studentName}: "${data.subject}"`,
@@ -110,8 +176,8 @@ class NotificationService {
   }
 
   // System notifications
-  addSystemUpdate(data) {
-    this.addNotification({
+  async addSystemUpdate(data) {
+    await this.addNotification({
       type: 'system_update',
       title: data.title || 'System Update',
       message: data.message,
@@ -120,27 +186,102 @@ class NotificationService {
     });
   }
 
-  markAsRead(notificationId) {
-    const notification = this.notifications.find(n => n.id === notificationId);
-    if (notification) {
-      notification.read = true;
-      this.saveNotifications();
+  async markAsRead(notificationId) {
+    if (!this.db) return;
+    
+    try {
+      // Import Firebase functions dynamically
+      const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
+      
+      await updateDoc(doc(this.db, 'notifications', notificationId), {
+        read: true,
+        updatedAt: new Date()
+      });
+      
+      // Update local array
+      const notification = this.notifications.find(n => n.id === notificationId);
+      if (notification) {
+        notification.read = true;
+        this.updateUI();
+      }
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
     }
   }
 
-  markAllAsRead() {
-    this.notifications.forEach(n => n.read = true);
-    this.saveNotifications();
+  async markAllAsRead() {
+    if (!this.db) return;
+    
+    try {
+      // Import Firebase functions dynamically
+      const { collection, query, where, getDocs, doc, updateDoc, writeBatch } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
+      
+      const notificationsRef = collection(this.db, 'notifications');
+      const q = query(
+        notificationsRef,
+        where('userEmail', '==', this.currentUser),
+        where('read', '==', false)
+      );
+      
+      const snapshot = await getDocs(q);
+      const batch = writeBatch(this.db);
+      
+      snapshot.forEach(docSnap => {
+        batch.update(docSnap.ref, { read: true, updatedAt: new Date() });
+      });
+      
+      await batch.commit();
+      
+      // Update local array
+      this.notifications.forEach(n => n.read = true);
+      this.updateUI();
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+    }
   }
 
-  deleteNotification(notificationId) {
-    this.notifications = this.notifications.filter(n => n.id !== notificationId);
-    this.saveNotifications();
+  async deleteNotification(notificationId) {
+    if (!this.db) return;
+    
+    try {
+      // Import Firebase functions dynamically
+      const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
+      
+      await deleteDoc(doc(this.db, 'notifications', notificationId));
+      
+      // Update local array
+      this.notifications = this.notifications.filter(n => n.id !== notificationId);
+      this.updateUI();
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+    }
   }
 
-  clearAllNotifications() {
-    this.notifications = [];
-    this.saveNotifications();
+  async clearAllNotifications() {
+    if (!this.db) return;
+    
+    try {
+      // Import Firebase functions dynamically
+      const { collection, query, where, getDocs, doc, deleteDoc, writeBatch } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
+      
+      const notificationsRef = collection(this.db, 'notifications');
+      const q = query(notificationsRef, where('userEmail', '==', this.currentUser));
+      
+      const snapshot = await getDocs(q);
+      const batch = writeBatch(this.db);
+      
+      snapshot.forEach(docSnap => {
+        batch.delete(docSnap.ref);
+      });
+      
+      await batch.commit();
+      
+      // Update local array
+      this.notifications = [];
+      this.updateUI();
+    } catch (error) {
+      console.error('Error clearing all notifications:', error);
+    }
   }
 
   getUnreadCount() {
@@ -188,43 +329,46 @@ class NotificationService {
             <span class="notification-time">${this.formatTime(notification.timestamp)}</span>
           </div>
           <p class="notification-message">${notification.message}</p>
-                     <div class="notification-actions">
-             <button class="mark-read-btn" onclick="window.NotificationService.markAsRead(${notification.id})">
-               ${notification.read ? 'Read' : 'Mark as read'}
-             </button>
-             <button class="delete-btn" onclick="window.NotificationService.deleteNotification(${notification.id})">
-               Delete
-             </button>
-           </div>
+          <div class="notification-actions">
+            <button class="mark-read-btn" onclick="window.NotificationService.markAsRead('${notification.id}')">
+              ${notification.read ? 'Read' : 'Mark as read'}
+            </button>
+            <button class="delete-btn" onclick="window.NotificationService.deleteNotification('${notification.id}')">
+              Delete
+            </button>
+          </div>
         </div>
       </div>
     `).join('');
   }
 
   formatTime(timestamp) {
+    if (!timestamp) return '';
+    
+    const date = new Date(timestamp);
     const now = new Date();
-    const time = new Date(timestamp);
-    const diff = now - time;
+    const diffInMinutes = Math.floor((now - date) / (1000 * 60));
     
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes} minutes ago`;
-    if (hours < 24) return `${hours} hours ago`;
-    if (days < 7) return `${days} days ago`;
+    if (diffInMinutes < 1) return 'Just now';
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
     
-    return time.toLocaleDateString();
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}d ago`;
+    
+    return date.toLocaleDateString();
   }
 
+  // Toast notifications disabled
   showToast(message) {
-    // Toast notifications disabled
-    return;
+    // Disabled for now
   }
 
+  // Create notification dropdown HTML if it doesn't exist
   initializeDropdown() {
-    // Create notification dropdown HTML if it doesn't exist
+    // Check if notification dropdown already exists
     const existingDropdown = document.getElementById('notification-dropdown');
     if (existingDropdown) return;
 
@@ -237,10 +381,10 @@ class NotificationService {
         <div class="notification-dropdown" id="notification-dropdown">
           <div class="notification-header">
             <h3>Notifications</h3>
-                       <div class="notification-controls">
-             <button onclick="window.NotificationService.markAllAsRead()" class="mark-all-read">Mark all read</button>
-             <button onclick="window.NotificationService.clearAllNotifications()" class="clear-all">Clear all</button>
-           </div>
+            <div class="notification-controls">
+              <button onclick="window.NotificationService.markAllAsRead()" class="mark-all-read">Mark all read</button>
+              <button onclick="window.NotificationService.clearAllNotifications()" class="clear-all">Clear all</button>
+            </div>
           </div>
           <div class="notifications-list" id="notifications-list">
             <!-- Notifications will be rendered here -->
@@ -249,33 +393,31 @@ class NotificationService {
       </div>
     `;
 
-    // Find the header-right container and insert notification dropdown as first child
+    // Try to find the header-right container and insert notification dropdown as first child
     const headerRight = document.querySelector('.header-right');
     if (headerRight) {
       headerRight.insertAdjacentHTML('afterbegin', notificationHTML);
-      this.setupEventListeners();
-      this.updateUI();
     } else {
       // Fallback: Find the logout wrapper and insert notification dropdown before it
       const logoutWrapper = document.querySelector('.logout-wrapper');
       if (logoutWrapper) {
         logoutWrapper.insertAdjacentHTML('beforebegin', notificationHTML);
-        this.setupEventListeners();
-        this.updateUI();
       }
     }
+
+    this.setupEventListeners();
   }
 
   setupEventListeners() {
     const notificationBtn = document.getElementById('notification-btn');
     const notificationDropdown = document.getElementById('notification-dropdown');
-
+      
     if (notificationBtn && notificationDropdown) {
       notificationBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         notificationDropdown.classList.toggle('show');
       });
-
+      
       document.addEventListener('click', (e) => {
         if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
           notificationDropdown.classList.remove('show');

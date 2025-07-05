@@ -1610,9 +1610,12 @@
   <script src="notification-service.js"></script>
   <script>
     // Initialize notification system for lecturer
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', async function() {
       if (window.NotificationService) {
         const userEmail = sessionStorage.getItem('userEmail') || 'lecturer@example.com';
+        
+        // Initialize with Firebase
+        await window.NotificationService.initialize(db);
         window.NotificationService.setUser(userEmail, 'lecturer');
         
         // Handle notification actions
@@ -1630,8 +1633,6 @@
             window.NotificationService.clearAllNotifications();
           });
         }
-        
-
       }
     });
   </script>
