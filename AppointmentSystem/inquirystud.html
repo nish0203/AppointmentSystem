@@ -110,8 +110,8 @@
     }
     
     .header .avatar-btn {
-      width: 32px; 
-      height: 32px;
+      width: 40px; 
+      height: 40px;
       border-radius: 50%;
       background: #eee;
       display: flex; 
@@ -137,7 +137,7 @@
     .header-right {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 16px;
     }
 
     
@@ -188,43 +188,42 @@
       position: relative;
       display: flex;
       align-items: center;
-      margin-right: 0px;
     }
     .notification-btn {
-      position: relative;
-      background: none;
-      border: none;
-      color: #374151;
-      font-size: 1.2rem;
-      cursor: pointer;
-      padding: 4px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      transition: all 0.2s;
+      background: #f3f4f6;
+      border: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
-      margin: 0;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+      color: #6b7280;
     }
     .notification-btn:hover {
-      background: #f3f4f6;
-      color: #ef4444;
+      background: #e5e7eb;
+      color: #374151;
     }
-    .notification-badge {
+    .notification-btn i {
+      font-size: 18px;
+    }
+    .notification-count {
       position: absolute;
-      top: 0px;
-      right: 0px;
+      top: -2px;
+      right: -2px;
       background: #ef4444;
       color: white;
       border-radius: 50%;
-      width: 16px;
-      height: 16px;
-      font-size: 0.65rem;
-      font-weight: 600;
-      display: none;
+      width: 20px;
+      height: 20px;
+      display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
       line-height: 1;
     }
     .notification-dropdown {
@@ -233,11 +232,11 @@
       right: 0;
       top: 110%;
       background: #fff;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
       border-radius: 12px;
       border: 1px solid #e5e7eb;
-      z-index: 200;
-      width: 380px;
+      z-index: 1000;
+      width: 360px;
       max-height: 500px;
       overflow: hidden;
     }
@@ -245,38 +244,37 @@
       display: block;
     }
     .notification-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #f3f4f6;
+      padding: 20px;
+      border-bottom: 1px solid #e5e7eb;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #f9fafb;
     }
-    .notification-header h3 {
+    .notification-header h4 {
       margin: 0;
       font-size: 1.1rem;
       font-weight: 600;
-      color: #374151;
+      color: #222;
     }
-    .notification-controls {
+    .notification-actions {
       display: flex;
-      gap: 8px;
+      gap: 12px;
     }
-    .notification-controls button {
+    .notification-actions button {
       background: none;
       border: none;
       color: #6b7280;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       cursor: pointer;
       padding: 4px 8px;
       border-radius: 4px;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
     }
-    .notification-controls button:hover {
-      background: #e5e7eb;
+    .notification-actions button:hover {
+      background: #f3f4f6;
       color: #374151;
     }
-    .notifications-list {
+    .notification-list {
       max-height: 400px;
       overflow-y: auto;
     }
@@ -719,14 +717,36 @@
       </div>
     </nav>
     <div class="header-right">
+      <div class="notification-wrapper">
+        <button class="notification-btn" id="notification-btn">
+          <i class="fa fa-bell"></i>
+          <span class="notification-count" id="notification-count" style="display: none;">0</span>
+        </button>
+        <div class="notification-dropdown" id="notification-dropdown">
+          <div class="notification-header">
+            <h4>Notifications</h4>
+            <div class="notification-actions">
+              <button class="mark-all-read" id="mark-all-read">Mark all read</button>
+              <button class="clear-all" id="clear-all">Clear all</button>
+            </div>
+          </div>
+          <div class="notification-list" id="notification-list">
+            <div class="no-notifications">
+              <i class="fa fa-bell-slash"></i>
+              <p>No notifications</p>
+            </div>
+          </div>
+        </div>
+      </div>
     <div class="logout-wrapper">
-      <button class="avatar-btn" onclick="toggleLogoutDropdown()" id="avatarBtn">
-        <img src="placeholder.png" alt="Student Profile" style="width: 32px; height: 32px; border-radius: 50%;" />
+        <button class="avatar-btn" id="avatarBtn">
+          <img id="user-avatar" src="placeholder.png" alt="Student Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
       </button>
-      <div class="logout-dropdown" id="logoutDropdown">
-        <button onclick="logout()">
+        <div class="logout-dropdown" id="logout-dropdown">
+          <button id="logout-btn">
           <i class="fa fa-sign-out-alt"></i> Logout
         </button>
+        </div>
       </div>
     </div>
   </header>
@@ -864,24 +884,44 @@
       }
     });
 
-    function toggleLogoutDropdown() {
-      const dropdown = document.getElementById('logoutDropdown');
-      dropdown.classList.toggle('show');
-    }
-
-    function logout() {
+    // Avatar dropdown functionality (copied from student.html)
+    const avatarBtn = document.getElementById('avatarBtn');
+    const logoutDropdown = document.getElementById('logout-dropdown');
+    if (avatarBtn && logoutDropdown) {
+      avatarBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        logoutDropdown.classList.toggle('show');
+      });
+      document.addEventListener('click', (e) => {
+        if (!avatarBtn.contains(e.target) && !logoutDropdown.contains(e.target)) {
+          logoutDropdown.classList.remove('show');
+        }
+      });
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
       sessionStorage.clear();
       window.location.href = 'login.html';
+        });
+      }
     }
 
-    // Close logout dropdown when clicking outside
-    document.addEventListener('click', function(event) {
-      const logoutDropdown = document.getElementById('logoutDropdown');
+    // Notification dropdown functionality
+    const notificationBtn = document.getElementById('notification-btn');
+    const notificationDropdown = document.getElementById('notification-dropdown');
       
-      if (!event.target.closest('.logout-wrapper')) {
-        logoutDropdown.classList.remove('show');
+    if (notificationBtn && notificationDropdown) {
+      notificationBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notificationDropdown.classList.toggle('show');
+      });
+      
+      document.addEventListener('click', (e) => {
+        if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
+          notificationDropdown.classList.remove('show');
       }
     });
+    }
   </script>
 
   <script type="module">
@@ -1075,9 +1115,23 @@
     document.addEventListener('DOMContentLoaded', function() {
       if (window.NotificationService) {
         const userEmail = sessionStorage.getItem('userEmail') || 'student@example.com';
-        window.NotificationService = new NotificationService(userEmail, 'student');
+        window.NotificationService.setUser(userEmail, 'student');
         
-
+        // Handle notification actions
+        const markAllReadBtn = document.getElementById('mark-all-read');
+        const clearAllBtn = document.getElementById('clear-all');
+        
+        if (markAllReadBtn) {
+          markAllReadBtn.addEventListener('click', function() {
+            window.NotificationService.markAllAsRead();
+          });
+        }
+        
+        if (clearAllBtn) {
+          clearAllBtn.addEventListener('click', function() {
+            window.NotificationService.clearAllNotifications();
+          });
+        }
       }
     });
   </script>
