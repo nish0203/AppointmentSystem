@@ -379,10 +379,16 @@ class NotificationService {
     const notificationBtn = document.getElementById('notification-btn');
     const notificationDropdown = document.getElementById('notification-dropdown');
     
+    console.log('🔍 NotificationService - Button found:', notificationBtn);
+    console.log('🔍 NotificationService - Dropdown found:', notificationDropdown);
+    
     if (notificationBtn && notificationDropdown) {
       notificationBtn.addEventListener('click', (e) => {
+        console.log('🔔 NotificationService - Button clicked!');
         e.stopPropagation();
         notificationDropdown.classList.toggle('show');
+        console.log('📱 NotificationService - Dropdown should be:', notificationDropdown.classList.contains('show') ? 'visible' : 'hidden');
+        console.log('📱 NotificationService - Dropdown classes:', notificationDropdown.className);
       });
       
       document.addEventListener('click', (e) => {
@@ -390,6 +396,10 @@ class NotificationService {
           notificationDropdown.classList.remove('show');
         }
       });
+      
+      console.log('✅ NotificationService - Event listeners added');
+    } else {
+      console.error('❌ NotificationService - Button or dropdown not found!');
     }
   }
 

@@ -651,28 +651,8 @@
       console.error('❌ Avatar button or dropdown not found!');
     }
 
-    // Notification dropdown functionality
-    const notificationBtn = document.getElementById('notification-btn');
-    const notificationDropdown = document.getElementById('notification-dropdown');
-    console.log('🔍 Notification button found:', notificationBtn);
-    console.log('🔍 Notification dropdown found:', notificationDropdown);
-    
-    if (notificationBtn && notificationDropdown) {
-      notificationBtn.addEventListener('click', (e) => {
-        console.log('🔔 Notification button clicked!');
-        e.stopPropagation();
-        notificationDropdown.classList.toggle('show');
-        console.log('📱 Dropdown should be:', notificationDropdown.classList.contains('show') ? 'visible' : 'hidden');
-      });
-      document.addEventListener('click', (e) => {
-        if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
-          notificationDropdown.classList.remove('show');
-        }
-      });
-    } else {
-      console.error('❌ Notification button or dropdown not found!');
-    }
-    // Notification Service will be initialized in the async function below
+    // Notification dropdown functionality will be handled by NotificationService
+    console.log('🔍 Notification elements will be handled by NotificationService');
 
     // Inquiry dropdown
     const inquiryDropdown = document.getElementById('inquiry-dropdown');
