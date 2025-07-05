@@ -1167,10 +1167,12 @@
           
           // Notify student of cancellation
           if (window.NotificationService) {
-            await window.NotificationService.addAppointmentCancelled({
-              lecturerName: appointmentData.lecturerName || 'Lecturer',
-              date: appointmentData.date,
-              time: `${appointmentData.startTime} - ${appointmentData.endTime}`
+            await window.NotificationService.sendNotificationToUser(appointmentData.studentEmail, 'student', {
+              type: 'lecturer_cancelled_appointment',
+              title: 'Appointment Cancelled',
+              message: `${appointmentData.lecturerName || 'Lecturer'} have cancelled your appointment booking for ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
+              icon: 'fa-calendar-times',
+              category: 'Appointments'
             });
           }
         } else if (requestType === 'reschedule') {
@@ -1199,10 +1201,12 @@
           
           // Notify student of approval with new date/time
           if (window.NotificationService) {
-            await window.NotificationService.addAppointmentApproved({
-              lecturerName: appointmentData.lecturerName || 'Lecturer',
-              date: requestData.preferredDate,
-              time: `${requestData.preferredTime} - ${requestData.preferredEndTime}`
+            await window.NotificationService.sendNotificationToUser(appointmentData.studentEmail, 'student', {
+              type: 'lecturer_approved_appointment',
+              title: 'Appointment Approved',
+              message: `${appointmentData.lecturerName || 'Lecturer'} have approved your appointment booking for ${requestData.preferredDate} ${requestData.preferredTime} - ${requestData.preferredEndTime}`,
+              icon: 'fa-check-circle',
+              category: 'Appointments'
             });
           }
         }
@@ -1252,10 +1256,12 @@
         // Notify student of rejection with actual appointment details
         if (window.NotificationService && appointmentData) {
           try {
-            await window.NotificationService.addAppointmentRejected({
-              lecturerName: appointmentData.lecturerName || 'Lecturer',
-              date: appointmentData.date,
-              time: `${appointmentData.startTime} - ${appointmentData.endTime}`
+            await window.NotificationService.sendNotificationToUser(appointmentData.studentEmail, 'student', {
+              type: 'lecturer_rejected_appointment',
+              title: 'Appointment Rejected',
+              message: `${appointmentData.lecturerName || 'Lecturer'} have rejected your appointment slot request for ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
+              icon: 'fa-times-circle',
+              category: 'Appointments'
             });
             console.log('Rejection notification sent');
           } catch (notificationError) {
@@ -1462,10 +1468,12 @@
         // Notify student of rejection
         if (window.NotificationService) {
           try {
-            await window.NotificationService.addAppointmentRejected({
-              lecturerName: appointmentData.lecturerName || 'Lecturer',
-              date: appointmentData.date,
-              time: `${appointmentData.startTime} - ${appointmentData.endTime}`
+            await window.NotificationService.sendNotificationToUser(appointmentData.studentEmail, 'student', {
+              type: 'lecturer_rejected_appointment',
+              title: 'Appointment Rejected',
+              message: `${appointmentData.lecturerName || 'Lecturer'} have rejected your appointment slot request for ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
+              icon: 'fa-times-circle',
+              category: 'Appointments'
             });
           } catch (notificationError) {
             console.error('Error sending rejection notification:', notificationError);
@@ -1508,10 +1516,12 @@
         
         // Notify student of cancellation
         if (window.NotificationService) {
-          await window.NotificationService.addAppointmentCancelled({
-            lecturerName: appointmentData.lecturerName || 'Lecturer',
-            date: appointmentData.date,
-            time: `${appointmentData.startTime} - ${appointmentData.endTime}`
+          await window.NotificationService.sendNotificationToUser(appointmentData.studentEmail, 'student', {
+            type: 'lecturer_cancelled_appointment',
+            title: 'Appointment Cancelled',
+            message: `${appointmentData.lecturerName || 'Lecturer'} have cancelled your appointment booking for ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
+            icon: 'fa-calendar-times',
+            category: 'Appointments'
           });
         }
         
@@ -1540,13 +1550,12 @@
         
         // Send notification to student
         if (window.NotificationService && appointmentData) {
-          // Create notification for the student
-          const studentNotificationService = new window.NotificationService.constructor();
-          studentNotificationService.setUser(appointmentData.studentEmail, 'student');
-          await studentNotificationService.addAppointmentApproved({
-            lecturerName: appointmentData.lecturerName || 'Lecturer',
-            date: appointmentData.date,
-            time: `${appointmentData.startTime} - ${appointmentData.endTime}`
+          await window.NotificationService.sendNotificationToUser(appointmentData.studentEmail, 'student', {
+            type: 'lecturer_approved_appointment',
+            title: 'Appointment Approved',
+            message: `${appointmentData.lecturerName || 'Lecturer'} have approved your appointment booking for ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
+            icon: 'fa-check-circle',
+            category: 'Appointments'
           });
         }
         

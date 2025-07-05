@@ -1068,10 +1068,9 @@
         
         // Add in-app notification for student
         if (window.NotificationService) {
-          await window.NotificationService.addAppointmentBooked({
+          await window.NotificationService.addStudentBookedAppointment({
             lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
-            date: preferredDate,
-            time: `${startTime} - ${endTime}`
+            time: `${preferredDate} ${startTime} - ${endTime}`
           });
         }
         
@@ -1086,18 +1085,16 @@
 
         // Add in-app notification for lecturer
         try {
-          const lecturerNotificationService = new NotificationService();
-          await lecturerNotificationService.initialize(db);
-          lecturerNotificationService.setUser(lecturerEmail, 'lecturer');
-          await lecturerNotificationService.addSlotBookedAlert({
-            studentName: studentName,
-            date: slotDate,
-            time: `${slotStartTime} - ${slotEndTime}`
+          await window.NotificationService.sendNotificationToUser(lecturerEmail, 'lecturer', {
+            type: 'student_requested_slot',
+            title: 'Slot Request',
+            message: `${studentName} have request for appointment slot for ${slotDate} ${slotStartTime} - ${slotEndTime}`,
+            icon: 'fa-user-plus',
+            category: 'Bookings'
           });
-          alert('Lecturer notification created!');
+          console.log('Lecturer notification created successfully');
         } catch (err) {
-          alert('Error creating lecturer notification: ' + err);
-          console.error('Lecturer notification error:', err);
+          console.error('Error creating lecturer notification:', err);
         }
         
         // Send email notifications
@@ -1281,23 +1278,20 @@
         
         // Add in-app notification for student
         if (window.NotificationService) {
-          window.NotificationService.addAppointmentBooked({
-            studentEmail: studentEmail,
-            studentName: studentName,
+          window.NotificationService.addStudentBookedAppointment({
             lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
-            date: selectedSlot.date,
-            time: `${selectedSlot.startTime} - ${selectedSlot.endTime}`
+            time: `${selectedSlot.date} ${selectedSlot.startTime} - ${selectedSlot.endTime}`
           });
         }
 
         // Add in-app notification for lecturer
         if (window.NotificationService) {
-          window.NotificationService.addSlotBookedAlert({
-            lecturerEmail: lecturerEmail,
-            lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
-            studentName: studentName,
-            date: selectedSlot.date,
-            time: `${selectedSlot.startTime} - ${selectedSlot.endTime}`
+          await window.NotificationService.sendNotificationToUser(lecturerEmail, 'lecturer', {
+            type: 'student_booked_slot',
+            title: 'Slot Booked',
+            message: `${studentName} have booked your appointment slot for ${selectedSlot.date} ${selectedSlot.startTime} - ${selectedSlot.endTime}`,
+            icon: 'fa-user-clock',
+            category: 'Bookings'
           });
         }
         

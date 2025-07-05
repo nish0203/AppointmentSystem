@@ -104,84 +104,119 @@ class NotificationService {
   }
 
   // STUDENT NOTIFICATIONS
-  async addAppointmentBooked(data) {
+  async addStudentBookedAppointment(data) {
     await this.addNotification({
-      type: 'appointment_booked',
+      type: 'student_booked_appointment',
       title: 'Appointment Booked',
-      message: `You have successfully booked an appointment with ${data.lecturerName} on ${data.date} at ${data.time}.`,
+      message: `You have booked an appointment for ${data.lecturerName} for ${data.time}`,
       icon: 'fa-calendar-check',
       category: 'Appointments'
     });
   }
 
-  async addAppointmentApproved(data) {
+  async addLecturerCancelledAppointment(data) {
     await this.addNotification({
-      type: 'appointment_approved',
-      title: 'Appointment Approved',
-      message: `${data.lecturerName} has approved your appointment slot on ${data.date} at ${data.time}.`,
-      icon: 'fa-check-circle',
-      category: 'Appointments'
-    });
-  }
-
-  async addAppointmentRejected(data) {
-    await this.addNotification({
-      type: 'appointment_rejected',
-      title: 'Appointment Rejected',
-      message: `${data.lecturerName} has rejected your appointment slot on ${data.date} at ${data.time}.`,
-      icon: 'fa-times-circle',
-      category: 'Appointments'
-    });
-  }
-
-  async addAppointmentCancelled(data) {
-    await this.addNotification({
-      type: 'appointment_cancelled',
+      type: 'lecturer_cancelled_appointment',
       title: 'Appointment Cancelled',
-      message: `${data.lecturerName} has cancelled your appointment slot on ${data.date} at ${data.time}.`,
+      message: `${data.lecturerName} have cancelled your appointment booking for ${data.time}`,
       icon: 'fa-calendar-times',
       category: 'Appointments'
     });
   }
 
-  async addAppointmentReminder(data) {
+  async addLecturerApprovedAppointment(data) {
     await this.addNotification({
-      type: 'appointment_reminder',
-      title: 'Appointment Reminder',
-      message: `You have an appointment with ${data.lecturerName} ${data.timing}`,
-      icon: 'fa-bell',
-      category: 'Reminders'
+      type: 'lecturer_approved_appointment',
+      title: 'Appointment Approved',
+      message: `${data.lecturerName} have approved your appointment booking for ${data.time}`,
+      icon: 'fa-check-circle',
+      category: 'Appointments'
+    });
+  }
+
+  async addLecturerRejectedAppointment(data) {
+    await this.addNotification({
+      type: 'lecturer_rejected_appointment',
+      title: 'Appointment Rejected',
+      message: `${data.lecturerName} have rejected your appointment slot request for ${data.time}`,
+      icon: 'fa-times-circle',
+      category: 'Appointments'
     });
   }
 
   // LECTURER NOTIFICATIONS
-  async addSlotBookedAlert(data) {
+  async addStudentBookedSlot(data) {
     await this.addNotification({
-      type: 'slot_booked',
+      type: 'student_booked_slot',
       title: 'Slot Booked',
-      message: `${data.studentName} has booked your slot on ${data.date} at ${data.time}.`,
+      message: `${data.studentName} have booked your appointment slot for ${data.time}`,
       icon: 'fa-user-clock',
       category: 'Bookings'
     });
   }
 
-  async addSlotRequestAlert(data) {
+  async addStudentRequestedSlot(data) {
     await this.addNotification({
-      type: 'slot_request',
+      type: 'student_requested_slot',
       title: 'Slot Request',
-      message: `${data.studentName} has requested to book a slot on ${data.date} at ${data.time}.`,
+      message: `${data.studentName} have request for appointment slot for ${data.time}`,
       icon: 'fa-user-plus',
       category: 'Bookings'
     });
   }
 
-  async addSlotRescheduleAlert(data) {
+  async addStudentRescheduleRequest(data) {
     await this.addNotification({
-      type: 'slot_reschedule',
-      title: 'Slot Reschedule Request',
-      message: `${data.studentName} has requested to reschedule a slot to ${data.date} at ${data.time}.`,
+      type: 'student_reschedule_request',
+      title: 'Reschedule Request',
+      message: `${data.studentName} have requested reschedule of appointment for ${data.time}`,
       icon: 'fa-user-edit',
       category: 'Bookings'
+    });
+  }
+
+  async addStudentCancelRequest(data) {
+    await this.addNotification({
+      type: 'student_cancel_request',
+      title: 'Cancellation Request',
+      message: `${data.studentName} have requested cancellation of appointment slot at ${data.time}`,
+      icon: 'fa-user-times',
+      category: 'Bookings'
+    });
+  }
+
+  // HELPER FUNCTION TO SEND NOTIFICATIONS TO OTHER USERS
+  async sendNotificationToUser(userEmail, userType, notificationData) {
+    if (!this.db) return;
+    
+    try {
+      // Import Firebase functions dynamically
+      const { collection, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
+      
+      const newNotification = {
+        userEmail: userEmail,
+        userType: userType,
+        ...notificationData,
+        timestamp: serverTimestamp(),
+        read: false,
+        createdAt: serverTimestamp()
+      };
+      
+      await addDoc(collection(this.db, 'notifications'), newNotification);
+      console.log('Notification sent to:', userEmail);
+    } catch (error) {
+      console.error('Error sending notification to user:', error);
+    }
+  }
+
+  // System notifications
+  async addSystemUpdate(data) {
+    await this.addNotification({
+      type: 'system_update',
+      title: 'System Update',
+      message: data.message,
+      icon: 'fa-info-circle',
+      category: 'System'
     });
   }
 
@@ -195,17 +230,6 @@ class NotificationService {
     });
   }
 
-  // System notifications
-  async addSystemUpdate(data) {
-    await this.addNotification({
-      type: 'system_update',
-      title: data.title || 'System Update',
-      message: data.message,
-      icon: 'fa-info-circle',
-      category: 'System'
-    });
-  }
-
   async markAsRead(notificationId) {
     if (!this.db) return;
     
@@ -214,11 +238,10 @@ class NotificationService {
       const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
       
       await updateDoc(doc(this.db, 'notifications', notificationId), {
-        read: true,
-        updatedAt: new Date()
+        read: true
       });
       
-      // Update local array
+      // Update local notification
       const notification = this.notifications.find(n => n.id === notificationId);
       if (notification) {
         notification.read = true;
@@ -234,26 +257,17 @@ class NotificationService {
     
     try {
       // Import Firebase functions dynamically
-      const { collection, query, where, getDocs, doc, updateDoc, writeBatch } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
+      const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
       
-      const notificationsRef = collection(this.db, 'notifications');
-      const q = query(
-        notificationsRef,
-        where('userEmail', '==', this.currentUser),
-        where('read', '==', false)
-      );
+      const unreadNotifications = this.notifications.filter(n => !n.read);
       
-      const snapshot = await getDocs(q);
-      const batch = writeBatch(this.db);
+      for (const notification of unreadNotifications) {
+        await updateDoc(doc(this.db, 'notifications', notification.id), {
+          read: true
+        });
+        notification.read = true;
+      }
       
-      snapshot.forEach(docSnap => {
-        batch.update(docSnap.ref, { read: true, updatedAt: new Date() });
-      });
-      
-      await batch.commit();
-      
-      // Update local array
-      this.notifications.forEach(n => n.read = true);
       this.updateUI();
     } catch (error) {
       console.error('Error marking all notifications as read:', error);
@@ -269,7 +283,7 @@ class NotificationService {
       
       await deleteDoc(doc(this.db, 'notifications', notificationId));
       
-      // Update local array
+      // Remove from local array
       this.notifications = this.notifications.filter(n => n.id !== notificationId);
       this.updateUI();
     } catch (error) {
@@ -282,21 +296,12 @@ class NotificationService {
     
     try {
       // Import Firebase functions dynamically
-      const { collection, query, where, getDocs, doc, deleteDoc, writeBatch } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
+      const { doc, deleteDoc } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
       
-      const notificationsRef = collection(this.db, 'notifications');
-      const q = query(notificationsRef, where('userEmail', '==', this.currentUser));
+      for (const notification of this.notifications) {
+        await deleteDoc(doc(this.db, 'notifications', notification.id));
+      }
       
-      const snapshot = await getDocs(q);
-      const batch = writeBatch(this.db);
-      
-      snapshot.forEach(docSnap => {
-        batch.delete(docSnap.ref);
-      });
-      
-      await batch.commit();
-      
-      // Update local array
       this.notifications = [];
       this.updateUI();
     } catch (error) {
@@ -309,131 +314,71 @@ class NotificationService {
   }
 
   updateUI() {
-    const badge = document.getElementById('notification-badge') || document.getElementById('notification-count');
-    const count = this.getUnreadCount();
+    const badge = document.getElementById('notification-badge');
+    const dropdown = document.getElementById('notification-dropdown');
     
     if (badge) {
-      if (count > 0) {
-        badge.textContent = count > 99 ? '99+' : count;
-        badge.style.display = 'block';
-      } else {
-        badge.style.display = 'none';
-      }
+      const unreadCount = this.getUnreadCount();
+      badge.textContent = unreadCount;
+      badge.style.display = unreadCount > 0 ? 'block' : 'none';
     }
-
-    this.renderNotifications();
+    
+    if (dropdown) {
+      this.renderNotifications();
+    }
   }
 
   renderNotifications() {
-    const container = document.getElementById('notifications-list') || document.getElementById('notification-list');
+    const container = document.getElementById('notification-list');
     if (!container) return;
-
+    
     if (this.notifications.length === 0) {
-      container.innerHTML = `
-        <div class="no-notifications">
-          <i class="fa fa-bell-slash"></i>
-          <p>No notifications yet</p>
-        </div>
-      `;
+      container.innerHTML = '<div class="notification-item empty">No notifications</div>';
       return;
     }
-
-    console.log('NotificationService userType:', this.userType);
-    // Force lecturer layout for testing
-    const isLecturer = true;
-    container.innerHTML = this.notifications.map(notification => {
-      return `
-      <div class="notification-item ${notification.read ? 'read' : 'unread'}" data-id="${notification.id}" style="display: flex; align-items: flex-start; gap: 12px;">
-        <div class="notification-icon" style="flex-shrink: 0;">
-          <i class="fa ${notification.icon || 'fa-bell'}" style="font-size: 1.2em;"></i>
-        </div>
-        <div class="notification-content">
-          <p class="notification-message" style="margin-top: 0; margin-bottom: 6px; line-height: 1.2;">${notification.message}</p>
-          <div class="notification-time" style="margin-bottom: 8px; font-size: 0.92em;">${this.formatTime(notification.timestamp)}</div>
-          <div class="notification-actions" style="display: flex; ${isLecturer ? 'flex-direction: column; align-items: flex-start; gap: 6px; width: 100%;' : 'justify-content: flex-end; gap: 8px;'} margin-top: 8px;">
-            <button class="mark-read-btn" onclick="window.NotificationService.markAsRead('${notification.id}')">
-              ${notification.read ? 'Read' : 'Mark as read'}
-            </button>
-            <button class="delete-btn" onclick="window.NotificationService.deleteNotification('${notification.id}')">
-              Delete
-            </button>
-          </div>
-        </div>
+    
+    container.innerHTML = this.notifications.map(notification => `
+      <div class="notification-item ${notification.read ? 'read' : 'unread'}" data-id="${notification.id}">
+                 <div class="notification-content">
+           <div class="notification-header-item">
+             <i class="fa ${notification.icon || 'fa-bell'}" style="color: #10B981; margin-right: 8px;"></i>
+             <span class="notification-title">${notification.title}</span>
+             <span class="notification-time">${this.formatTime(notification.timestamp)}</span>
+           </div>
+           <div class="notification-message">${notification.message}</div>
+         </div>
+                 <div class="notification-actions-item">
+           ${!notification.read ? `<button class="notification-btn-item mark-read" onclick="window.NotificationService.markAsRead('${notification.id}')">Mark as Read</button>` : ''}
+           <button class="notification-btn-item delete" onclick="window.NotificationService.deleteNotification('${notification.id}')">Delete</button>
+         </div>
       </div>
-      `;
-    }).join('');
+    `).join('');
   }
 
   formatTime(timestamp) {
-    if (!timestamp) return '';
+    if (!timestamp) return 'Just now';
     
     const date = new Date(timestamp);
     const now = new Date();
-    const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+    const diff = now - date;
     
-    if (diffInMinutes < 1) return 'Just now';
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-    
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 7) return `${diffInDays}d ago`;
+    if (diff < 60000) return 'Just now';
+    if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+    if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+    if (diff < 604800000) return `${Math.floor(diff / 86400000)}d ago`;
     
     return date.toLocaleDateString();
   }
 
-  // Toast notifications disabled
   showToast(message) {
-    // Disabled for now
+    // Simple toast notification (optional)
+    console.log('Toast:', message);
   }
 
-  // Create notification dropdown HTML if it doesn't exist
   initializeDropdown() {
-    // Check if notification dropdown already exists
-    const existingDropdown = document.getElementById('notification-dropdown');
-    if (existingDropdown) return;
-
-    const notificationHTML = `
-      <div class="notification-wrapper">
-        <button class="notification-btn" id="notification-btn">
-          <i class="fa fa-bell"></i>
-          <span class="notification-badge" id="notification-badge" style="display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; padding: 0; line-height: 1; font-size: 13px; transform: translateY(2px);">0</span>
-        </button>
-        <div class="notification-dropdown" id="notification-dropdown">
-          <div class="notification-header">
-            <h3>Notifications</h3>
-            <div class="notification-controls">
-              <button onclick="window.NotificationService.markAllAsRead()" class="mark-all-read">Mark all read</button>
-              <button onclick="window.NotificationService.clearAllNotifications()" class="clear-all">Clear all</button>
-            </div>
-          </div>
-          <div class="notifications-list" id="notifications-list">
-            <!-- Notifications will be rendered here -->
-          </div>
-        </div>
-      </div>
-    `;
-
-    // Try to find the header-right container and insert notification dropdown as first child
-    const headerRight = document.querySelector('.header-right');
-    if (headerRight) {
-      headerRight.insertAdjacentHTML('afterbegin', notificationHTML);
-    } else {
-      // Fallback: Find the logout wrapper and insert notification dropdown before it
-      const logoutWrapper = document.querySelector('.logout-wrapper');
-      if (logoutWrapper) {
-        logoutWrapper.insertAdjacentHTML('beforebegin', notificationHTML);
-      }
-    }
-
-    this.setupEventListeners();
-  }
-
-  setupEventListeners() {
     const notificationBtn = document.getElementById('notification-btn');
     const notificationDropdown = document.getElementById('notification-dropdown');
-      
+    
     if (notificationBtn && notificationDropdown) {
       notificationBtn.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -447,14 +392,34 @@ class NotificationService {
       });
     }
   }
+
+  setupEventListeners() {
+    // Set up event listeners for notification actions
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('mark-read')) {
+        const notificationId = e.target.closest('.notification-item').dataset.id;
+        this.markAsRead(notificationId);
+      } else if (e.target.classList.contains('delete')) {
+        const notificationId = e.target.closest('.notification-item').dataset.id;
+        this.deleteNotification(notificationId);
+      }
+    });
+  }
 }
 
-// Create global instance
-window.NotificationService = new NotificationService();
+// Create global instance only if it doesn't exist
+if (!window.NotificationService) {
+  window.NotificationService = new NotificationService();
+  console.log('✅ NotificationService created');
+} else {
+  console.log('⚠️ NotificationService already exists, skipping creation');
+}
 
-// Auto-initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+// Initialize dropdown when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
   if (window.NotificationService) {
     window.NotificationService.initializeDropdown();
+    window.NotificationService.setupEventListeners();
+    console.log('✅ NotificationService dropdown initialized');
   }
 }); 

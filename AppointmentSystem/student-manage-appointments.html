@@ -1439,12 +1439,16 @@
           status: 'pending',
           requestedAt: new Date().toISOString()
         });
-        // Notify lecturer of slot request
+        // Notify lecturer of cancellation request
         if (window.NotificationService) {
-          await window.NotificationService.addSlotRequestAlert({
-            studentName: currentStudentName || 'Student',
-            date: 'DATE', // Replace with actual date if available
-            time: 'TIME' // Replace with actual time if available
+          const appointment = await getDoc(doc(db, 'appointments', selectedAppointmentId));
+          const appointmentData = appointment.data();
+          await window.NotificationService.sendNotificationToUser(appointmentData.lecturerEmail, 'lecturer', {
+            type: 'student_cancel_request',
+            title: 'Cancellation Request',
+            message: `${currentStudentName || 'Student'} have requested cancellation of appointment slot at ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
+            icon: 'fa-user-times',
+            category: 'Bookings'
           });
         }
         closeCancellationModal();
@@ -1506,10 +1510,14 @@
         });
         // Notify lecturer of reschedule request
         if (window.NotificationService) {
-          await window.NotificationService.addSlotRescheduleAlert({
-            studentName: currentStudentName || 'Student',
-            date: preferredDate,
-            time: `${preferredTime} - ${preferredEndTime}`
+          const appointment = await getDoc(doc(db, 'appointments', selectedAppointmentId));
+          const appointmentData = appointment.data();
+          await window.NotificationService.sendNotificationToUser(appointmentData.lecturerEmail, 'lecturer', {
+            type: 'student_reschedule_request',
+            title: 'Reschedule Request',
+            message: `${currentStudentName || 'Student'} have requested reschedule of appointment for ${preferredDate} ${preferredTime} - ${preferredEndTime}`,
+            icon: 'fa-user-edit',
+            category: 'Bookings'
           });
         }
         closeRescheduleModal();
