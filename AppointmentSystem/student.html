@@ -785,6 +785,25 @@
 
         // Load appointments after setting up profile
         await loadAppointments(email);
+        
+        // Initialize notification service with Firebase
+        if (window.NotificationService) {
+          await window.NotificationService.initialize(db);
+          window.NotificationService.setUser(email, 'student');
+          
+          const markAllReadBtn = document.getElementById('mark-all-read');
+          const clearAllBtn = document.getElementById('clear-all');
+          if (markAllReadBtn) {
+            markAllReadBtn.addEventListener('click', function() {
+              window.NotificationService.markAllAsRead();
+            });
+          }
+          if (clearAllBtn) {
+            clearAllBtn.addEventListener('click', function() {
+              window.NotificationService.clearAllNotifications();
+            });
+          }
+        }
       } else {
         nameEl.textContent = 'Welcome!';
         emailEl.textContent = '-';
