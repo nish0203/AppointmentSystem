@@ -785,7 +785,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
-      getFirestore, doc, getDoc, collection, getDocs, query, where, orderBy, updateDoc, deleteDoc
+      getFirestore, doc, getDoc, collection, getDocs, query, where, orderBy, updateDoc, deleteDoc, addDoc
     } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -1172,7 +1172,7 @@
             });
           }
         } else if (requestType === 'reschedule') {
-          // For reschedule, actually update the appointment with new date/time
+          // For reschedule, update the appointment with new date/time (no new slot needed)
           
           // Make old slot available again
           if (appointmentData.slotId) {
@@ -1183,15 +1183,16 @@
             });
           }
           
-          // Update the appointment with new details
+          // Update the appointment with new details (no slot reference since it's a custom time)
           await updateDoc(doc(db, 'appointments', appointmentId), {
             date: requestData.preferredDate,
             startTime: requestData.preferredTime,
             endTime: requestData.preferredEndTime,
-            status: 'confirmed',
+            status: 'approved',
             rescheduleRequested: false,
             rescheduledAt: new Date().toISOString(),
-            slotId: null // Remove old slot reference since we're creating a new time
+            slotId: null, // No slot reference since this is a custom rescheduled time
+            isRescheduled: true // Mark as rescheduled appointment
           });
           
           // Notify student of approval with new date/time
