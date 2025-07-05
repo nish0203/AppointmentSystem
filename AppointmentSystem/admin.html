@@ -539,6 +539,51 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* Conversation styles for inquiry chat display */
+    .response-section {
+      background: #f0f9ff;
+      border: 1px solid #0ea5e9;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .response-header {
+      font-weight: 600;
+      color: #0369a1;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .response-content {
+      color: #075985;
+      line-height: 1.6;
+    }
+
+    .user-response-section {
+      background: #f0fdf4;
+      border: 1px solid #22c55e;
+      border-radius: 6px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .user-response-header {
+      font-weight: 600;
+      color: #15803d;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .user-response-content {
+      color: #166534;
+      line-height: 1.6;
+    }
   </style>
 </head>
 
@@ -2349,9 +2394,12 @@
                      <span><i class="fa fa-tag"></i> ${inquiry.category || 'Other'}</span>
                      <span><i class="fa fa-hashtag"></i> ${inquiryId}</span>
                    </div>
-                   <p style="color: #374151; margin: 0; line-height: 1.5;">${inquiry.description}</p>
+                   <div style="color: #374151; margin-bottom: 1rem; line-height: 1.5;">
+                     <div style="font-weight: 600; margin-bottom: 0.5rem;">Initial Inquiry:</div>
+                     <p style="margin: 0; background: #f8fafc; padding: 0.75rem; border-radius: 4px; border-left: 3px solid #3b82f6;">${inquiry.description}</p>
+                   </div>
                    ${inquiry.attachmentUrl ? `
-                     <div style="margin-top: 0.5rem;">
+                     <div style="margin-bottom: 1rem;">
                        <a href="${inquiry.attachmentUrl}" target="_blank" style="color: #3b82f6; text-decoration: none; font-size: 0.9rem;">
                          <i class="fa fa-paperclip"></i> ${inquiry.attachmentName || 'View Attachment'}
                        </a>
@@ -2362,6 +2410,11 @@
                    <div>${formattedDate}</div>
                    <div style="font-size: 0.8rem;">${timeAgo}</div>
                  </div>
+               </div>
+               
+               <!-- Chat-style conversation -->
+               <div style="margin-bottom: 1rem;">
+                 ${generateConversationThreadStudent(inquiry)}
                </div>
                
                <div style="display: flex; gap: 0.5rem; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
@@ -2620,7 +2673,7 @@
              type: 'user',
              message: inquiry.userResponse,
              date: inquiry.userResponseDate?.toDate?.() || new Date(inquiry.userResponseDate) || null,
-             author: 'You'
+             author: inquiry.userName || 'User'
            });
          }
          // Add conversation thread if exists (new structure)
@@ -2630,7 +2683,7 @@
                type: msg.type || (msg.isAdmin ? 'admin' : 'user'),
                message: msg.message || msg.response,
                date: msg.timestamp?.toDate ? msg.timestamp.toDate() : (msg.timestamp instanceof Date ? msg.timestamp : new Date(msg.timestamp || Date.now())),
-               author: msg.isAdmin || msg.type === 'admin' ? (msg.author || 'Admin') : 'You'
+               author: msg.isAdmin || msg.type === 'admin' ? (msg.author || 'Admin') : (inquiry.userName || msg.author || 'User')
              });
            });
          }
@@ -2640,6 +2693,12 @@
            const dateB = b.date || new Date(0);
            return dateA - dateB;
          });
+         
+         // If no conversation messages, show a placeholder
+         if (messages.length === 0) {
+           return '<div style="color: #64748b; font-style: italic; padding: 0.5rem;">No responses yet.</div>';
+         }
+         
          // Generate HTML for each message
          messages.forEach((msg, index) => {
            const isAdmin = msg.type === 'admin';
@@ -2664,14 +2723,13 @@
 
        // ... add near the top of the script, before generateConversationThreadStudent ...
        function formatDate(date) {
-         if (!date) return '';
-         const d = new Date(date);
-         const year = d.getFullYear();
-         const month = String(d.getMonth() + 1).padStart(2, '0');
-         const day = String(d.getDate()).padStart(2, '0');
-         const hours = String(d.getHours()).padStart(2, '0');
-         const minutes = String(d.getMinutes()).padStart(2, '0');
-         return `${year}-${month}-${day} ${hours}:${minutes}`;
+         return date.toLocaleDateString('en-US', {
+           year: 'numeric',
+           month: 'short',
+           day: 'numeric',
+           hour: '2-digit',
+           minute: '2-digit'
+         });
        }
     </script>
     <script src="notification-service.js"></script>

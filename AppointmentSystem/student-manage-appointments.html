@@ -575,8 +575,12 @@
           <input type="date" id="reschedule-preferred-date" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px;" required>
         </div>
         <div style="margin-bottom: 20px;">
-          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Preferred new time <span style="color: #ef4444;">*</span>:</label>
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Preferred new start time <span style="color: #ef4444;">*</span>:</label>
           <input type="time" id="reschedule-preferred-time" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px;" required>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Preferred new end time <span style="color: #ef4444;">*</span>:</label>
+          <input type="time" id="reschedule-preferred-end-time" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px;" required>
         </div>
         <div style="margin-bottom: 20px;">
           <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Additional notes:</label>
@@ -694,6 +698,7 @@
     const storage = getStorage(app);
 
     let currentStudentEmail = '';
+    let currentStudentName = '';
 
     // Initialize page
     (async () => {
@@ -701,6 +706,7 @@
       const email = params.get('email') || sessionStorage.getItem('userEmail');
       const editId = params.get('edit');
       currentStudentEmail = email;
+      currentStudentName = sessionStorage.getItem('userName') || 'Student';
 
       if (email) {
         sessionStorage.setItem('userEmail', email);
@@ -1211,6 +1217,14 @@
 
     function showRescheduleModal(appointmentId) {
       selectedAppointmentId = appointmentId;
+      
+      // Set minimum date to tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowStr = tomorrow.toISOString().split('T')[0];
+      document.getElementById('reschedule-preferred-date').min = tomorrowStr;
+      document.getElementById('reschedule-preferred-date').value = tomorrowStr;
+      
       document.getElementById('reschedule-modal').style.display = 'flex';
     }
 
@@ -1306,7 +1320,7 @@
               ${rescheduleDetails.preferredDate ? `
                 <div style="margin-bottom: 12px;">
                   <strong style="color: #374151; font-size: 0.9rem;">Preferred New Date & Time:</strong><br>
-                  <p style="margin: 2px 0; color: #10B981; font-weight: 600; font-size: 0.9rem;">📅 ${rescheduleDetails.preferredDate} at ${rescheduleDetails.preferredTime || 'Time not specified'}</p>
+                  <p style="margin: 2px 0; color: #10B981; font-weight: 600; font-size: 0.9rem;">📅 ${rescheduleDetails.preferredDate} at ${rescheduleDetails.preferredTime || 'Time not specified'}${rescheduleDetails.preferredEndTime ? ` - ${rescheduleDetails.preferredEndTime}` : ''}</p>
                 </div>
               ` : ''}
               
@@ -1451,10 +1465,29 @@
       const reason = document.getElementById('reschedule-reason').value;
       const preferredDate = document.getElementById('reschedule-preferred-date').value;
       const preferredTime = document.getElementById('reschedule-preferred-time').value;
+      const preferredEndTime = document.getElementById('reschedule-preferred-end-time').value;
       const notes = document.getElementById('reschedule-notes').value;
       
-      if (!preferredDate || !preferredTime) {
-        showError('Please select a preferred date and time.');
+      if (!preferredDate || !preferredTime || !preferredEndTime) {
+        showError('Please select a preferred date, start time, and end time.');
+        return;
+      }
+      
+      // Validate that the selected date is not in the past (must be tomorrow or later)
+      const today = new Date();
+      const selectedDate = new Date(preferredDate);
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+      
+      if (selectedDate < tomorrow) {
+        showError('Please select a date starting from tomorrow.');
+        return;
+      }
+      
+      // Validate that end time is after start time
+      if (preferredTime >= preferredEndTime) {
+        showError('End time must be after start time.');
         return;
       }
       
@@ -1466,6 +1499,7 @@
           reason: reason,
           preferredDate: preferredDate,
           preferredTime: preferredTime,
+          preferredEndTime: preferredEndTime,
           notes: notes,
           status: 'pending',
           requestedAt: new Date().toISOString()
@@ -1475,7 +1509,7 @@
           await window.NotificationService.addSlotRescheduleAlert({
             studentName: currentStudentName || 'Student',
             date: preferredDate,
-            time: preferredTime
+            time: `${preferredTime} - ${preferredEndTime}`
           });
         }
         closeRescheduleModal();
