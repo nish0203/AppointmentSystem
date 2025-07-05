@@ -79,9 +79,10 @@
       top: 110%;
       background: #fff;
       min-width: 220px;
-      box-shadow: 0 4px 16px #0002;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
       border-radius: 8px;
-      z-index: 100;
+      border: 1px solid #e5e7eb;
+      z-index: 1000;
       flex-direction: column;
       padding: 8px 0;
     }
@@ -110,15 +111,15 @@
     }
     
     .header .avatar-btn {
-      width: 32px; 
-      height: 32px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       background: #eee;
-      display: flex; 
-      align-items: center; 
+      display: flex;
+      align-items: center;
       justify-content: center;
       overflow: hidden;
-      margin-left: 0px;
+      margin-left: 18px;
       cursor: pointer;
       position: relative;
       outline: none;
@@ -188,43 +189,42 @@
       position: relative;
       display: flex;
       align-items: center;
-      margin-right: 0px;
     }
     .notification-btn {
-      position: relative;
-      background: none;
-      border: none;
-      color: #374151;
-      font-size: 1.2rem;
-      cursor: pointer;
-      padding: 4px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      transition: all 0.2s;
+      background: #f3f4f6;
+      border: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
-      margin: 0;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+      color: #6b7280;
     }
     .notification-btn:hover {
-      background: #f3f4f6;
-      color: #ef4444;
+      background: #e5e7eb;
+      color: #374151;
     }
-    .notification-badge {
+    .notification-btn i {
+      font-size: 18px;
+    }
+    .notification-count {
       position: absolute;
-      top: 0px;
-      right: 0px;
+      top: -2px;
+      right: -2px;
       background: #ef4444;
       color: white;
       border-radius: 50%;
-      width: 16px;
-      height: 16px;
-      font-size: 0.65rem;
-      font-weight: 600;
-      display: none;
+      width: 20px;
+      height: 20px;
+      display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
       line-height: 1;
     }
     .notification-dropdown {
@@ -233,11 +233,11 @@
       right: 0;
       top: 110%;
       background: #fff;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
       border-radius: 12px;
       border: 1px solid #e5e7eb;
-      z-index: 200;
-      width: 380px;
+      z-index: 1000;
+      width: 360px;
       max-height: 500px;
       overflow: hidden;
     }
@@ -245,126 +245,120 @@
       display: block;
     }
     .notification-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid #f3f4f6;
+      padding: 20px;
+      border-bottom: 1px solid #e5e7eb;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #f9fafb;
     }
-    .notification-header h3 {
+    .notification-header h4 {
       margin: 0;
       font-size: 1.1rem;
       font-weight: 600;
-      color: #374151;
+      color: #222;
     }
-    .notification-controls {
+    .notification-actions {
       display: flex;
-      gap: 8px;
+      gap: 12px;
     }
-    .notification-controls button {
+    .notification-actions button {
       background: none;
       border: none;
       color: #6b7280;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       cursor: pointer;
       padding: 4px 8px;
       border-radius: 4px;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
     }
-    .notification-controls button:hover {
-      background: #e5e7eb;
+    .notification-actions button:hover {
+      background: #f3f4f6;
       color: #374151;
     }
-    .notifications-list {
+    .notification-list {
       max-height: 400px;
       overflow-y: auto;
     }
     .notification-item {
-      display: flex;
       padding: 16px 20px;
       border-bottom: 1px solid #f3f4f6;
-      transition: background 0.2s;
       cursor: pointer;
+      transition: background 0.2s ease;
+      position: relative;
     }
     .notification-item:hover {
       background: #f9fafb;
     }
     .notification-item.unread {
-      background: #fef3f2;
-      border-left: 3px solid #ef4444;
+      background: #eff6ff;
     }
-    .notification-item.read {
-      opacity: 0.8;
+    .notification-item.unread::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6px;
+      height: 6px;
+      background: #3b82f6;
+      border-radius: 50%;
+    }
+    .notification-item.unread {
+      padding-left: 24px;
+    }
+    .notification-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
     }
     .notification-icon {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
-      background: #f3f4f6;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: 12px;
       flex-shrink: 0;
     }
-    .notification-item.unread .notification-icon {
+    .notification-icon.appointment {
+      background: #dbeafe;
+      color: #3b82f6;
+    }
+    .notification-icon.cancellation {
       background: #fee2e2;
       color: #ef4444;
     }
-    .notification-content {
-      flex: 1;
-      min-width: 0;
+    .notification-icon.reminder {
+      background: #fef3c7;
+      color: #f59e0b;
     }
-    .notification-content h4 {
+    .notification-text {
+      flex: 1;
+    }
+    .notification-title {
+      font-weight: 600;
+      color: #222;
       margin: 0 0 4px 0;
       font-size: 0.9rem;
-      font-weight: 600;
-      color: #374151;
     }
-    .notification-content p {
-      margin: 0 0 8px 0;
-      font-size: 0.85rem;
+    .notification-message {
       color: #6b7280;
+      font-size: 0.85rem;
+      margin: 0 0 4px 0;
       line-height: 1.4;
     }
     .notification-time {
-      font-size: 0.75rem;
       color: #9ca3af;
-    }
-    .notification-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-    }
-    .mark-read-btn, .delete-btn {
-      background: none;
-      border: 1px solid #d1d5db;
-      color: #6b7280;
       font-size: 0.75rem;
-      padding: 4px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .mark-read-btn:hover {
-      background: #ecfdf5;
-      border-color: #10b981;
-      color: #10b981;
-    }
-    .delete-btn:hover {
-      background: #fef2f2;
-      border-color: #ef4444;
-      color: #ef4444;
     }
     .no-notifications {
-      text-align: center;
       padding: 40px 20px;
+      text-align: center;
       color: #9ca3af;
     }
     .no-notifications i {
       font-size: 2rem;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       display: block;
     }
     .no-notifications p {
@@ -847,6 +841,85 @@
     .view-details-btn:hover {
       background: #dc2626;
     }
+
+    /* Success Popup Styles */
+    .success-popup {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .success-popup.show {
+      display: flex;
+    }
+
+    .success-popup-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      animation: popupSlideIn 0.3s ease-out;
+    }
+
+    @keyframes popupSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .success-icon {
+      margin-bottom: 1rem;
+    }
+
+    .success-icon i {
+      font-size: 3rem;
+      color: #10b981;
+    }
+
+    .success-popup-content h3 {
+      margin: 0 0 0.5rem 0;
+      color: #1f2937;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .success-popup-content p {
+      margin: 0 0 1.5rem 0;
+      color: #6b7280;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .success-popup-content .btn {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+
+    .success-popup-content .btn:hover {
+      background: #059669;
+    }
   </style>
 </head>
 <body>
@@ -856,7 +929,13 @@
     </div>
     <nav>
       <a href="lecturer.html" class="nav-link">Dashboard</a>
-      <a href="lecturer-manage-slots.html" class="nav-link">Manage Slots</a>
+      <div class="dropdown nav-link" tabindex="0" id="slot-dropdown">
+        Slot Management <i class="fa fa-caret-down" style="margin-left:6px;"></i>
+        <div class="dropdown-content" id="slot-dropdown-content">
+          <a href="lecturer-appointment-slots.html">Set Appointment Slots</a>
+          <a href="lecturer-manage-slots.html">Manage Booked Appointments</a>
+        </div>
+      </div>
       <div class="dropdown nav-link active" tabindex="0" id="inquiry-dropdown">
         Inquiry <i class="fa fa-caret-down" style="margin-left:0px;"></i>
         <div class="dropdown-content" id="inquiry-dropdown-content">
@@ -866,14 +945,36 @@
       </div>
     </nav>
     <div class="header-right">
-    <div class="logout-wrapper">
-      <button class="avatar-btn" onclick="toggleLogoutDropdown()" id="avatarBtn">
-        <img src="placeholder.png" alt="Lecturer Profile" style="width: 32px; height: 32px; border-radius: 50%;" />
-      </button>
-      <div class="logout-dropdown" id="logoutDropdown">
-        <button onclick="logout()">
-          <i class="fa fa-sign-out-alt"></i> Logout
+      <div class="notification-wrapper">
+        <button class="notification-btn" id="notification-btn">
+          <i class="fa fa-bell"></i>
+          <span class="notification-count" id="notification-count" style="display: none;">0</span>
         </button>
+        <div class="notification-dropdown" id="notification-dropdown">
+          <div class="notification-header">
+            <h4>Notifications</h4>
+            <div class="notification-actions">
+              <button class="mark-all-read" id="mark-all-read">Mark all read</button>
+              <button class="clear-all" id="clear-all">Clear all</button>
+            </div>
+          </div>
+          <div class="notification-list" id="notification-list">
+            <div class="no-notifications">
+              <i class="fa fa-bell-slash"></i>
+              <p>No notifications</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="logout-wrapper">
+        <button class="avatar-btn" onclick="toggleLogoutDropdown()" id="avatarBtn">
+          <img id="user-avatar" src="placeholder.png" alt="Lecturer Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
+        </button>
+        <div class="logout-dropdown" id="logoutDropdown">
+          <button onclick="logout()">
+            <i class="fa fa-sign-out-alt"></i> Logout
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -951,6 +1052,18 @@
           <button type="submit" class="btn" id="submit-response-btn">Submit Response</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Success Popup -->
+  <div id="success-popup" class="success-popup">
+    <div class="success-popup-content">
+      <div class="success-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h3>Success!</h3>
+      <p>Your response has been submitted successfully.</p>
+      <button class="btn btn-primary" onclick="closeSuccessPopup()">OK</button>
     </div>
   </div>
 
@@ -1083,25 +1196,37 @@
         });
       }
       
-      // Add user response if exists
+      // Add user response if exists and NOT already in conversation array
+      let userResponseAdded = false;
       if (inquiry.userResponse) {
-        messages.push({
-          type: 'user',
-          message: inquiry.userResponse,
-          date: inquiry.userResponseDate?.toDate?.() || new Date(inquiry.userResponseDate) || null,
-          author: 'You'
-        });
+        // Check if conversation array contains a user message with the same text
+        let duplicate = false;
+        if (inquiry.conversation && Array.isArray(inquiry.conversation)) {
+          duplicate = inquiry.conversation.some(msg => {
+            const isUser = (msg.type === 'user' || (!msg.type && !msg.isAdmin));
+            return isUser && (msg.message === inquiry.userResponse || msg.response === inquiry.userResponse);
+          });
+        }
+        if (!duplicate) {
+          messages.push({
+            type: 'user',
+            message: inquiry.userResponse,
+            date: inquiry.userResponseDate?.toDate?.() || new Date(inquiry.userResponseDate) || null,
+            author: 'You'
+          });
+          userResponseAdded = true;
+        }
       }
       
       // Add conversation thread if exists (new structure)
       if (inquiry.conversation && Array.isArray(inquiry.conversation)) {
         inquiry.conversation.forEach(msg => {
-                     messages.push({
-             type: msg.type || (msg.isAdmin ? 'admin' : 'user'),
-             message: msg.message || msg.response,
-             date: msg.timestamp?.toDate ? msg.timestamp.toDate() : (msg.timestamp instanceof Date ? msg.timestamp : new Date(msg.timestamp || Date.now())),
-             author: msg.isAdmin || msg.type === 'admin' ? (msg.author || 'Admin') : 'You'
-           });
+          messages.push({
+            type: msg.type || (msg.isAdmin ? 'admin' : 'user'),
+            message: msg.message || msg.response,
+            date: msg.timestamp?.toDate ? msg.timestamp.toDate() : (msg.timestamp instanceof Date ? msg.timestamp : new Date(msg.timestamp || Date.now())),
+            author: msg.isAdmin || msg.type === 'admin' ? (msg.author || 'Admin') : 'You'
+          });
         });
       }
       
@@ -1298,27 +1423,34 @@
       currentInquiryId = null;
     };
 
-    // Handle response form submission
-    document.getElementById('response-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      if (!currentInquiryId) return;
+    // Success popup functions
+    window.showSuccessPopup = function() {
+      const popup = document.getElementById('success-popup');
+      popup.classList.add('show');
+    };
 
+    window.closeSuccessPopup = function() {
+      const popup = document.getElementById('success-popup');
+      popup.classList.remove('show');
+    };
+
+    // Defensive: Remove any previous event listener before adding a new one
+    const responseForm = document.getElementById('response-form');
+    if (responseForm._submitHandler) {
+      responseForm.removeEventListener('submit', responseForm._submitHandler);
+    }
+    responseForm._submitHandler = async function(e) {
+      e.preventDefault();
+      if (!currentInquiryId) return;
       const userResponse = document.getElementById('user-response').value.trim();
       if (!userResponse) return;
-
       const submitBtn = document.getElementById('submit-response-btn');
       const originalText = submitBtn.textContent;
-      
       try {
         submitBtn.textContent = 'Submitting...';
         submitBtn.disabled = true;
-
-        // Get current inquiry to check for existing conversation
         const currentInquiry = inquiries.find(i => i.id === currentInquiryId);
         const currentConversation = currentInquiry?.conversation || [];
-        
-        // Create new message object
         const newMessage = {
           type: 'user',
           message: userResponse,
@@ -1326,11 +1458,20 @@
           author: sessionStorage.getItem('userName') || 'You',
           isAdmin: false
         };
-        
-        // Add new message to conversation thread
+        // Prevent duplicate message
+        const lastMessage = currentConversation[currentConversation.length - 1];
+        if (
+          lastMessage &&
+          lastMessage.message === newMessage.message &&
+          lastMessage.author === newMessage.author &&
+          new Date(lastMessage.timestamp).getTime() === newMessage.timestamp.getTime()
+        ) {
+          alert('Duplicate response detected. Not submitting again.');
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+          return;
+        }
         const updatedConversation = [...currentConversation, newMessage];
-        
-        // Update the inquiry with new conversation thread
         const inquiryRef = doc(db, 'inquiries', currentInquiryId);
         const updateData = {
           conversation: updatedConversation,
@@ -1338,20 +1479,14 @@
           lastResponseBy: 'user',
           lastResponseDate: serverTimestamp()
         };
-
-        // If this is the first user response, keep the legacy field for backward compatibility
         if (!currentInquiry?.userResponse) {
           updateData.userResponse = userResponse;
           updateData.userResponseDate = serverTimestamp();
         }
-
         await updateDoc(inquiryRef, updateData);
-
-        // Show success and reload
-        alert('Response submitted successfully!');
+        showSuccessPopup();
         closeResponseModal();
-        await loadInquiries(); // Reload to show updated data
-
+        await loadInquiries();
       } catch (error) {
         console.error('Error submitting response:', error);
         alert('Failed to submit response. Please try again.');
@@ -1359,7 +1494,8 @@
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
       }
-    });
+    };
+    responseForm.addEventListener('submit', responseForm._submitHandler);
 
     // Close modal when clicking outside
     document.getElementById('response-modal').addEventListener('click', function(e) {
@@ -1369,6 +1505,35 @@
     });
 
     // Navigation functions (make them global)
+    // Notification functionality
+    const notificationBtn = document.getElementById('notification-btn');
+    const notificationDropdown = document.getElementById('notification-dropdown');
+    
+    if (notificationBtn && notificationDropdown) {
+      notificationBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notificationDropdown.classList.toggle('show');
+      });
+      
+      document.addEventListener('click', (e) => {
+        if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
+          notificationDropdown.classList.remove('show');
+        }
+      });
+    }
+
+    const slotDropdown = document.getElementById('slot-dropdown');
+    const slotDropdownContent = document.getElementById('slot-dropdown-content');
+    slotDropdown.addEventListener('click', (e) => {
+      e.stopPropagation();
+      slotDropdownContent.classList.toggle('show');
+    });
+    document.addEventListener('click', (e) => {
+      if (!slotDropdown.contains(e.target)) {
+        slotDropdownContent.classList.remove('show');
+      }
+    });
+
     const inquiryDropdown = document.getElementById('inquiry-dropdown');
     const inquiryDropdownContent = document.getElementById('inquiry-dropdown-content');
     inquiryDropdown.addEventListener('click', (e) => {
@@ -1448,7 +1613,23 @@
     document.addEventListener('DOMContentLoaded', function() {
       if (window.NotificationService) {
         const userEmail = sessionStorage.getItem('userEmail') || 'lecturer@example.com';
-        window.NotificationService = new NotificationService(userEmail, 'lecturer');
+        window.NotificationService.setUser(userEmail, 'lecturer');
+        
+        // Handle notification actions
+        const markAllReadBtn = document.getElementById('mark-all-read');
+        const clearAllBtn = document.getElementById('clear-all');
+        
+        if (markAllReadBtn) {
+          markAllReadBtn.addEventListener('click', function() {
+            window.NotificationService.markAllAsRead();
+          });
+        }
+        
+        if (clearAllBtn) {
+          clearAllBtn.addEventListener('click', function() {
+            window.NotificationService.clearAllNotifications();
+          });
+        }
         
 
       }

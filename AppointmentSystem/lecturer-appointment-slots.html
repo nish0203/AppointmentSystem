@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Manage Appointment Slots – Uni Bookings</title>
+  <title>Lecturer Dashboard | eBbook</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -64,9 +64,10 @@
       top: 110%;
       background: #fff;
       min-width: 220px;
-      box-shadow: 0 4px 16px #0002;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
       border-radius: 8px;
-      z-index: 100;
+      border: 1px solid #e5e7eb;
+      z-index: 1000;
       flex-direction: column;
       padding: 8px 0;
     }
@@ -91,12 +92,12 @@
       color: #ef4444;
     }
     .header .avatar-btn {
-      width: 32px; height: 32px;
+      width: 44px; height: 44px;
       border-radius: 50%;
       background: #eee;
       display: flex; align-items: center; justify-content: center;
       overflow: hidden;
-      margin-left: 0px;
+      margin-left: 18px;
       cursor: pointer;
       position: relative;
       outline: none;
@@ -110,13 +111,6 @@
       border-radius: 50%;
       display: block;
     }
-    
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
     .logout-wrapper {
       position: relative;
       display: flex;
@@ -154,6 +148,222 @@
     }
     .logout-dropdown.show {
       display: block;
+    }
+    
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .notification-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    
+    .notification-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #f3f4f6;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+      color: #6b7280;
+    }
+    
+    .notification-btn:hover {
+      background: #e5e7eb;
+      color: #374151;
+    }
+    
+    .notification-btn i {
+      font-size: 18px;
+    }
+    
+    .notification-count {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1;
+    }
+    
+    .notification-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 110%;
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+      z-index: 1000;
+      width: 360px;
+      max-height: 500px;
+      overflow: hidden;
+    }
+    
+    .notification-dropdown.show {
+      display: block;
+    }
+    
+    .notification-header {
+      padding: 20px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .notification-header h4 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #222;
+    }
+    
+    .notification-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .notification-actions button {
+      background: none;
+      border: none;
+      color: #6b7280;
+      font-size: 0.85rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+    
+    .notification-actions button:hover {
+      background: #f3f4f6;
+      color: #374151;
+    }
+    
+    .notification-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .notification-item {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f3f4f6;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      position: relative;
+    }
+    
+    .notification-item:hover {
+      background: #f9fafb;
+    }
+    
+    .notification-item.unread {
+      background: #eff6ff;
+    }
+    
+    .notification-item.unread::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 6px;
+      height: 6px;
+      background: #3b82f6;
+      border-radius: 50%;
+    }
+    
+    .notification-item.unread {
+      padding-left: 24px;
+    }
+    
+    .notification-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    
+    .notification-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .notification-icon.appointment {
+      background: #dbeafe;
+      color: #3b82f6;
+    }
+    
+    .notification-icon.cancellation {
+      background: #fee2e2;
+      color: #ef4444;
+    }
+    
+    .notification-icon.reminder {
+      background: #fef3c7;
+      color: #f59e0b;
+    }
+    
+    .notification-text {
+      flex: 1;
+    }
+    
+    .notification-title {
+      font-weight: 600;
+      color: #222;
+      margin: 0 0 4px 0;
+      font-size: 0.9rem;
+    }
+    
+    .notification-message {
+      color: #6b7280;
+      font-size: 0.85rem;
+      margin: 0 0 4px 0;
+      line-height: 1.4;
+    }
+    
+    .notification-time {
+      color: #9ca3af;
+      font-size: 0.75rem;
+    }
+    
+    .no-notifications {
+      padding: 40px 20px;
+      text-align: center;
+      color: #9ca3af;
+    }
+    
+    .no-notifications i {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+    
+    .no-notifications p {
+      margin: 0;
+      font-size: 0.9rem;
     }
     .main-container {
       max-width: 1200px;
@@ -201,7 +411,7 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 32px;
+      height: 4px;
       background: linear-gradient(135deg, #2563eb 0%, #ef4444 100%);
     }
     
@@ -412,7 +622,7 @@
       font-size: 1.1rem !important;
       font-weight: 600 !important;
       color: white !important;
-      margin-left: 0px !important;
+      margin-left: 8px !important;
       user-select: none !important;
     }
     
@@ -420,7 +630,7 @@
     .flatpickr-prev-month,
     .flatpickr-next-month {
       position: relative !important;
-      width: 32px !important;
+      width: 28px !important;
       height: 28px !important;
       background: rgba(255, 255, 255, 0.2) !important;
       border-radius: 6px !important;
@@ -483,14 +693,19 @@
     }
     
     .flatpickr-day.today {
-      border-color: #ef4444 !important;
-      color: #ef4444 !important;
-      font-weight: 600 !important;
+      border: none !important;
+      color: #d1d5db !important; /* Tailwind gray-300 */
+      background: #f3f4f6 !important; /* Tailwind gray-100 */
+      font-weight: normal !important;
+      box-shadow: none !important;
     }
     
-    .flatpickr-day.today.selected {
-      background: linear-gradient(135deg, #2563eb 0%, #ef4444 100%) !important;
-      color: white !important;
+    .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, .flatpickr-day.selected:focus, .flatpickr-day.selected:hover {
+      border: 1px solid #ef4444 !important;
+      color: #ef4444 !important;
+      font-weight: 600 !important;
+      background: #fff !important;
+      box-shadow: none !important;
     }
     
     .flatpickr-time {
@@ -705,7 +920,7 @@
       color: #222;
     }
     .slots-list {
-      max-height: 32px;
+      max-height: 500px;
       overflow-y: auto;
       padding-right: 8px;
     }
@@ -881,14 +1096,14 @@
     <nav>
       <a href="lecturer.html" class="nav-link">Dashboard</a>
       <div class="dropdown nav-link active" tabindex="0" id="slot-dropdown">
-        Slot Management <i class="fa fa-caret-down" style="margin-left:0px;"></i>
+        Slot Management <i class="fa fa-caret-down" style="margin-left:6px;"></i>
         <div class="dropdown-content" id="slot-dropdown-content">
           <a href="lecturer-appointment-slots.html">Set Appointment Slots</a>
           <a href="lecturer-manage-slots.html">Manage Booked Appointments</a>
         </div>
       </div>
       <div class="dropdown nav-link" tabindex="0" id="inquiry-dropdown">
-        Inquiry <i class="fa fa-caret-down" style="margin-left:0px;"></i>
+        Inquiry <i class="fa fa-caret-down" style="margin-left:6px;"></i>
         <div class="dropdown-content" id="inquiry-dropdown-content">
           <a href="inquirylect.html">Submit Inquiry</a>
           <a href="viewinquirylect.html">Inquiry History</a>
@@ -896,12 +1111,34 @@
       </div>
     </nav>
     <div class="header-right">
+        <div class="notification-wrapper">
+          <button class="notification-btn" id="notification-btn">
+            <i class="fa fa-bell"></i>
+            <span class="notification-count" id="notification-count" style="display: none;">0</span>
+          </button>
+          <div class="notification-dropdown" id="notification-dropdown">
+            <div class="notification-header">
+              <h4>Notifications</h4>
+              <div class="notification-actions">
+                <button class="mark-all-read" id="mark-all-read">Mark all read</button>
+                <button class="clear-all" id="clear-all">Clear all</button>
+              </div>
+            </div>
+            <div class="notification-list" id="notification-list">
+              <div class="no-notifications">
+                <i class="fa fa-bell-slash"></i>
+                <p>No notifications</p>
+              </div>
+            </div>
+          </div>
+        </div>
     <div class="logout-wrapper">
-      <button class="avatar-btn" onclick="toggleLogoutDropdown()" id="avatarBtn">
-        <img src="placeholder.png" alt="Lecturer Profile" style="width: 32px; height: 32px; border-radius: 50%;" />
+          <button class="avatar-btn" id="avatarBtn">
+            <img src="placeholder.png" alt="Lecturer Profile" style="width: 40px; height: 40px; border-radius: 50%;" />
       </button>
       <div class="logout-dropdown" id="logout-dropdown">
         <button id="logout-btn"><i class="fa fa-sign-out-alt"></i> Logout</button>
+          </div>
       </div>
     </div>
   </div>
@@ -966,7 +1203,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
-      getFirestore, collection, doc, setDoc, getDocs, deleteDoc, updateDoc, query, where
+      getFirestore, collection, doc, setDoc, getDocs, deleteDoc, updateDoc, query, where, getDoc
     } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -983,9 +1220,12 @@
     const db = getFirestore(app);
 
     // Initialize Flatpickr with eBbook theme
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
     const datePicker = flatpickr("#slot-date", {
       inline: false,
-      minDate: "today",
+      minDate: tomorrow,
+      defaultDate: tomorrow,
       dateFormat: "Y-m-d",
       position: "auto center",
       animate: true,
@@ -1034,7 +1274,7 @@
                   font-size: 1.1rem !important;
                   font-weight: 600 !important;
                   color: white !important;
-                  margin-left: 0px !important;
+                  margin-left: 8px !important;
                 `;
                 
                 currentMonthContainer.appendChild(yearSpan);
@@ -1134,13 +1374,11 @@
     // --- Instant Avatar Loading (cached from login) ---
     const cachedAvatarUrl = sessionStorage.getItem('userAvatarUrl');
     if (cachedAvatarUrl) {
-      console.log('📸 Loading cached avatar instantly:', cachedAvatarUrl);
       const avatarImg = document.querySelector('#avatarBtn img');
       if (avatarImg) {
         avatarImg.src = cachedAvatarUrl;
       }
     }
-
     // Load user avatar from Firebase (for updates)
     (async () => {
       const userEmail = sessionStorage.getItem('userEmail');
@@ -1150,17 +1388,12 @@
           if (userDoc.exists()) {
             const userData = userDoc.data();
             if (userData.avatarUrl) {
-              const cachedAvatar = sessionStorage.getItem('userAvatarUrl');
-              // Only update if avatar has changed
-              if (userData.avatarUrl !== cachedAvatar) {
-                console.log('🔄 Updating avatar from Firebase');
                 const avatarImg = document.querySelector('#avatarBtn img');
                 if (avatarImg) {
                   avatarImg.src = userData.avatarUrl;
                 }
                 // Update cache
                 sessionStorage.setItem('userAvatarUrl', userData.avatarUrl);
-              }
             }
           }
         } catch (error) {
@@ -1169,7 +1402,7 @@
       }
     })();
 
-    // Avatar dropdown functionality
+    // --- Minimal working avatar/logout dropdown logic ---
     const avatarBtn = document.getElementById('avatarBtn');
     const logoutDropdown = document.getElementById('logout-dropdown');
     avatarBtn.addEventListener('click', (e) => {
@@ -1184,6 +1417,21 @@
     document.getElementById('logout-btn').addEventListener('click', () => {
       sessionStorage.clear();
       window.location.href = 'login.html';
+    });
+
+    // Notification functionality
+    const notificationBtn = document.getElementById('notification-btn');
+    const notificationDropdown = document.getElementById('notification-dropdown');
+    
+    notificationBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      notificationDropdown.classList.toggle('show');
+    });
+    
+    document.addEventListener('click', (e) => {
+      if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
+        notificationDropdown.classList.remove('show');
+      }
     });
 
     // Slot Management dropdown
@@ -1322,11 +1570,11 @@
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       
-      // Filter out past slots
+      // Filter out past slots and today's slots
       const validSlots = slots.filter(slot => {
         const slotDate = new Date(slot.date);
         slotDate.setHours(0, 0, 0, 0);
-        return slotDate >= today;
+        return slotDate > today;
       });
 
       container.innerHTML = `
@@ -1398,14 +1646,14 @@
         return;
       }
       
-      // Check for past dates
+      // Check for past dates and same day
       const slotDate = new Date(date);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       slotDate.setHours(0, 0, 0, 0);
       
-      if (slotDate < today) {
-        showMessage('Cannot create slots for past dates');
+      if (slotDate <= today) {
+        showMessage('Cannot create slots for today or past dates. Please select a future date.');
         return;
       }
       
@@ -1464,10 +1712,12 @@
       editForm.classList.add('show');
       
       // Initialize edit form pickers
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
       flatpickr(`#edit-date-${slotId}`, {
-        minDate: "today",
+        minDate: tomorrow,
         dateFormat: "Y-m-d",
-        defaultDate: slot.date
+        defaultDate: slot.date ? slot.date : tomorrow
       });
       
       flatpickr(`#edit-start-${slotId}`, {
@@ -1517,14 +1767,14 @@
         return;
       }
       
-      // Check for past dates
+      // Check for past dates and same day
       const slotDate = new Date(date);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       slotDate.setHours(0, 0, 0, 0);
       
-      if (slotDate < today) {
-        showMessage('Cannot set slots for past dates');
+      if (slotDate <= today) {
+        showMessage('Cannot set slots for today or past dates. Please select a future date.');
         return;
       }
       
@@ -1591,7 +1841,7 @@
       }
     };
 
-    // Auto-remove expired slots
+    // Auto-remove expired slots (including today's slots)
     async function removeExpiredSlots() {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -1599,7 +1849,7 @@
       const expiredSlots = slots.filter(slot => {
         const slotDate = new Date(slot.date);
         slotDate.setHours(0, 0, 0, 0);
-        return slotDate < today;
+        return slotDate <= today;
       });
       
       for (const slot of expiredSlots) {
@@ -1706,7 +1956,14 @@
         const userEmail = sessionStorage.getItem('userEmail') || 'lecturer@example.com';
         window.NotificationService = new NotificationService(userEmail, 'lecturer');
         
+        // Handle notification actions
+        document.getElementById('mark-all-read').addEventListener('click', function() {
+          window.NotificationService.markAllAsRead();
+        });
 
+        document.getElementById('clear-all').addEventListener('click', function() {
+          window.NotificationService.clearAll();
+        });
       }
     });
   </script>

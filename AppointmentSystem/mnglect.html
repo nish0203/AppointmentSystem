@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manage Lecturers - Admin Portal</title>
+  <title>Manage Lecturers | eBbook</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -499,7 +499,10 @@
           <div class="stat-label">Total Lecturers</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">By Faculty</div>
+          <div class="stat-label" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>By Faculty</span>
+            <button id="manageFacultiesBtn" class="btn btn-secondary" style="margin-bottom: 0; margin-left: auto;">Manage Faculties</button>
+          </div>
           <div class="faculty-stats" id="facultyStats">
             <!-- Faculty stats will be populated here -->
           </div>
@@ -610,6 +613,50 @@
     </div>
   </div>
 
+  <!-- Add Manage Faculties button and modal -->
+  <div id="manageFacultiesModal" class="modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:10000; justify-content:center; align-items:center;">
+    <div style="background:#fff; border-radius:10px; padding:2rem; min-width:350px; max-width:90vw;">
+      <h2>Manage Faculties</h2>
+      <div id="facultiesList" style="margin-bottom:1.5rem;"></div>
+      <div style="margin-bottom:1rem;">
+        <label for="facultyDropdown" style="font-weight:600;">All Faculties:</label>
+        <select id="facultyDropdown" style="width:100%; padding:0.5rem; border-radius:6px; border:1px solid #e2e8f0; margin-top:0.5rem;">
+          <option value="FCA">FCA</option>
+          <option value="FAIE">FAIE</option>
+          <option value="FCI">FCI</option>
+          <option value="FOM">FOM</option>
+          <option value="FCM">FCM</option>
+          <option value="FAC">FAC</option>
+        </select>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label for="newFacultyName" style="font-weight:600;">Add New Faculty:</label>
+        <input type="text" id="newFacultyName" placeholder="Faculty Name (e.g. Faculty of Science)" maxlength="100" style="width:100%; margin-top:0.5rem; padding:0.5rem; border-radius:6px; border:1px solid #e2e8f0;">
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button id="addFacultyBtn" class="btn btn-primary">Save</button>
+        <button id="closeFacultiesModal" class="btn btn-secondary">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="notification-toast" style="display:none; position:fixed; bottom:2rem; right:2rem; min-width:220px; background:#222; color:#fff; padding:1rem 1.5rem; border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.15); font-size:1rem; z-index:2000; align-items:center; gap:0.75rem;">
+    <span id="notification-toast-message"></span>
+    <button id="notification-toast-close" style="background:none; border:none; color:#fff; font-size:1.2rem; margin-left:1rem; cursor:pointer;">&times;</button>
+  </div>
+
+  <!-- Custom Confirmation Modal -->
+  <div id="custom-confirm-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.4); z-index:3000; justify-content:center; align-items:center;">
+    <div style="background:#fff; border-radius:12px; padding:2rem; min-width:320px; max-width:90vw; box-shadow:0 8px 32px rgba(0,0,0,0.18); text-align:center;">
+      <div id="custom-confirm-message" style="margin-bottom:2rem; font-size:1.1rem; color:#222;"></div>
+      <div style="display:flex; justify-content:center; gap:1rem;">
+        <button id="custom-confirm-yes" class="btn btn-primary">Yes</button>
+        <button id="custom-confirm-no" class="btn btn-secondary">No</button>
+      </div>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
@@ -650,23 +697,16 @@
 
     let editingDocId = null;
     let allLecturers = [];
-
-    const facultyNames = {
-      'FCM': 'Faculty of Computing and Multimedia',
-      'FCA': 'Faculty of Creative Arts',
-      'FAC': 'Faculty of Accountancy',
-      'FCI': 'Faculty of Communication and Information',
-      'FOM': 'Faculty of Management',
-      'FOE': 'Faculty of Engineering'
-    };
+    let faculties = [];
 
     const facultyPrefixes = {
-      'FCM': 'FCM',
-      'FCA': 'FCA',
-      'FAC': 'FAC',
-      'FCI': 'FCI',
-      'FOM': 'FOM',
-      'FOE': 'FOE'
+      FCA: 'FCA',
+      FAIE: 'FAIE',
+      FCI: 'FCI',
+      FOM: 'FOM',
+      FCM: 'FCM',
+      FAC: 'FAC',
+      FOE: 'FOE',
     };
 
     // Update office prefix when faculty changes
@@ -742,15 +782,13 @@
 
       tableBody.innerHTML = lecturersToShow.map((lecturer, index) => {
         const faculty = lecturer.faculty || 'Unknown';
-        const badgeClass = `badge-${faculty.toLowerCase()}`;
-        
         return `
           <tr data-doc-id="${lecturer.docId}">
             <td>${index + 1}</td>
             <td><strong>${lecturer.id || 'N/A'}</strong></td>
             <td>${lecturer.name || 'N/A'}</td>
             <td>${lecturer.email || 'N/A'}</td>
-            <td><span class="badge ${badgeClass}">${faculty}</span></td>
+            <td><span class="badge">${faculty}</span></td>
             <td><strong>${lecturer.office || 'N/A'}</strong></td>
             <td>${lecturer.contact || 'N/A'}</td>
             <td>${lecturer.createdBy || 'Unknown'}</td>
@@ -811,14 +849,48 @@
       lecturerOfficeInput.placeholder = 'Enter 4 digits';
     }
 
-    // Show error message
-    function showError(message) {
-      alert(message); // In a real app, you'd use a proper notification system
+    // Notification Toast logic
+    function showNotification(message, type = 'info', duration = 3000) {
+      const toast = document.getElementById('notification-toast');
+      const msg = document.getElementById('notification-toast-message');
+      const closeBtn = document.getElementById('notification-toast-close');
+      msg.textContent = message;
+      toast.style.background = type === 'success' ? '#16a34a' : type === 'error' ? '#dc2626' : '#222';
+      toast.style.display = 'flex';
+      let hideTimeout = setTimeout(hide, duration);
+      function hide() {
+        toast.style.display = 'none';
+        clearTimeout(hideTimeout);
+      }
+      closeBtn.onclick = hide;
     }
 
-    // Show success message
+    // Custom Confirm Modal logic
+    function showConfirm(message) {
+      return new Promise(resolve => {
+        const modal = document.getElementById('custom-confirm-modal');
+        const msg = document.getElementById('custom-confirm-message');
+        const yesBtn = document.getElementById('custom-confirm-yes');
+        const noBtn = document.getElementById('custom-confirm-no');
+        msg.textContent = message;
+        modal.style.display = 'flex';
+        function cleanup(result) {
+          modal.style.display = 'none';
+          yesBtn.onclick = null;
+          noBtn.onclick = null;
+          resolve(result);
+        }
+        yesBtn.onclick = () => cleanup(true);
+        noBtn.onclick = () => cleanup(false);
+      });
+    }
+
+    // Replace alert/confirm in main lecturer logic
+    function showError(message) {
+      showNotification(message, 'error');
+    }
     function showSuccess(message) {
-      alert(message); // In a real app, you'd use a proper notification system
+      showNotification(message, 'success');
     }
 
     // Event listeners
@@ -883,7 +955,7 @@
           showModal(true);
         }
       } else if (action === 'delete') {
-        if (confirm('Are you sure you want to delete this lecturer? This action cannot be undone.')) {
+        if (await showConfirm('Are you sure you want to delete this lecturer? This action cannot be undone.')) {
           try {
             await deleteDoc(doc(db, 'lecturers', docId));
             await loadLecturers();
@@ -930,7 +1002,7 @@
       }
 
       const confirmMessage = editingDocId ? 'Confirm update?' : 'Confirm addition?';
-      if (!confirm(confirmMessage)) return;
+      if (!(await showConfirm(confirmMessage))) return;
 
       try {
         saveBtn.disabled = true;
@@ -973,8 +1045,134 @@
       }
     });
 
+    // Fetch faculties from Firestore and populate dropdown
+    async function fetchFaculties() {
+      const facultiesSnap = await getDocs(collection(db, 'faculties'));
+      faculties = facultiesSnap.docs.map(doc => ({ code: doc.id, ...doc.data() }));
+      populateFacultyDropdown();
+      updateStatistics();
+    }
+
+    function populateFacultyDropdown() {
+      lecturerFacultyInput.innerHTML = '<option value="" disabled selected>Select Faculty</option>' +
+        faculties.map(f => `<option value="${f.code}">${f.name} (${f.code})</option>`).join('');
+      if (facultyDropdown) {
+        facultyDropdown.innerHTML = faculties.map(f => `<option value="${f.code}">${f.name} (${f.code})</option>`).join('');
+      }
+    }
+
+    // Call fetchFaculties on page load
+    fetchFaculties().then(populateFacultyDropdown);
+
+    // Manage Faculties Modal logic (stub)
+    const manageFacultiesBtn = document.getElementById('manageFacultiesBtn');
+    const manageFacultiesModal = document.getElementById('manageFacultiesModal');
+    const closeFacultiesModal = document.getElementById('closeFacultiesModal');
+    manageFacultiesBtn.addEventListener('click', () => {
+      manageFacultiesModal.style.display = 'flex';
+      loadFacultyDropdown();
+    });
+    closeFacultiesModal.addEventListener('click', () => {
+      manageFacultiesModal.style.display = 'none';
+    });
+
+    function renderFacultiesList() {
+      const listDiv = document.getElementById('facultiesList');
+      listDiv.innerHTML = faculties.map(f => `
+        <div style="display:flex;align-items:center;margin-bottom:8px;gap:8px;">
+          <input type="text" value="${f.code}" data-old-code="${f.code}" class="facultyCodeInput" style="width:70px;">
+          <input type="text" value="${f.name}" data-code="${f.code}" class="facultyNameInput" style="width:220px;">
+          <button class="btn btn-primary btn-sm updateFacultyBtn" data-old-code="${f.code}">Update</button>
+          <button class="btn btn-danger btn-sm deleteFacultyBtn" data-code="${f.code}">Delete</button>
+        </div>
+      `).join('');
+      // Add event listeners for update
+      listDiv.querySelectorAll('.updateFacultyBtn').forEach(btn => {
+        btn.onclick = async function() {
+          const oldCode = btn.getAttribute('data-old-code');
+          const codeInput = listDiv.querySelector(`input.facultyCodeInput[data-old-code='${oldCode}']`);
+          const nameInput = listDiv.querySelector(`input.facultyNameInput[data-code='${oldCode}']`);
+          const newCode = codeInput.value.trim().toUpperCase();
+          const newName = nameInput.value.trim();
+          if (!newCode || !newName) { alert('Faculty code and name cannot be empty.'); return; }
+          if (newCode !== oldCode && faculties.some(f => f.code === newCode)) {
+            alert('A faculty with this code already exists.'); return;
+          }
+          if (newCode !== oldCode) {
+            // Update all lecturers with oldCode to newCode
+            const lecturersSnap = await getDocs(collection(db, 'lecturers'));
+            const batchUpdates = [];
+            lecturersSnap.docs.forEach(docSnap => {
+              const data = docSnap.data();
+              if ((data.faculty || '').toUpperCase() === oldCode) {
+                batchUpdates.push(updateDoc(doc(db, 'lecturers', docSnap.id), { faculty: newCode }));
+              }
+            });
+            await Promise.all(batchUpdates);
+            // Delete old, add new
+            await deleteDoc(doc(db, 'faculties', oldCode));
+            await setDoc(doc(db, 'faculties', newCode), { name: newName });
+          } else {
+            await setDoc(doc(db, 'faculties', newCode), { name: newName });
+          }
+          await loadFacultyDropdown();
+          renderFacultiesList();
+          alert('Faculty updated!');
+        };
+      });
+      // Add event listeners for delete
+      listDiv.querySelectorAll('.deleteFacultyBtn').forEach(btn => {
+        btn.onclick = async function() {
+          const code = btn.getAttribute('data-code');
+          // Check if any lecturer is assigned to this faculty
+          const lecturersSnap = await getDocs(collection(db, 'lecturers'));
+          const hasLecturer = lecturersSnap.docs.some(doc => (doc.data().faculty || '').toUpperCase() === code);
+          if (hasLecturer) {
+            alert('Cannot delete: There are lecturers assigned to this faculty.');
+            return;
+          }
+          if (!confirm('Are you sure you want to delete this faculty? This action cannot be undone.')) return;
+          await deleteDoc(doc(db, 'faculties', code));
+          await loadFacultyDropdown();
+          renderFacultiesList();
+          alert('Faculty deleted!');
+        };
+      });
+    }
+
     // Initialize
     loadLecturers();
+
+    const facultyDropdown = document.getElementById('facultyDropdown');
+    const newFacultyNameInput = document.getElementById('newFacultyName');
+    const addFacultyBtn = document.getElementById('addFacultyBtn');
+
+    async function loadFacultyDropdown() {
+      const facultiesSnap = await getDocs(collection(db, 'faculties'));
+      faculties = facultiesSnap.docs.map(doc => ({ code: doc.id, ...doc.data() }));
+      facultyDropdown.innerHTML = faculties.map(f => `<option value="${f.code}">${f.name} (${f.code})</option>`).join('');
+      renderFacultiesList();
+    }
+
+    addFacultyBtn.onclick = async function() {
+      const name = newFacultyNameInput.value.trim();
+      if (!name) {
+        alert('Please enter a faculty name.');
+        return;
+      }
+      // Generate a code from the name (e.g., first 3-4 uppercase letters)
+      let code = name.match(/[A-Z]/g)?.join('') || name.substring(0,4).toUpperCase();
+      if (!code || code.length < 2) code = name.substring(0,4).toUpperCase();
+      // Check for duplicate code
+      if (faculties.some(f => f.code === code)) {
+        alert('A faculty with this code already exists.');
+        return;
+      }
+      await setDoc(doc(db, 'faculties', code), { name });
+      newFacultyNameInput.value = '';
+      await loadFacultyDropdown();
+      alert('Faculty added!');
+    };
   </script>
 </body>
 </html>

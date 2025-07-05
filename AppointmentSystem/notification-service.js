@@ -148,7 +148,7 @@ class NotificationService {
   }
 
   updateUI() {
-    const badge = document.getElementById('notification-badge');
+    const badge = document.getElementById('notification-badge') || document.getElementById('notification-count');
     const count = this.getUnreadCount();
     
     if (badge) {
@@ -164,7 +164,7 @@ class NotificationService {
   }
 
   renderNotifications() {
-    const container = document.getElementById('notifications-list');
+    const container = document.getElementById('notifications-list') || document.getElementById('notification-list');
     if (!container) return;
 
     if (this.notifications.length === 0) {
