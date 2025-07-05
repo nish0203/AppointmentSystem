@@ -6,6 +6,7 @@
   <title>Manage Administrators | eBbook</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="notification.css">
   <style>
     * {
       margin: 0;
@@ -633,6 +634,9 @@
   <!-- Include email service -->
   <script src="email-service-ultra-simple.js"></script>
 
+  <!-- Notification Service -->
+  <script src="notification-service.js"></script>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
@@ -647,6 +651,9 @@
       projectId: "appointment-management-c2531"
     });
     const db = getFirestore(app);
+    if (window.NotificationService) {
+      window.NotificationService.initialize(db);
+    }
 
     // Initialize EmailJS
     emailjs.init('CO_25CIKuZ9YpYqQt');
