@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <link rel="stylesheet" href="notification.css">
   <style>
     body {
       font-family: 'Inter', Arial, sans-serif;
@@ -1219,6 +1220,10 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
+    if (window.NotificationService) {
+      window.NotificationService.initialize(db);
+    }
+
     // Initialize Flatpickr with eBbook theme
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -1954,16 +1959,23 @@
     document.addEventListener('DOMContentLoaded', function() {
       if (window.NotificationService) {
         const userEmail = sessionStorage.getItem('userEmail') || 'lecturer@example.com';
-        window.NotificationService = new NotificationService(userEmail, 'lecturer');
+        window.NotificationService.setUser(userEmail, 'lecturer');
         
         // Handle notification actions
-        document.getElementById('mark-all-read').addEventListener('click', function() {
-          window.NotificationService.markAllAsRead();
-        });
-
-        document.getElementById('clear-all').addEventListener('click', function() {
-          window.NotificationService.clearAll();
-        });
+        const markAllReadBtn = document.getElementById('mark-all-read');
+        const clearAllBtn = document.getElementById('clear-all');
+        
+        if (markAllReadBtn) {
+          markAllReadBtn.addEventListener('click', function() {
+            window.NotificationService.markAllAsRead();
+          });
+        }
+        
+        if (clearAllBtn) {
+          clearAllBtn.addEventListener('click', function() {
+            window.NotificationService.clearAllNotifications();
+          });
+        }
       }
     });
   </script>

@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="notification.css">
   <style>
     body {
       font-family: 'Inter', Arial, sans-serif;
@@ -636,6 +637,9 @@
     };
     const app  = initializeApp(firebaseConfig);
     const db   = getFirestore(app);
+    if (window.NotificationService) {
+      window.NotificationService.initialize(db);
+    }
     const storage = getStorage(app);
 
     // Make Firebase functions globally available
@@ -1376,16 +1380,23 @@
     document.addEventListener('DOMContentLoaded', function() {
       if (window.NotificationService) {
         const userEmail = sessionStorage.getItem('userEmail') || 'lecturer@example.com';
-        window.NotificationService = new NotificationService(userEmail, 'lecturer');
+        window.NotificationService.setUser(userEmail, 'lecturer');
         
         // Handle notification actions
-        document.getElementById('mark-all-read').addEventListener('click', function() {
-          window.NotificationService.markAllAsRead();
-        });
+        const markAllReadBtn = document.getElementById('mark-all-read');
+        const clearAllBtn = document.getElementById('clear-all');
         
-        document.getElementById('clear-all').addEventListener('click', function() {
-          window.NotificationService.clearAll();
-        });
+        if (markAllReadBtn) {
+          markAllReadBtn.addEventListener('click', function() {
+            window.NotificationService.markAllAsRead();
+          });
+        }
+        
+        if (clearAllBtn) {
+          clearAllBtn.addEventListener('click', function() {
+            window.NotificationService.clearAllNotifications();
+          });
+        }
       }
     });
   </script>

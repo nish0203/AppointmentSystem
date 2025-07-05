@@ -319,17 +319,14 @@ class NotificationService {
     }
 
     container.innerHTML = this.notifications.map(notification => `
-      <div class="notification-item ${notification.read ? 'read' : 'unread'}" data-id="${notification.id}">
-        <div class="notification-icon">
-          <i class="fa ${notification.icon || 'fa-bell'}"></i>
+      <div class="notification-item ${notification.read ? 'read' : 'unread'}" data-id="${notification.id}" style="display: flex; align-items: flex-start; gap: 12px;">
+        <div class="notification-icon" style="flex-shrink: 0;">
+          <i class="fa ${notification.icon || 'fa-bell'}" style="font-size: 1.2em;"></i>
         </div>
         <div class="notification-content">
-          <div class="notification-header">
-            <span class="notification-title">${notification.title}</span>
-            <span class="notification-time">${this.formatTime(notification.timestamp)}</span>
-          </div>
-          <p class="notification-message">${notification.message}</p>
-          <div class="notification-actions">
+          <p class="notification-message" style="margin-top: 0; margin-bottom: 6px; line-height: 1.2;">${notification.message}</p>
+          <div class="notification-time" style="margin-bottom: 8px; font-size: 0.92em;">${this.formatTime(notification.timestamp)}</div>
+          <div class="notification-actions" style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
             <button class="mark-read-btn" onclick="window.NotificationService.markAsRead('${notification.id}')">
               ${notification.read ? 'Read' : 'Mark as read'}
             </button>
@@ -376,7 +373,7 @@ class NotificationService {
       <div class="notification-wrapper">
         <button class="notification-btn" id="notification-btn">
           <i class="fa fa-bell"></i>
-          <span class="notification-badge" id="notification-badge">0</span>
+          <span class="notification-badge" id="notification-badge" style="display: flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; padding: 0; line-height: 1; font-size: 13px; transform: translateY(2px);">0</span>
         </button>
         <div class="notification-dropdown" id="notification-dropdown">
           <div class="notification-header">
