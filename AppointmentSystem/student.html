@@ -527,6 +527,12 @@
 
     let currentStudentEmail = '';
 
+    // Initialize currentStudentEmail immediately
+    (() => {
+      const params = new URLSearchParams(location.search);
+      currentStudentEmail = params.get('email') || sessionStorage.getItem('userEmail') || '';
+    })();
+
     // Immediately display cached data on page load (before any async operations)
     const initializePageImmediately = () => {
       const params = new URLSearchParams(location.search);
@@ -1098,7 +1104,8 @@
         
         // Reload appointments to show the rating
         if (typeof window.loadAppointments === 'function') {
-          await window.loadAppointments(currentStudentEmail);
+          const studentEmail = currentStudentEmail || sessionStorage.getItem('userEmail');
+          await window.loadAppointments(studentEmail);
         } else {
           // If loadAppointments is not available, reload the page
           window.location.reload();

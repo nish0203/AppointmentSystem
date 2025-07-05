@@ -839,22 +839,36 @@
       if (upcoming.length === 0) {
         upcomingList.innerHTML = '<p style="color: #6b7280; text-align: center; padding: 20px;">No upcoming appointments</p>';
       } else {
-        upcomingList.innerHTML = upcoming.map(apt => `
-          <div class="consultation-item" data-date="${apt.date}" data-time="${apt.startTime}">
-            <div class="row"><span class="label">Appointment Date:</span> <span class="value upcoming-date">${apt.date}</span></div>
-            <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">${apt.startTime}</span></div>
-            <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">${apt.endTime}</span></div>
-            <div class="booked-by">Booked by: <span class="student-name">${apt.studentName || apt.studentEmail || 'Student'}</span></div>
-            <div class="days-left" style="font-size:0.97rem;color:#10B981;margin-top:4px;"></div>
-            ${apt.purpose ? `<div style="margin-top:8px;font-size:0.9rem;color:#666;"><strong>Purpose:</strong> ${apt.purpose}</div>` : ''}
-            ${apt.documents && apt.documents.length > 0 ? `
-              <div style="margin-top:8px;">
-                <strong style="font-size:0.9rem;color:#666;">Documents:</strong>
-                ${apt.documents.map(doc => `<a href="${doc.url}" target="_blank" style="display:block;color:#10B981;font-size:0.85rem;margin-top:2px;text-decoration:underline;">${doc.name}</a>`).join('')}
-              </div>
-            ` : ''}
-          </div>
-        `).join('');
+        upcomingList.innerHTML = upcoming.map(apt => {
+          // Check if appointment time has passed
+          const appointmentDateTime = new Date(`${apt.date} ${apt.startTime}`);
+          const now = new Date();
+          const canMarkAsDone = now >= appointmentDateTime;
+          
+          return `
+            <div class="consultation-item" data-date="${apt.date}" data-time="${apt.startTime}">
+              <div class="row"><span class="label">Appointment Date:</span> <span class="value upcoming-date">${apt.date}</span></div>
+              <div class="row"><span class="label">Start Time:</span> <span class="value" style="color:#10B981">${apt.startTime}</span></div>
+              <div class="row"><span class="label">End Time:</span> <span class="value" style="color:#ef4444">${apt.endTime}</span></div>
+              <div class="booked-by">Booked by: <span class="student-name">${apt.studentName || apt.studentEmail || 'Student'}</span></div>
+              <div class="days-left" style="font-size:0.97rem;color:#10B981;margin-top:4px;"></div>
+              ${apt.purpose ? `<div style="margin-top:8px;font-size:0.9rem;color:#666;"><strong>Purpose:</strong> ${apt.purpose}</div>` : ''}
+              ${apt.documents && apt.documents.length > 0 ? `
+                <div style="margin-top:8px;">
+                  <strong style="font-size:0.9rem;color:#666;">Documents:</strong>
+                  ${apt.documents.map(doc => `<a href="${doc.url}" target="_blank" style="display:block;color:#10B981;font-size:0.85rem;margin-top:2px;text-decoration:underline;">${doc.name}</a>`).join('')}
+                </div>
+              ` : ''}
+              ${canMarkAsDone ? `
+                <div style="margin-top:12px;display:flex;gap:8px;">
+                  <button onclick="markAppointmentDone('${apt.id}')" style="background:#10B981;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:0.8rem;">
+                    <i class="fa fa-check"></i> Mark as Done
+                  </button>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('');
       }
       
       // Render pending appointments
@@ -975,9 +989,27 @@
       document.getElementById('success-modal').style.display = 'none';
     }
 
+    // Mark appointment as done
+    async function markAppointmentDone(appointmentId) {
+      try {
+        await updateDoc(doc(db, 'appointments', appointmentId), {
+          status: 'done',
+          completedAt: new Date().toISOString()
+        });
+        
+        // Reload appointments
+        await loadAppointments(currentLecturerEmail);
+        showSuccessModal('Completed!', 'Appointment marked as completed successfully!');
+      } catch (error) {
+        console.error('Error marking appointment as done:', error);
+        showSuccessModal('Error', 'Failed to mark appointment as done. Please try again.');
+      }
+    }
+
     // Make functions globally available
     window.approveAppointment = approveAppointment;
     window.rejectAppointment = rejectAppointment;
+    window.markAppointmentDone = markAppointmentDone;
     window.closeSuccessModal = closeSuccessModal;
 
     // Show days left for upcoming appointments
