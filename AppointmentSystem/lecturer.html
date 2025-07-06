@@ -181,7 +181,7 @@
     .notification-btn i {
       font-size: 18px;
     }
-    .notification-count {
+    .notification-badge {
       position: absolute;
       top: -2px;
       right: -2px;
@@ -249,92 +249,7 @@
       max-height: 400px;
       overflow-y: auto;
     }
-    .notification-item {
-      padding: 16px 20px;
-      border-bottom: 1px solid #f3f4f6;
-      cursor: pointer;
-      transition: background 0.2s ease;
-      position: relative;
-    }
-    .notification-item:hover {
-      background: #f9fafb;
-    }
-    .notification-item.unread {
-      background: #eff6ff;
-    }
-    .notification-item.unread::before {
-      content: '';
-      position: absolute;
-      left: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 6px;
-      height: 6px;
-      background: #3b82f6;
-      border-radius: 50%;
-    }
-    .notification-item.unread {
-      padding-left: 24px;
-    }
-    .notification-content {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-    }
-    .notification-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .notification-icon.appointment {
-      background: #dbeafe;
-      color: #3b82f6;
-    }
-    .notification-icon.cancellation {
-      background: #fee2e2;
-      color: #ef4444;
-    }
-    .notification-icon.reminder {
-      background: #fef3c7;
-      color: #f59e0b;
-    }
-    .notification-text {
-      flex: 1;
-    }
-    .notification-title {
-      font-weight: 600;
-      color: #222;
-      margin: 0 0 4px 0;
-      font-size: 0.9rem;
-    }
-    .notification-message {
-      color: #6b7280;
-      font-size: 0.85rem;
-      margin: 0 0 4px 0;
-      line-height: 1.4;
-    }
-    .notification-time {
-      color: #9ca3af;
-      font-size: 0.75rem;
-    }
-    .no-notifications {
-      padding: 40px 20px;
-      text-align: center;
-      color: #9ca3af;
-    }
-    .no-notifications i {
-      font-size: 2rem;
-      margin-bottom: 12px;
-      display: block;
-    }
-    .no-notifications p {
-      margin: 0;
-      font-size: 0.9rem;
-    }
+
     .dashboard-container {
       max-width: 1200px;
       margin: 32px auto;
@@ -489,7 +404,7 @@
       <div class="notification-wrapper">
         <button class="notification-btn" id="notification-btn">
           <i class="fa fa-bell"></i>
-          <span class="notification-count" id="notification-count" style="display: none;">0</span>
+          <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
         </button>
         <div class="notification-dropdown" id="notification-dropdown">
           <div class="notification-header">
@@ -936,9 +851,25 @@
     // Approve appointment
     async function approveAppointment(appointmentId) {
       try {
+        // Get appointment data first
+        const appointmentDoc = await getDoc(doc(db, 'appointments', appointmentId));
+        const appointmentData = appointmentDoc.data();
+        
         await updateDoc(doc(db, 'appointments', appointmentId), {
-          status: 'approved'
+          status: 'approved',
+          approvedAt: new Date().toISOString()
         });
+        
+        // Send notification to student
+        if (window.NotificationService && appointmentData) {
+          await window.NotificationService.sendNotificationToUser(appointmentData.studentEmail, 'student', {
+            type: 'lecturer_approved_appointment',
+            title: 'Appointment Approved',
+            message: `${appointmentData.lecturerName || 'Lecturer'} have approved your appointment booking for ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
+            icon: 'fa-check-circle',
+            category: 'Appointments'
+          });
+        }
         
         // Reload appointments
         await loadAppointments(currentLecturerEmail);
@@ -957,7 +888,9 @@
         
         // Update appointment status
         await updateDoc(doc(db, 'appointments', appointmentId), {
-          status: 'rejected'
+          status: 'rejected',
+          rejectedAt: new Date().toISOString(),
+          rejectedBy: 'lecturer'
         });
         
         // Make the slot available again
@@ -966,6 +899,17 @@
             isBooked: false,
             bookedBy: null,
             appointmentId: null
+          });
+        }
+        
+        // Send notification to student
+        if (window.NotificationService && appointmentData) {
+          await window.NotificationService.sendNotificationToUser(appointmentData.studentEmail, 'student', {
+            type: 'lecturer_rejected_appointment',
+            title: 'Appointment Rejected',
+            message: `${appointmentData.lecturerName || 'Lecturer'} have rejected your appointment slot request for ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
+            icon: 'fa-times-circle',
+            category: 'Appointments'
           });
         }
         
@@ -1051,20 +995,7 @@
     sortAppointments('upcoming-list');
     sortAppointments('pending-list');
 
-    // Notification functionality
-    const notificationBtn = document.getElementById('notification-btn');
-    const notificationDropdown = document.getElementById('notification-dropdown');
-    
-    notificationBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      notificationDropdown.classList.toggle('show');
-    });
-    
-    document.addEventListener('click', (e) => {
-      if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
-        notificationDropdown.classList.remove('show');
-      }
-    });
+    // Notification functionality handled by NotificationService
 
     // Slot Management dropdown
     const slotDropdown = document.getElementById('slot-dropdown');
@@ -1341,6 +1272,15 @@
             icon: 'fa-calendar-check',
             category: 'Appointments'
           });
+          
+          // Send notification to student about acceptance
+          await window.NotificationService.sendNotificationToUser(currentRequest.studentEmail, 'student', {
+            type: 'lecturer_approved_appointment',
+            title: 'Appointment Approved',
+            message: `${currentRequest.lecturerName || 'Lecturer'} have approved your appointment booking for ${currentRequest.preferredDate} ${currentRequest.startTime} - ${currentRequest.endTime}`,
+            icon: 'fa-check-circle',
+            category: 'Appointments'
+          });
         }
 
         showSuccessModal('Request Accepted!', 'A new appointment slot has been created and the student has been notified.');
@@ -1375,6 +1315,15 @@
             type: 'slot_request',
             title: 'Student Slot Request Rejected',
             message: `${currentRequest.studentName} (${currentRequest.studentEmail})'s slot request for ${currentRequest.preferredDate} at ${currentRequest.startTime} - ${currentRequest.endTime} was rejected.`,
+            icon: 'fa-times-circle',
+            category: 'Appointments'
+          });
+          
+          // Send notification to student about rejection
+          await window.NotificationService.sendNotificationToUser(currentRequest.studentEmail, 'student', {
+            type: 'lecturer_rejected_appointment',
+            title: 'Appointment Rejected',
+            message: `${currentRequest.lecturerName || 'Lecturer'} have rejected your appointment slot request for ${currentRequest.preferredDate} ${currentRequest.startTime} - ${currentRequest.endTime}`,
             icon: 'fa-times-circle',
             category: 'Appointments'
           });

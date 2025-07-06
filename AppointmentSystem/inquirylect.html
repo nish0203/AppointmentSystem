@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="notification.css">
   <style>
     * {
       margin: 0;
@@ -212,7 +213,7 @@
     .notification-btn i {
       font-size: 18px;
     }
-    .notification-count {
+    .notification-badge {
       position: absolute;
       top: -2px;
       right: -2px;
@@ -297,117 +298,7 @@
       max-height: 400px;
       overflow-y: auto;
     }
-    .notification-item {
-      padding: 16px 20px;
-      border-bottom: 1px solid #f3f4f6;
-      cursor: pointer;
-      transition: background 0.2s ease;
-      position: relative;
-    }
-    .notification-item:hover {
-      background: #f9fafb;
-    }
-    .notification-item.unread {
-      background: #eff6ff;
-    }
-    .notification-item.unread::before {
-      content: '';
-      position: absolute;
-      left: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 6px;
-      height: 6px;
-      background: #3b82f6;
-      border-radius: 50%;
-    }
-    .notification-item.unread {
-      padding-left: 24px;
-    }
-    .notification-content {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-    }
-    .notification-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-    .notification-icon.appointment {
-      background: #dbeafe;
-      color: #3b82f6;
-    }
-    .notification-icon.cancellation {
-      background: #fee2e2;
-      color: #ef4444;
-    }
-    .notification-icon.reminder {
-      background: #fef3c7;
-      color: #f59e0b;
-    }
-    .notification-text {
-      flex: 1;
-    }
-    .notification-title {
-      font-weight: 600;
-      color: #222;
-      margin: 0 0 4px 0;
-      font-size: 0.9rem;
-    }
-    .notification-message {
-      color: #6b7280;
-      font-size: 0.85rem;
-      margin: 0 0 4px 0;
-      line-height: 1.4;
-    }
-    .notification-time {
-      color: #9ca3af;
-      font-size: 0.75rem;
-    }
-    .no-notifications {
-      padding: 40px 20px;
-      text-align: center;
-      color: #9ca3af;
-    }
-    .no-notifications i {
-      font-size: 2rem;
-      margin-bottom: 12px;
-      display: block;
-    }
-    .no-notifications p {
-      margin: 0;
-      font-size: 0.9rem;
-    }
 
-    /* Toast Notifications */
-    .notification-toast {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #374151;
-      color: white;
-      padding: 12px 16px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transform: translateX(100%);
-      transition: transform 0.3s ease;
-      max-width: 300px;
-    }
-    .notification-toast.show {
-      transform: translateX(0);
-    }
-    .notification-toast i {
-      color: #10b981;
-    }
 
 
     .container {
@@ -739,7 +630,7 @@
       <div class="notification-wrapper">
         <button class="notification-btn" id="notification-btn">
           <i class="fa fa-bell"></i>
-          <span class="notification-count" id="notification-count" style="display: none;">0</span>
+          <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
         </button>
         <div class="notification-dropdown" id="notification-dropdown">
           <div class="notification-header">

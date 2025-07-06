@@ -209,26 +209,7 @@ class NotificationService {
     }
   }
 
-  // System notifications
-  async addSystemUpdate(data) {
-    await this.addNotification({
-      type: 'system_update',
-      title: 'System Update',
-      message: data.message,
-      icon: 'fa-info-circle',
-      category: 'System'
-    });
-  }
 
-  async addInquiryReceived(data) {
-    await this.addNotification({
-      type: 'inquiry_received',
-      title: 'New Inquiry Received',
-      message: `You have received a new inquiry from ${data.studentName}: "${data.subject}"`,
-      icon: 'fa-question-circle',
-      category: 'Inquiries'
-    });
-  }
 
   async markAsRead(notificationId) {
     if (!this.db) return;
@@ -339,18 +320,18 @@ class NotificationService {
     
     container.innerHTML = this.notifications.map(notification => `
       <div class="notification-item ${notification.read ? 'read' : 'unread'}" data-id="${notification.id}">
-                 <div class="notification-content">
-           <div class="notification-header-item">
-             <i class="fa ${notification.icon || 'fa-bell'}" style="color: #10B981; margin-right: 8px;"></i>
-             <span class="notification-title">${notification.title}</span>
-             <span class="notification-time">${this.formatTime(notification.timestamp)}</span>
-           </div>
-           <div class="notification-message">${notification.message}</div>
-         </div>
-                 <div class="notification-actions-item">
-           ${!notification.read ? `<button class="notification-btn-item mark-read" onclick="window.NotificationService.markAsRead('${notification.id}')">Mark as Read</button>` : ''}
-           <button class="notification-btn-item delete" onclick="window.NotificationService.deleteNotification('${notification.id}')">Delete</button>
-         </div>
+        <div class="notification-content">
+          <div class="notification-header-item">
+            <i class="fa ${notification.icon || 'fa-bell'}" style="color: #10B981; margin-right: 8px;"></i>
+            <span class="notification-title">${notification.title}</span>
+            <span class="notification-time">${this.formatTime(notification.timestamp)}</span>
+          </div>
+          <div class="notification-message">${notification.message}</div>
+          <div class="notification-actions-item">
+            ${!notification.read ? `<button class="notification-btn-item mark-read" onclick="window.NotificationService.markAsRead('${notification.id}')">Mark as Read</button>` : ''}
+            <button class="notification-btn-item delete" onclick="window.NotificationService.deleteNotification('${notification.id}')">Delete</button>
+          </div>
+        </div>
       </div>
     `).join('');
   }
@@ -383,7 +364,11 @@ class NotificationService {
     console.log('🔍 NotificationService - Dropdown found:', notificationDropdown);
     
     if (notificationBtn && notificationDropdown) {
-      notificationBtn.addEventListener('click', (e) => {
+      // Remove any existing event listeners to prevent duplicates
+      const newBtn = notificationBtn.cloneNode(true);
+      notificationBtn.parentNode.replaceChild(newBtn, notificationBtn);
+      
+      newBtn.addEventListener('click', (e) => {
         console.log('🔔 NotificationService - Button clicked!');
         e.stopPropagation();
         notificationDropdown.classList.toggle('show');
@@ -392,7 +377,7 @@ class NotificationService {
       });
       
       document.addEventListener('click', (e) => {
-        if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
+        if (!newBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
           notificationDropdown.classList.remove('show');
         }
       });
@@ -400,6 +385,12 @@ class NotificationService {
       console.log('✅ NotificationService - Event listeners added');
     } else {
       console.error('❌ NotificationService - Button or dropdown not found!');
+      console.log('Available elements:', {
+        notificationBtn: document.getElementById('notification-btn'),
+        notificationDropdown: document.getElementById('notification-dropdown'),
+        allButtons: document.querySelectorAll('button'),
+        allDropdowns: document.querySelectorAll('.notification-dropdown')
+      });
     }
   }
 

@@ -742,7 +742,7 @@
       <div class="notification-wrapper">
         <button class="notification-btn" id="notification-btn">
           <i class="fa fa-bell"></i>
-          <span class="notification-count" id="notification-count" style="display: none;">0</span>
+          <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
         </button>
         <div class="notification-dropdown" id="notification-dropdown">
           <div class="notification-header">
@@ -877,6 +877,10 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    
+    // Make db globally accessible for NotificationService
+    window.db = db;
+    
     if (window.NotificationService) {
       window.NotificationService.initialize(db);
     }
@@ -1302,22 +1306,7 @@
     });
 
     // Navigation functions (make them global)
-    // Notification functionality
-    const notificationBtn = document.getElementById('notification-btn');
-    const notificationDropdown = document.getElementById('notification-dropdown');
-    
-    if (notificationBtn && notificationDropdown) {
-      notificationBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        notificationDropdown.classList.toggle('show');
-      });
-      
-      document.addEventListener('click', (e) => {
-        if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
-          notificationDropdown.classList.remove('show');
-        }
-      });
-    }
+    // Notification functionality handled by NotificationService
 
     const slotDropdown = document.getElementById('slot-dropdown');
     const slotDropdownContent = document.getElementById('slot-dropdown-content');
@@ -1408,11 +1397,11 @@
   <script>
     // Initialize notification system for lecturer
     document.addEventListener('DOMContentLoaded', async function() {
-      if (window.NotificationService) {
+      if (window.NotificationService && window.db) {
         const userEmail = sessionStorage.getItem('userEmail') || 'lecturer@example.com';
         
         // Initialize with Firebase
-        await window.NotificationService.initialize(db);
+        await window.NotificationService.initialize(window.db);
         window.NotificationService.setUser(userEmail, 'lecturer');
         
         // Handle notification actions
