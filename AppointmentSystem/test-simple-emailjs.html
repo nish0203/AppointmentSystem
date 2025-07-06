@@ -47,18 +47,18 @@
 </head>
 <body>
     <div class="container">
-        <h1>🧪 Ultra Simple EmailJS Test (Plain Text Only!)</h1>
+        <h1>🧪 Appointment System Email Notification Test</h1>
         
         <div class="info">
-            <strong>🎨 Professional Email Templates Test!</strong>
-            <p>Testing the new <strong>HTML email templates</strong> for your appointment system!</p>
+            <strong>📧 Real Notification System Test!</strong>
+            <p>Testing the actual email notifications used in your lecturer and student pages!</p>
             <ul>
-                <li>✅ Professional HTML email designs</li>
-                <li>✅ Mobile-responsive templates</li>
-                <li>✅ Consistent university branding</li>
-                <li>✅ Template: booking_confirmation (NEW!)</li>
-                <li>✅ Template: slot_booked_alert (working)</li>
-                <li>⚠️ Other templates need to be created in EmailJS first</li>
+                <li>✅ Lecturer Notifications (sent to students)</li>
+                <li>✅ Student Notifications (sent to lecturers)</li>
+                <li>✅ Uses the same logic as your NotificationService</li>
+                <li>✅ Professional HTML email templates</li>
+                <li>✅ Mobile-responsive designs</li>
+                <li>🎯 Test exactly what users receive!</li>
             </ul>
         </div>
 
@@ -68,16 +68,28 @@
         </div>
 
         <div style="margin: 20px 0;">
-            <h3>Test Email Functions:</h3>
-            <button onclick="testBookingConfirmation()">📧 Test Booking Confirmation</button>
-            <button onclick="testSlotBookedAlert()">📚 Test Slot Booked Alert</button>
-            <button onclick="testCancellation()">❌ Test Cancellation</button>
-            <button onclick="testReminder()">⏰ Test 24h Reminder</button>
-            <button onclick="test1HourReminder()">⏰ Test 1h Reminder</button>
-            <button onclick="test15MinReminder()">⏰ Test 15min Reminder</button>
-            <button onclick="testOTP()">🔑 Test OTP (Original)</button>
-            <button onclick="debugBookingTemplate()">🔍 Debug Booking Template</button>
+            <h3>📧 Lecturer Notifications (sent to students):</h3>
+            <button onclick="testLecturerApprovalNotification()">✅ Lecturer Approved Appointment</button>
+            <button onclick="testLecturerRejectionNotification()">❌ Lecturer Rejected Appointment</button>
+            <button onclick="testLecturerCancellationNotification()">🗑️ Lecturer Cancelled Appointment</button>
         </div>
+        
+        <div style="margin: 20px 0;">
+            <h3>🎓 Student Notifications (sent to lecturers):</h3>
+            <button onclick="testStudentBookedSlotNotification()">📅 Student Booked Slot</button>
+            <button onclick="testStudentRequestedSlotNotification()">📝 Student Requested Slot</button>
+            <button onclick="testStudentCancelRequestNotification()">❌ Student Cancel Request</button>
+            <button onclick="testStudentRescheduleRequestNotification()">🔄 Student Reschedule Request</button>
+        </div>
+        
+        <div style="margin: 20px 0;">
+            <h3>⏰ Appointment Reminder System:</h3>
+            <button onclick="testAppointmentReminder()">📅 Test 24h Reminder</button>
+            <button onclick="testReminderService()">🔧 Test Reminder Service</button>
+            <button onclick="checkReminderStats()">📊 Check Reminder Stats</button>
+        </div>
+        
+
 
         <div id="results"></div>
     </div>
@@ -87,10 +99,19 @@
     
     <!-- Include our ultra simple email service -->
     <script src="email-service-ultra-simple.js"></script>
+    
+    <!-- Include notification service for enhanced testing -->
+    <script src="notification-service.js"></script>
+    
+    <!-- Include appointment reminder service -->
+    <script src="appointment-reminder-service.js"></script>
 
     <script>
         // Initialize EmailJS
         emailjs.init('CO_25CIKuZ9YpYqQt');
+        
+        // Initialize email service
+        window.emailService = new EmailService();
 
         function addResult(message, isSuccess = true) {
             const results = document.getElementById('results');
@@ -100,7 +121,100 @@
             results.insertBefore(div, results.firstChild);
         }
 
-        async function testBookingConfirmation() {
+        // Helper function to send email notifications like the enhanced NotificationService
+        async function sendNotificationEmail(userEmail, userType, notificationData) {
+            const { type, title, message } = notificationData;
+            
+            // Extract appointment data from message
+            const appointmentData = extractAppointmentData(message);
+            
+            // Handle different notification types
+            switch (type) {
+                case 'lecturer_approved_appointment':
+                    await emailService.sendBookingConfirmation(
+                        userEmail,
+                        appointmentData.studentName || 'Student',
+                        appointmentData.lecturerName || 'Lecturer',
+                        appointmentData.date || 'TBD',
+                        appointmentData.time || 'TBD'
+                    );
+                    break;
+                    
+                case 'lecturer_rejected_appointment':
+                case 'lecturer_cancelled_appointment':
+                    await emailService.sendCancellationNotification(
+                        userEmail,
+                        appointmentData.studentName || 'Student',
+                        appointmentData.date || 'TBD',
+                        appointmentData.time || 'TBD',
+                        appointmentData.reason || 'No reason provided',
+                        appointmentData.lecturerName || 'Lecturer',
+                        appointmentData.studentName || 'Student'
+                    );
+                    break;
+                    
+                case 'student_booked_slot':
+                case 'student_requested_slot':
+                    await emailService.sendSlotBookedAlert(
+                        userEmail,
+                        appointmentData.lecturerName || 'Lecturer',
+                        appointmentData.studentName || 'Student',
+                        appointmentData.date || 'TBD',
+                        appointmentData.time || 'TBD',
+                        appointmentData.studentEmail || 'student@example.com',
+                        appointmentData.purpose || 'General consultation'
+                    );
+                    break;
+                    
+                case 'student_reschedule_request':
+                case 'student_cancel_request':
+                    await emailService.sendPlainEmail(
+                        userEmail,
+                        `${title}\n\n${message}\n\nPlease check your appointment dashboard for more details.`
+                    );
+                    break;
+                    
+                default:
+                    await emailService.sendPlainEmail(
+                        userEmail,
+                        `${title}\n\n${message}\n\nThis is an automated message from the University Booking System.`
+                    );
+            }
+        }
+        
+        // Helper function to extract appointment data from notification messages
+        function extractAppointmentData(message) {
+            const data = {};
+            
+            // Extract names
+            const lecturerMatch = message.match(/(.+?) have (approved|rejected|cancelled)/);
+            if (lecturerMatch) {
+                data.lecturerName = lecturerMatch[1];
+            }
+            
+            const studentMatch = message.match(/(.+?) have (booked|requested|request)/);
+            if (studentMatch) {
+                data.studentName = studentMatch[1];
+            }
+            
+            // Extract date and time
+            const dateTimeMatch = message.match(/for (.+?) (\d{1,2}:\d{2} (?:AM|PM))/);
+            if (dateTimeMatch) {
+                data.date = dateTimeMatch[1];
+                data.time = dateTimeMatch[2];
+            }
+            
+            // Extract full time range
+            const timeRangeMatch = message.match(/(\d{1,2}:\d{2} (?:AM|PM) - \d{1,2}:\d{2} (?:AM|PM))/);
+            if (timeRangeMatch) {
+                data.time = timeRangeMatch[1];
+            }
+            
+            return data;
+        }
+
+        // LECTURER NOTIFICATIONS (sent to students)
+        async function testLecturerApprovalNotification() {
             const email = document.getElementById('testEmail').value;
             if (!email) {
                 addResult('Please enter an email address', false);
@@ -108,226 +222,244 @@
             }
 
             try {
-                addResult('📧 Sending booking confirmation (trying NEW template first...)');
-                addResult('🎯 Primary attempt: booking_confirmation template', true);
+                addResult('✅ Testing lecturer approval notification...');
                 
-                const result = await emailService.sendBookingConfirmation(
-                    email,                                    // studentEmail
-                    'John Doe',                              // studentName  
-                    'Dr. Sarah Smith',                       // lecturerName
-                    'Monday, January 15, 2024',             // appointmentDate
-                    '10:00 AM - 11:00 AM',                  // appointmentTime
-                    'https://meet.google.com/abc-123-def'   // meetingLink
+                const notificationData = {
+                    type: 'lecturer_approved_appointment',
+                    title: 'Appointment Approved',
+                    message: 'Dr. Sarah Smith have approved your appointment booking for Monday, January 15, 2024 10:00 AM - 11:00 AM'
+                };
+                
+                await sendNotificationEmail(email, 'student', notificationData);
+                addResult('✅ Lecturer approval notification sent! Check your email.');
+                
+            } catch (error) {
+                addResult(`❌ Failed: ${error.message}`, false);
+            }
+        }
+
+        async function testLecturerRejectionNotification() {
+            const email = document.getElementById('testEmail').value;
+            if (!email) {
+                addResult('Please enter an email address', false);
+                return;
+            }
+
+            try {
+                addResult('❌ Testing lecturer rejection notification...');
+                
+                const notificationData = {
+                    type: 'lecturer_rejected_appointment',
+                    title: 'Appointment Rejected',
+                    message: 'Dr. Sarah Smith have rejected your appointment slot request for Monday, January 15, 2024 10:00 AM - 11:00 AM'
+                };
+                
+                await sendNotificationEmail(email, 'student', notificationData);
+                addResult('✅ Lecturer rejection notification sent! Check your email.');
+                
+            } catch (error) {
+                addResult(`❌ Failed: ${error.message}`, false);
+            }
+        }
+
+        async function testLecturerCancellationNotification() {
+            const email = document.getElementById('testEmail').value;
+            if (!email) {
+                addResult('Please enter an email address', false);
+                return;
+            }
+
+            try {
+                addResult('🗑️ Testing lecturer cancellation notification...');
+                
+                const notificationData = {
+                    type: 'lecturer_cancelled_appointment',
+                    title: 'Appointment Cancelled',
+                    message: 'Dr. Sarah Smith have cancelled your appointment booking for Monday, January 15, 2024 10:00 AM - 11:00 AM'
+                };
+                
+                await sendNotificationEmail(email, 'student', notificationData);
+                addResult('✅ Lecturer cancellation notification sent! Check your email.');
+                
+            } catch (error) {
+                addResult(`❌ Failed: ${error.message}`, false);
+            }
+        }
+
+        // STUDENT NOTIFICATIONS (sent to lecturers)
+        async function testStudentBookedSlotNotification() {
+            const email = document.getElementById('testEmail').value;
+            if (!email) {
+                addResult('Please enter an email address', false);
+                return;
+            }
+
+            try {
+                addResult('📅 Testing student booked slot notification...');
+                
+                const notificationData = {
+                    type: 'student_booked_slot',
+                    title: 'Slot Booked',
+                    message: 'John Doe have booked your appointment slot for Monday, January 15, 2024 10:00 AM - 11:00 AM'
+                };
+                
+                await sendNotificationEmail(email, 'lecturer', notificationData);
+                addResult('✅ Student booked slot notification sent! Check your email.');
+                
+            } catch (error) {
+                addResult(`❌ Failed: ${error.message}`, false);
+            }
+        }
+
+
+
+        async function testStudentRequestedSlotNotification() {
+            const email = document.getElementById('testEmail').value;
+            if (!email) {
+                addResult('Please enter an email address', false);
+                return;
+            }
+
+            try {
+                addResult('📝 Testing student requested slot notification...');
+                
+                const notificationData = {
+                    type: 'student_requested_slot',
+                    title: 'Slot Request',
+                    message: 'John Doe have request for appointment slot for Monday, January 15, 2024 10:00 AM - 11:00 AM'
+                };
+                
+                await sendNotificationEmail(email, 'lecturer', notificationData);
+                addResult('✅ Student requested slot notification sent! Check your email.');
+                
+            } catch (error) {
+                addResult(`❌ Failed: ${error.message}`, false);
+            }
+        }
+
+        async function testStudentCancelRequestNotification() {
+            const email = document.getElementById('testEmail').value;
+            if (!email) {
+                addResult('Please enter an email address', false);
+                return;
+            }
+
+            try {
+                addResult('❌ Testing student cancel request notification...');
+                
+                const notificationData = {
+                    type: 'student_cancel_request',
+                    title: 'Cancellation Request',
+                    message: 'John Doe have requested cancellation of appointment slot at Monday, January 15, 2024 10:00 AM - 11:00 AM'
+                };
+                
+                await sendNotificationEmail(email, 'lecturer', notificationData);
+                addResult('✅ Student cancel request notification sent! Check your email.');
+                
+            } catch (error) {
+                addResult(`❌ Failed: ${error.message}`, false);
+            }
+        }
+
+        async function testStudentRescheduleRequestNotification() {
+            const email = document.getElementById('testEmail').value;
+            if (!email) {
+                addResult('Please enter an email address', false);
+                return;
+            }
+
+            try {
+                addResult('🔄 Testing student reschedule request notification...');
+                
+                const notificationData = {
+                    type: 'student_reschedule_request',
+                    title: 'Reschedule Request',
+                    message: 'John Doe have requested reschedule of appointment for Tuesday, January 16, 2024 2:00 PM - 3:00 PM'
+                };
+                
+                await sendNotificationEmail(email, 'lecturer', notificationData);
+                addResult('✅ Student reschedule request notification sent! Check your email.');
+                
+            } catch (error) {
+                addResult(`❌ Failed: ${error.message}`, false);
+            }
+        }
+
+
+        
+        // APPOINTMENT REMINDER SYSTEM TESTS
+        async function testAppointmentReminder() {
+            const email = document.getElementById('testEmail').value;
+            if (!email) {
+                addResult('Please enter an email address', false);
+                return;
+            }
+
+            try {
+                addResult('📅 Testing 24-hour appointment reminder...');
+                
+                await window.emailService.sendAppointmentReminder(
+                    email,
+                    'John Doe',
+                    'Your appointment is in 24 hours',
+                    'Tomorrow, January 16, 2024',
+                    '10:00 AM - 11:00 AM',
+                    'Dr. Sarah Smith',
+                    'Thesis consultation'
                 );
                 
-                if (result.usedFallback) {
-                    addResult('⚠️ booking_confirmation template not found - used fallback OTP template');
-                    addResult('✅ Booking confirmation sent via fallback method! Check your email (plain text format).');
-                    addResult('💡 Create the "booking_confirmation" template in EmailJS for HTML formatting', true);
-                } else {
-                    addResult('✅ Booking confirmation sent with professional HTML template! Check your email inbox.');
-                    addResult('📋 Template used: booking_confirmation with proper HTML formatting', true);
+                addResult('✅ 24-hour reminder sent! Check your email.');
+                
+            } catch (error) {
+                addResult(`❌ Failed: ${error.message}`, false);
+            }
+        }
+        
+        async function testReminderService() {
+            try {
+                addResult('🔧 Testing Appointment Reminder Service...');
+                
+                // Check if service is available
+                if (!window.AppointmentReminderService) {
+                    addResult('❌ AppointmentReminderService not available', false);
+                    return;
                 }
-            } catch (error) {
-                addResult(`❌ Failed: ${error.message}`, false);
-                console.error('Detailed error:', error);
-            }
-        }
-
-        async function testSlotBookedAlert() {
-            const email = document.getElementById('testEmail').value;
-            if (!email) {
-                addResult('Please enter an email address', false);
-                return;
-            }
-
-            try {
-                addResult('📚 Sending slot booked alert...');
                 
-                await emailService.sendSlotBookedAlert(
-                    email,                      // lecturerEmail
-                    'Dr. Smith',               // lecturerName
-                    'John Doe',                // studentName
-                    '2024-01-15',              // appointmentDate
-                    '10:00 AM',                // appointmentTime
-                    'john.doe@student.com',    // studentEmail
-                    'Project discussion'       // purpose
-                );
+                addResult('✅ AppointmentReminderService is available');
                 
-                addResult('✅ Slot booked alert sent! Check your email inbox.');
+                // Get service stats
+                const stats = window.AppointmentReminderService.getStats();
+                addResult(`📊 Service Stats: ${JSON.stringify(stats)}`);
+                
+                // Test manual trigger (this will check for real appointments in database)
+                addResult('🔍 Triggering manual reminder check...');
+                await window.AppointmentReminderService.triggerReminderCheck();
+                addResult('✅ Manual reminder check completed');
+                
             } catch (error) {
                 addResult(`❌ Failed: ${error.message}`, false);
             }
         }
-
-        async function testCancellation() {
-            const email = document.getElementById('testEmail').value;
-            if (!email) {
-                addResult('Please enter an email address', false);
-                return;
-            }
-
+        
+        function checkReminderStats() {
             try {
-                addResult('❌ Sending cancellation notification using HTML template...');
-                addResult('🎯 Testing Template ID: cancellation_notification', true);
-                
-                await emailService.sendCancellationNotification(
-                    email,                           // email
-                    'John Doe',                      // name (recipient)
-                    'Monday, January 15, 2024',     // appointmentDate  
-                    '10:00 AM - 11:00 AM',          // appointmentTime
-                    'Lecturer unavailable due to emergency', // reason
-                    'Dr. Sarah Smith',              // lecturerName
-                    'John Doe'                      // studentName
-                );
-                
-                addResult('✅ Cancellation notification sent with professional template! Check your email inbox.');
-                addResult('📋 Template used: cancellation_notification with HTML formatting', true);
-            } catch (error) {
-                addResult(`❌ Failed: ${error.message}`, false);
-                addResult('💡 Make sure to create the "cancellation_notification" template in EmailJS first', false);
-            }
-        }
-
-        async function testReminder() {
-            const email = document.getElementById('testEmail').value;
-            if (!email) {
-                addResult('Please enter an email address', false);
-                return;
-            }
-
-            try {
-                addResult('⏰ Testing flexible reminder template...');
-                addResult('🎯 Testing Template ID: appointment_reminder (universal template)', true);
-                
-                await emailService.sendAppointmentReminder(
-                    email,                                              // email
-                    'John Doe',                                        // recipientName
-                    'Your appointment is in 24 hours',                // reminderTiming (flexible!)
-                    'Tomorrow, January 16, 2024',                     // appointmentDate
-                    '10:00 AM - 11:00 AM',                           // appointmentTime
-                    'Dr. Sarah Smith',                                // otherPartyName
-                    'Project discussion and thesis review'           // purpose
-                );
-                
-                addResult('✅ 24-hour reminder sent with flexible template! Check your email inbox.');
-                addResult('💡 This same template can be used for any timing (1 hour, 15 minutes, etc.)', true);
-            } catch (error) {
-                addResult(`❌ Failed: ${error.message}`, false);
-                addResult('💡 Make sure to create the "appointment_reminder" template in EmailJS first', false);
-            }
-        }
-
-        async function testOTP() {
-            const email = document.getElementById('testEmail').value;
-            if (!email) {
-                addResult('Please enter an email address', false);
-                return;
-            }
-
-            try {
-                addResult('🔑 Sending OTP (original functionality)...');
-                
-                await emailService.sendOTP(email, '123456');
-                
-                addResult('✅ OTP sent! This proves your EmailJS is working.');
-            } catch (error) {
-                addResult(`❌ Failed: ${error.message}`, false);
-            }
-        }
-
-        async function test1HourReminder() {
-            const email = document.getElementById('testEmail').value;
-            if (!email) {
-                addResult('Please enter an email address', false);
-                return;
-            }
-
-            try {
-                addResult('⏰ Testing 1-hour reminder...');
-                
-                await emailService.sendAppointmentReminder(
-                    email,                                              // email
-                    'Dr. Sarah Smith',                                 // recipientName (lecturer this time)
-                    'Your appointment is starting in 1 hour',         // reminderTiming (1 hour)
-                    'Today, January 15, 2024',                       // appointmentDate
-                    '2:00 PM - 3:00 PM',                             // appointmentTime
-                    'John Doe',                                       // otherPartyName (student)
-                    'Thesis consultation'                             // purpose
-                );
-                
-                addResult('✅ 1-hour reminder sent! Same template, different timing.');
-            } catch (error) {
-                addResult(`❌ Failed: ${error.message}`, false);
-            }
-        }
-
-        async function test15MinReminder() {
-            const email = document.getElementById('testEmail').value;
-            if (!email) {
-                addResult('Please enter an email address', false);
-                return;
-            }
-
-            try {
-                addResult('⏰ Testing 15-minute reminder...');
-                
-                await emailService.sendAppointmentReminder(
-                    email,                                              // email
-                    'John Doe',                                        // recipientName (student)
-                    'Your appointment is starting in 15 minutes',     // reminderTiming (15 min)
-                    'Today',                                          // appointmentDate
-                    '10:00 AM - 11:00 AM',                          // appointmentTime
-                    'Dr. Sarah Smith',                               // otherPartyName (lecturer)
-                    'General consultation'                           // purpose
-                );
-                
-                addResult('✅ 15-minute reminder sent! Urgent timing, minimal details.');
-            } catch (error) {
-                addResult(`❌ Failed: ${error.message}`, false);
-            }
-        }
-
-        async function debugBookingTemplate() {
-            const email = document.getElementById('testEmail').value;
-            if (!email) {
-                addResult('Please enter an email address', false);
-                return;
-            }
-
-            try {
-                addResult('🔍 Testing direct template call to booking_confirmation...');
-                
-                // Test with minimal parameters first
-                const response = await emailjs.send(
-                    'service_mailgun',
-                    'booking_confirmation',
-                    {
-                        email: email,              // Required: recipient email
-                        student_name: 'Test Student',
-                        lecturer_name: 'Test Lecturer',
-                        appointment_date: 'Today',
-                        appointment_time: '10:00 AM'
-                    },
-                    { publicKey: 'CO_25CIKuZ9YpYqQt' }
-                );
-                
-                addResult('✅ Direct template call worked! Template exists and parameters are correct.');
-                console.log('✅ Direct template response:', response);
-                
-            } catch (error) {
-                addResult(`❌ Direct template call failed: ${error.message}`, false);
-                console.error('❌ Direct template error details:', error);
-                
-                // Try to get more info about the error
-                if (error.status) {
-                    addResult(`Status: ${error.status}`, false);
+                if (!window.AppointmentReminderService) {
+                    addResult('❌ AppointmentReminderService not available', false);
+                    return;
                 }
-                if (error.text) {
-                    addResult(`Response: ${error.text}`, false);
-                }
+                
+                const stats = window.AppointmentReminderService.getStats();
+                addResult('📊 Reminder Service Statistics:');
+                addResult(`   • Sent reminders: ${stats.sentReminders}`);
+                addResult(`   • Check interval: ${stats.checkInterval} minutes`);
+                addResult(`   • Reminder timing: ${stats.reminderHours} hours before`);
+                addResult(`   • Is running: ${stats.isRunning ? 'Yes' : 'No'}`);
+                
+            } catch (error) {
+                addResult(`❌ Failed: ${error.message}`, false);
             }
         }
+
     </script>
 </body>
 </html> 

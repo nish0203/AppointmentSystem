@@ -178,7 +178,20 @@
     </div>
   </div>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import {
+      getFirestore, doc, getDoc
+    } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+
+    // Initialize Firebase
+    const app = initializeApp({
+      apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
+      authDomain: "appointment-management-c2531.firebaseapp.com",
+      projectId: "appointment-management-c2531",
+    });
+    const db = getFirestore(app);
+
     // back button logic
     document.getElementById('backBtn').addEventListener('click', () => {
       if (confirm('Are you sure you want to go back to the homepage?')) {
@@ -188,6 +201,27 @@
 
     let announcements = [];
     let editingId = null;
+    let currentAdminId = 'AD001'; // Default fallback
+
+    // Load current admin data
+    async function loadCurrentAdmin() {
+      try {
+        const currentUserEmail = sessionStorage.getItem('userEmail');
+        if (currentUserEmail) {
+          const adminDoc = await getDoc(doc(db, 'admins', currentUserEmail));
+          if (adminDoc.exists()) {
+            const adminData = adminDoc.data();
+            currentAdminId = adminData.id || 'AD001';
+            console.log('Loaded current admin ID:', currentAdminId);
+          } else {
+            console.warn('Admin document not found for:', currentUserEmail);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading current admin:', error);
+        // Keep default fallback
+      }
+    }
 
     function renderAnnouncements() {
       const list = document.getElementById('announcement-list');
@@ -231,7 +265,7 @@
       } else {
         const id      = Date.now();
         const date    = new Date().toLocaleString();
-        const adminId = 'AD001';
+        const adminId = currentAdminId;
         announcements.push({ id, adminId, title, content, date });
         // sendEmail(title, content);
       }
@@ -279,7 +313,7 @@
       } else {
         announcements = [{
           id: 1,
-          adminId: 'AD001',
+          adminId: currentAdminId,
           title: 'System Update',
           content: 'The system will be under maintenance tonight.',
           date: new Date().toLocaleString()
@@ -289,8 +323,10 @@
     }
 
     // Initialize
-    loadFromLocal();
-    renderAnnouncements();
+    loadCurrentAdmin().then(() => {
+      loadFromLocal();
+      renderAnnouncements();
+    });
   </script>
 
 </body>

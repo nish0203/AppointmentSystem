@@ -440,6 +440,9 @@
         <p><b>E-mail:</b> <span id="lecturer-email">-</span></p>
         <p><b>Faculty:</b> <span id="lecturer-faculty">-</span></p>
         <p><b>Office:</b> <span id="lecturer-office">-</span></p>
+        <button onclick="changeAvatar()" style="background: #10B981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 10px;">
+          <i class="fa fa-user"></i> Edit Avatar
+        </button>
       </div>
     </div>
     <!-- Student Requests Section (Full Width) -->
@@ -533,6 +536,9 @@
     </div>
   </div>
 
+  <!-- Hidden file input for avatar -->
+  <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
@@ -555,6 +561,13 @@
     if (window.NotificationService) {
       window.NotificationService.initialize(db);
     }
+    
+    // Initialize appointment reminder service
+    if (window.AppointmentReminderService && window.emailService) {
+      window.AppointmentReminderService.initialize(db, window.emailService);
+      console.log('✅ Appointment reminder service initialized for lecturer');
+    }
+    
     const storage = getStorage(app);
 
     // Make Firebase functions globally available
@@ -1351,10 +1364,91 @@
     window.closeSuccessModal = function() {
       document.getElementById('success-modal').style.display = 'none';
     };
+    
+    // Avatar functionality
+    function changeAvatar() {
+      document.getElementById('avatar-input').click();
+    }
+
+    document.getElementById('avatar-input').addEventListener('change', async function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file');
+        return;
+      }
+
+      // Validate file size (5MB limit)
+      const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+      if (file.size > maxSize) {
+        alert('File size too large. Please select an image smaller than 5MB.');
+        return;
+      }
+
+      try {
+        // Show loading state
+        const fileName = `avatar_${Date.now()}.${file.name.split('.').pop()}`;
+        const userEmail = sessionStorage.getItem('userEmail');
+        
+        if (!userEmail) {
+          alert('Please log in first');
+          return;
+        }
+
+        // Upload to Firebase Storage
+        const fileRef = ref(storage, `avatars/lecturers/${userEmail}/${fileName}`);
+        const snapshot = await uploadBytes(fileRef, file);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+
+        // Update lecturer document
+        await updateDoc(doc(db, 'lecturers', userEmail), {
+          avatarUrl: downloadURL
+        });
+
+        // Update avatar displays (both header and main profile picture)
+        document.getElementById('user-avatar').src = downloadURL;
+        const profilePic = document.querySelector('.profile-pic');
+        if (profilePic) {
+          profilePic.src = downloadURL;
+        }
+
+        // Update cache
+        sessionStorage.setItem('userAvatarUrl', downloadURL);
+
+        console.log('Avatar updated successfully');
+        alert('Avatar updated successfully!');
+
+      } catch (error) {
+        console.error('Error uploading avatar:', error);
+        alert('Failed to upload avatar. Please try again.');
+      }
+    });
+
+    // Make functions global
+    window.changeAvatar = changeAvatar;
   </script>
 
+  <!-- EmailJS Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  
+  <!-- Include email service -->
+  <script src="email-service-ultra-simple.js"></script>
+  
+  <!-- Include appointment reminder service -->
+  <script src="appointment-reminder-service.js"></script>
+  
   <!-- Notification Service -->
   <script src="notification-service.js"></script>
+  
+  <script>
+    // Initialize EmailJS
+    emailjs.init('CO_25CIKuZ9YpYqQt');
+    
+    // Initialize email service
+    window.emailService = new EmailService();
+  </script>
   
   <script>
     // Initialize notification system for lecturer

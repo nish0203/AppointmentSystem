@@ -732,6 +732,15 @@
         } else {
           console.error('❌ NotificationService not found!');
         }
+        
+        // Initialize appointment reminder service
+        if (window.AppointmentReminderService) {
+          console.log('⏰ Initializing appointment reminder service...');
+          await window.AppointmentReminderService.initialize(db, window.emailService);
+          console.log('✅ Appointment reminder service initialized for student');
+        } else {
+          console.error('❌ AppointmentReminderService not found!');
+        }
       } else {
         nameEl.textContent = 'Welcome!';
         emailEl.textContent = '-';
@@ -1032,6 +1041,23 @@
 
   <!-- Notification Service -->
   <script src="notification-service.js"></script>
+  
+  <!-- EmailJS Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  
+  <!-- Email Service -->
+  <script src="email-service-ultra-simple.js"></script>
+  
+  <!-- Appointment Reminder Service -->
+  <script src="appointment-reminder-service.js"></script>
+
+  <script>
+    // Initialize EmailJS
+    emailjs.init('CO_25CIKuZ9YpYqQt');
+    
+    // Initialize email service
+    window.emailService = new EmailService();
+  </script>
 
   <script>
     // Inquiry modal functions

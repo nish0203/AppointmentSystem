@@ -562,12 +562,8 @@
       <h1><i class="fa fa-calendar-check"></i> Manage Appointments</h1>
       <p>Review and manage student appointment requests</p>
       <div style="margin-top: 16px;">
-        <button onclick="debugDatabase()" style="background: #6366f1; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-right: 8px;">
-          Debug Database
-        </button>
-        <button onclick="reloadAppointments()" style="background: #10B981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">
-          Reload Appointments
-        </button>
+        
+        
         <span id="lecturer-info" style="margin-left: 0px; color: #666; font-size: 0.9rem;"></span>
       </div>
     </div>
@@ -721,6 +717,12 @@
     if (window.NotificationService) {
       window.NotificationService.initialize(db);
     }
+    
+    // Initialize appointment reminder service
+    if (window.AppointmentReminderService && window.emailService) {
+      window.AppointmentReminderService.initialize(db, window.emailService);
+      console.log('✅ Appointment reminder service initialized for lecturer-manage-slots');
+    }
 
     let currentLecturerEmail = '';
 
@@ -800,67 +802,7 @@
       }
     });
 
-    // Debug function to check database
-    async function debugDatabase() {
-      console.log('=== DEBUG DATABASE ===');
-      console.log('Current lecturer email:', currentLecturerEmail);
-      
-      try {
-        // Check if appointments collection exists
-        const allAppointments = await getDocs(collection(db, 'appointments'));
-        console.log('Total appointments in database:', allAppointments.size);
-        
-        const appointmentsByLecturer = {};
-        const appointmentsByStatus = {};
-        
-        allAppointments.docs.forEach(doc => {
-          const data = doc.data();
-          const lecEmail = data.lecturerEmail || 'NO_LECTURER_EMAIL';
-          const status = data.status || 'NO_STATUS';
-          
-          console.log('Appointment ID:', doc.id);
-          console.log('Data:', data);
-          console.log('---');
-          
-          // Count by lecturer
-          if (!appointmentsByLecturer[lecEmail]) {
-            appointmentsByLecturer[lecEmail] = 0;
-          }
-          appointmentsByLecturer[lecEmail]++;
-          
-          // Count by status
-          if (!appointmentsByStatus[status]) {
-            appointmentsByStatus[status] = 0;
-          }
-          appointmentsByStatus[status]++;
-        });
-        
-        console.log('Appointments by lecturer:', appointmentsByLecturer);
-        console.log('Appointments by status:', appointmentsByStatus);
-        
-        // Check for exact match
-        const exactMatches = allAppointments.docs.filter(doc => 
-          doc.data().lecturerEmail === currentLecturerEmail
-        );
-        console.log(`Exact matches for ${currentLecturerEmail}:`, exactMatches.length);
-        
-        alert(`Debug complete! Check browser console for details.\n\nSummary:\n- Total appointments: ${allAppointments.size}\n- Exact matches for ${currentLecturerEmail}: ${exactMatches.length}\n- Pending status appointments: ${appointmentsByStatus.pending || 0}`);
-        
-      } catch (error) {
-        console.error('Debug error:', error);
-        alert('Debug failed: ' + error.message);
-      }
-    }
 
-    // Reload function
-    async function reloadAppointments() {
-      if (currentLecturerEmail) {
-        await loadAppointments(currentLecturerEmail);
-        alert('Appointments reloaded!');
-      } else {
-        alert('No lecturer email available');
-      }
-    }
 
     // Make functions global - moved to end of script
     // window.debugDatabase = debugDatabase;
@@ -1527,8 +1469,8 @@
     window.rejectAppointment = rejectAppointment;
     window.markAppointmentDone = markAppointmentDone;
     window.viewAppointmentDetails = viewAppointmentDetails;
-    window.debugDatabase = debugDatabase;
-    window.reloadAppointments = reloadAppointments;
+
+
 
     // Render appointments
     function renderAppointments(appointments) {
@@ -1639,7 +1581,7 @@
                 ${appointment.purpose || 'Untitled Appointment'}
               </h3>
               <div class="meta">
-                <span><i class="fa fa-calendar"></i> ${new Date(appointment.bookedAt).toLocaleDateString()}</span>
+                <span><i class="fa fa-calendar"></i> ${appointment.date}</span>
                 <span><i class="fa fa-clock"></i> ${appointment.startTime} - ${appointment.endTime}</span>
               </div>
             </div>
@@ -1682,8 +1624,25 @@
     // Notification dropdown functionality handled by NotificationService
   </script>
 
+  <!-- EmailJS Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  
+  <!-- Include email service -->
+  <script src="email-service-ultra-simple.js"></script>
+  
+  <!-- Include appointment reminder service -->
+  <script src="appointment-reminder-service.js"></script>
+  
   <!-- Notification Service -->
   <script src="notification-service.js"></script>
+  
+  <script>
+    // Initialize EmailJS
+    emailjs.init('CO_25CIKuZ9YpYqQt');
+    
+    // Initialize email service
+    window.emailService = new EmailService();
+  </script>
   <script>
     // Initialize notification system for lecturer
     document.addEventListener('DOMContentLoaded', function() {

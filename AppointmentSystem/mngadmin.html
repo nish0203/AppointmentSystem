@@ -640,7 +640,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
-      getFirestore, collection, doc, getDocs,
+      getFirestore, collection, doc, getDocs, getDoc,
       setDoc, updateDoc, deleteDoc
     } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
@@ -692,6 +692,7 @@
 
     let editingEmail = null;
     let allAdmins = [];
+    let currentAdminId = 'AD001'; // Default fallback
     let currentOTP = null;
     let pendingAdminData = null;
     let requiresOTP = false;
@@ -818,6 +819,26 @@
       }
     }
 
+    // Load current admin data
+    async function loadCurrentAdmin() {
+      try {
+        const currentUserEmail = sessionStorage.getItem('userEmail');
+        if (currentUserEmail) {
+          const adminDoc = await getDoc(doc(db, 'admins', currentUserEmail));
+          if (adminDoc.exists()) {
+            const adminData = adminDoc.data();
+            currentAdminId = adminData.id || 'AD001';
+            console.log('Loaded current admin ID:', currentAdminId);
+          } else {
+            console.warn('Admin document not found for:', currentUserEmail);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading current admin:', error);
+        // Keep default fallback
+      }
+    }
+
     // Show modal
     async function showModal(isEdit = false) {
       modalTitle.textContent = isEdit ? 'Edit Administrator' : 'Add New Administrator';
@@ -825,6 +846,8 @@
       if (!isEdit) {
         form.reset();
         adminIdInput.value = await generateNextAdminId();
+        // Set current admin ID for new admins
+        adminCreatedByInput.value = currentAdminId;
       }
 
       modal.style.display = 'flex';
@@ -1132,7 +1155,9 @@
     }
 
     // Initialize
-    loadAdmins();
+    loadCurrentAdmin().then(() => {
+      loadAdmins();
+    });
   </script>
 </body>
 </html>

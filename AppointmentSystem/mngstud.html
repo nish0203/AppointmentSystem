@@ -621,7 +621,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
-      getFirestore, collection, doc, getDocs,
+      getFirestore, collection, doc, getDocs, getDoc,
       setDoc, updateDoc, deleteDoc
     } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
@@ -659,6 +659,7 @@
 
     let editingDocId = null;
     let allStudents = [];
+    let currentAdminId = 'AD001'; // Default fallback
 
     // Load students
     async function loadStudents() {
@@ -763,12 +764,34 @@
       }
     }
 
+    // Load current admin data
+    async function loadCurrentAdmin() {
+      try {
+        const currentUserEmail = sessionStorage.getItem('userEmail');
+        if (currentUserEmail) {
+          const adminDoc = await getDoc(doc(db, 'admins', currentUserEmail));
+          if (adminDoc.exists()) {
+            const adminData = adminDoc.data();
+            currentAdminId = adminData.id || 'AD001';
+            console.log('Loaded current admin ID:', currentAdminId);
+          } else {
+            console.warn('Admin document not found for:', currentUserEmail);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading current admin:', error);
+        // Keep default fallback
+      }
+    }
+
     // Show modal
     function showModal(isEdit = false) {
       modalTitle.textContent = isEdit ? 'Edit Student' : 'Add New Student';
       
       if (!isEdit) {
         form.reset();
+        // Set current admin ID for new students
+        studentCreatedByInput.value = currentAdminId;
       }
 
       modal.style.display = 'flex';
@@ -940,7 +963,9 @@
     });
 
     // Initialize
-    loadStudents();
+    loadCurrentAdmin().then(() => {
+      loadStudents();
+    });
   </script>
   <script src="notification-service.js"></script>
 </body>

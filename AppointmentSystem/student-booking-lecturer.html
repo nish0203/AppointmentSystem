@@ -622,6 +622,10 @@
         <p><strong>Faculty:</strong> <span id="lecturer-faculty">-</span></p>
         <p><strong>Office:</strong> <span id="lecturer-office">-</span></p>
         <p><strong>Specialization:</strong> <span id="lecturer-specialization">-</span></p>
+        <p><strong>Rating:</strong> <span id="lecturer-rating">Loading...</span></p>
+        <button onclick="openRatingsModal()" style="background: #6366f1; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: 10px;">
+          <i class="fa fa-star"></i> View Comments & Ratings
+        </button>
       </div>
     </div>
 
@@ -732,6 +736,24 @@
     </div>
   </div>
 
+  <!-- Ratings & Comments Modal -->
+  <div id="ratings-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 600px; max-height: 80vh; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow-y: auto;">
+      <span style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #999;" onclick="closeRatingsModal()">&times;</span>
+      <div style="text-align: center; margin-bottom: 20px;">
+        <i class="fa fa-star" style="font-size: 3rem; color: #f59e0b; margin-bottom: 10px;"></i>
+        <h3 style="margin: 0; color: #222;">Ratings & Comments</h3>
+        <p style="color: #666; margin: 10px 0;" id="ratings-summary">Loading ratings...</p>
+      </div>
+      <div id="ratings-content" style="max-height: 400px; overflow-y: auto;">
+        <div style="text-align: center; padding: 40px; color: #6b7280;">
+          <i class="fa fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
+          <p>Loading ratings and comments...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Email Service - Mailtrap for appointments, EmailJS+Mailgun for OTP (PRESERVED) -->
   <script src="email-service-ultra-simple.js"></script>
   
@@ -825,6 +847,15 @@
       document.getElementById('lecturer-faculty').textContent = lecturer.faculty || '-';
       document.getElementById('lecturer-office').textContent = lecturer.office || '-';
       document.getElementById('lecturer-specialization').textContent = lecturer.specialization || '-';
+      
+      // Update rating display
+      const ratingElement = document.getElementById('lecturer-rating');
+      if (lecturer.averageRating) {
+        const stars = '★'.repeat(Math.floor(lecturer.averageRating)) + '☆'.repeat(5 - Math.floor(lecturer.averageRating));
+        ratingElement.innerHTML = `${stars} ${lecturer.averageRating}/5 (${lecturer.totalRatings || 0} reviews)`;
+      } else {
+        ratingElement.textContent = 'No ratings yet';
+      }
       
       // Update lecturer avatar if available
       const avatarElement = document.getElementById('lecturer-avatar');
@@ -978,17 +1009,11 @@
 
     // Handle request slot form submission
     document.getElementById('request-slot-form').addEventListener('submit', async function(e) {
-      alert('request-slot-form handler triggered');
-      if (typeof lecturerEmail !== 'undefined') {
-        alert('request-slot-form lecturerEmail: ' + lecturerEmail);
-        console.log('request-slot-form lecturerEmail:', lecturerEmail);
-      }
       e.preventDefault();
       
       const studentEmail = sessionStorage.getItem('userEmail');
       const studentName = sessionStorage.getItem('userName') || 'Student';
       if (!studentEmail) {
-        alert('Please log in to request slots');
         window.location.href = 'login.html';
         return;
       }
@@ -1001,7 +1026,7 @@
 
       // Validate time range
       if (startTime >= endTime) {
-        alert('End time must be after start time');
+        showErrorModal('Invalid Time Range', 'End time must be after start time');
         return;
       }
 
@@ -1011,7 +1036,7 @@
       const selectedDate = new Date(preferredDate);
       selectedDate.setHours(0,0,0,0);
       if (selectedDate <= today) {
-        alert('You can only request slots for tomorrow or later.');
+        showErrorModal('Invalid Date', 'You can only request slots for tomorrow or later.');
         return;
       }
 
@@ -1040,7 +1065,7 @@
           }
         });
         if (conflict) {
-          alert('The lecturer already has a slot at this time. Please choose a different time.');
+          showErrorModal('Schedule Conflict', 'The lecturer already has a slot at this time. Please choose a different time.');
           submitBtn.textContent = originalText;
           submitBtn.disabled = false;
           return;
@@ -1133,7 +1158,7 @@
         
       } catch (error) {
         console.error('Error booking appointment:', error);
-        alert(`Failed to send request: ${error.message}`);
+        showErrorModal('Request Failed', `Failed to send request: ${error.message}`);
       } finally {
         // Reset loading state
         const submitBtn = document.querySelector('#request-slot-form button[type="submit"]');
@@ -1151,7 +1176,6 @@
       const studentEmail = sessionStorage.getItem('userEmail');
       const studentName = sessionStorage.getItem('userName') || 'Student';
       if (!studentEmail) {
-        alert('Please log in to book appointments');
         window.location.href = 'login.html';
         return;
       }
@@ -1298,7 +1322,7 @@
         
       } catch (error) {
         console.error('Error booking appointment:', error);
-        alert(`Failed to book appointment: ${error.message}`);
+        showErrorModal('Booking Failed', `Failed to book appointment: ${error.message}`);
       } finally {
         // Reset loading state
         const submitBtn = document.querySelector('.btn-confirm');
@@ -1313,6 +1337,271 @@
         closeBookingModal();
       }
     });
+
+    // Ratings modal functions
+    window.openRatingsModal = async function() {
+      document.getElementById('ratings-modal').style.display = 'flex';
+      await loadLecturerRatings();
+    };
+
+    window.closeRatingsModal = function() {
+      document.getElementById('ratings-modal').style.display = 'none';
+    };
+
+    async function loadLecturerRatings() {
+      try {
+        // Show loading state
+        document.getElementById('ratings-content').innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #6b7280;">
+            <i class="fa fa-spinner fa-spin" style="font-size: 2rem; margin-bottom: 10px;"></i>
+            <p>Loading ratings and comments...</p>
+          </div>
+        `;
+
+        // Get lecturer email from URL params or current lecturer data
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentLecturerEmail = urlParams.get('lecturer') || lecturerEmail || (currentLecturer && currentLecturer.email);
+        
+        console.log('Loading ratings for lecturer:', currentLecturerEmail);
+
+        // Get all appointments for this lecturer that have ratings
+        const appointmentsQuery = query(
+          collection(db, 'appointments'),
+          where('lecturerEmail', '==', currentLecturerEmail)
+        );
+        
+        const snapshot = await getDocs(appointmentsQuery);
+        const ratingsData = [];
+        
+        console.log('Found', snapshot.size, 'appointments for lecturer');
+        
+        if (snapshot.size === 0) {
+          console.log('❌ No appointments found for lecturer email:', currentLecturerEmail);
+          console.log('🔍 Let me check all lecturers in the database...');
+          
+          // Debug: Check what lecturer emails exist
+          const lecturersSnapshot = await getDocs(collection(db, 'lecturers'));
+          console.log('Available lecturers:');
+          lecturersSnapshot.docs.forEach(doc => {
+            console.log('- ', doc.id, ':', doc.data().name);
+          });
+        }
+        
+        snapshot.docs.forEach(doc => {
+          const data = doc.data();
+          console.log('📋 Appointment:', doc.id);
+          console.log('   - Student:', data.studentName);
+          console.log('   - Status:', data.status);
+          console.log('   - Has rating?', !!data.rating);
+          console.log('   - Rating value:', data.rating);
+          console.log('   - Rating comment:', data.ratingComment);
+          console.log('   - Full data:', data);
+          
+          // Less restrictive filter - include appointments with ratings regardless of status
+          if (data.rating) {
+            console.log('✅ Adding rating to list');
+            ratingsData.push({
+              rating: data.rating,
+              comment: data.ratingComment || null,
+              studentName: data.studentName || 'Anonymous',
+              date: data.ratedAt || data.bookedAt || 'Date not available',
+              appointmentDate: data.date,
+              appointmentTime: data.startTime,
+              status: data.status
+            });
+          } else {
+            console.log('❌ No rating found for this appointment');
+          }
+        });
+        
+        console.log('📊 Final filtered ratings data:', ratingsData);
+
+        // Sort by date (newest first)
+        ratingsData.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Calculate summary
+        const totalRatings = ratingsData.length;
+        const averageRating = totalRatings > 0 
+          ? (ratingsData.reduce((sum, r) => sum + r.rating, 0) / totalRatings).toFixed(1)
+          : 0;
+
+        // Update summary
+        document.getElementById('ratings-summary').innerHTML = 
+          totalRatings > 0 
+            ? `Average: ${averageRating}/5 from ${totalRatings} review${totalRatings !== 1 ? 's' : ''}`
+            : 'No ratings available yet';
+
+        // Display ratings
+        if (ratingsData.length === 0) {
+          document.getElementById('ratings-content').innerHTML = `
+            <div style="text-align: center; padding: 40px; color: #6b7280;">
+              <i class="fa fa-star-o" style="font-size: 3rem; margin-bottom: 16px; color: #d1d5db;"></i>
+              <h4 style="margin: 0 0 8px 0; color: #374151;">No ratings yet</h4>
+              <p style="margin: 0;">This lecturer hasn't received any ratings from students yet.</p>
+            </div>
+          `;
+        } else {
+          document.getElementById('ratings-content').innerHTML = ratingsData.map(rating => {
+            const stars = '★'.repeat(rating.rating) + '☆'.repeat(5 - rating.rating);
+            const formattedDate = new Date(rating.date).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            });
+
+            return `
+              <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-bottom: 12px; background: #f9fafb;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <div>
+                    <div style="color: #f59e0b; font-size: 1.2rem; margin-bottom: 4px;">${stars}</div>
+                    <div style="font-weight: 600; color: #374151;">${rating.studentName}</div>
+                  </div>
+                  <div style="text-align: right; font-size: 0.85rem; color: #6b7280;">
+                    <div>Appointment: ${rating.appointmentDate}</div>
+                    <div>Rated: ${formattedDate}</div>
+                  </div>
+                </div>
+                ${rating.comment ? `
+                  <div style="background: white; padding: 12px; border-radius: 6px; border-left: 4px solid #6366f1; margin-top: 8px;">
+                    <p style="margin: 0; color: #374151; font-style: italic;">"${rating.comment}"</p>
+                  </div>
+                ` : ''}
+              </div>
+            `;
+          }).join('');
+        }
+
+      } catch (error) {
+        console.error('Error loading ratings:', error);
+        document.getElementById('ratings-content').innerHTML = `
+          <div style="text-align: center; padding: 40px; color: #ef4444;">
+            <i class="fa fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 10px;"></i>
+            <p>Failed to load ratings. Please try again.</p>
+          </div>
+        `;
+      }
+    }
+
+    // Temporary function to populate sample ratings data
+    window.populateSampleRatings = async function() {
+      try {
+        console.log('🔄 Creating sample ratings data...');
+        
+        const lecturerEmail = 'proxidex999@gmail.com'; // The lecturer from your screenshot
+        const sampleAppointments = [
+          {
+            studentEmail: 'student1@student.tarc.edu.my',
+            studentName: 'Alice Johnson',
+            studentId: 'S001',
+            lecturerEmail: lecturerEmail,
+            lecturerName: 'KEK WEN LONG',
+            date: '2024-01-15',
+            startTime: '10:00 AM',
+            endTime: '11:00 AM',
+            purpose: 'Thesis discussion',
+            status: 'done',
+            rating: 5,
+            ratingComment: 'Excellent guidance! Very helpful and knowledgeable. Really helped me understand my research direction.',
+            bookedAt: '2024-01-10T08:00:00.000Z',
+            ratedAt: '2024-01-16T10:00:00.000Z'
+          },
+          {
+            studentEmail: 'student2@student.tarc.edu.my',
+            studentName: 'Bob Smith',
+            studentId: 'S002',
+            lecturerEmail: lecturerEmail,
+            lecturerName: 'KEK WEN LONG',
+            date: '2024-01-20',
+            startTime: '2:00 PM',
+            endTime: '3:00 PM',
+            purpose: 'Assignment clarification',
+            status: 'done',
+            rating: 4,
+            ratingComment: 'Very patient and clear explanations. Helped me understand the requirements better.',
+            bookedAt: '2024-01-18T09:00:00.000Z',
+            ratedAt: '2024-01-21T14:00:00.000Z'
+          },
+          {
+            studentEmail: 'student3@student.tarc.edu.my',
+            studentName: 'Carol Davis',
+            studentId: 'S003',
+            lecturerEmail: lecturerEmail,
+            lecturerName: 'KEK WEN LONG',
+            date: '2024-01-25',
+            startTime: '11:00 AM',
+            endTime: '12:00 PM',
+            purpose: 'Career advice',
+            status: 'done',
+            rating: 4,
+            ratingComment: 'Great insights about industry trends and career paths. Very inspiring!',
+            bookedAt: '2024-01-22T10:00:00.000Z',
+            ratedAt: '2024-01-26T11:00:00.000Z'
+          },
+          {
+            studentEmail: 'student4@student.tarc.edu.my',
+            studentName: 'David Wilson',
+            studentId: 'S004',
+            lecturerEmail: lecturerEmail,
+            lecturerName: 'KEK WEN LONG',
+            date: '2024-02-01',
+            startTime: '9:00 AM',
+            endTime: '10:00 AM',
+            purpose: 'Project consultation',
+            status: 'done',
+            rating: 5,
+            ratingComment: 'Amazing consultation! Provided excellent feedback on my project proposal.',
+            bookedAt: '2024-01-28T08:00:00.000Z',
+            ratedAt: '2024-02-02T09:00:00.000Z'
+          },
+          {
+            studentEmail: 'student5@student.tarc.edu.my',
+            studentName: 'Emma Brown',
+            studentId: 'S005',
+            lecturerEmail: lecturerEmail,
+            lecturerName: 'KEK WEN LONG',
+            date: '2024-02-05',
+            startTime: '3:00 PM',
+            endTime: '4:00 PM',
+            purpose: 'Research methodology',
+            status: 'done',
+            rating: 3,
+            ratingComment: 'Good session, though I would have liked more detailed examples.',
+            bookedAt: '2024-02-02T10:00:00.000Z',
+            ratedAt: '2024-02-06T15:00:00.000Z'
+          }
+        ];
+
+        // Add each appointment to Firestore
+        for (const appointment of sampleAppointments) {
+          const docRef = await addDoc(collection(db, 'appointments'), appointment);
+          console.log('✅ Added appointment with rating:', docRef.id);
+        }
+
+        // Update lecturer's average rating
+        const ratings = sampleAppointments.map(apt => apt.rating);
+        const averageRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+        const roundedRating = Math.round(averageRating * 10) / 10;
+
+        await updateDoc(doc(db, 'lecturers', lecturerEmail), {
+          averageRating: roundedRating,
+          totalRatings: ratings.length
+        });
+
+        console.log('🌟 Updated lecturer average rating to:', roundedRating);
+        console.log('📊 Total ratings:', ratings.length);
+        
+        showSuccessModal('Sample Data Added', `Successfully added ${sampleAppointments.length} sample appointments with ratings!\n\nAverage rating: ${roundedRating}/5\nTotal reviews: ${ratings.length}\n\nNow try clicking "View Comments & Ratings" again!`);
+        
+        // Refresh the lecturer data to show updated rating
+        if (typeof loadLecturerData === 'function') {
+          await loadLecturerData();
+        }
+
+      } catch (error) {
+        console.error('❌ Error creating sample data:', error);
+        showErrorModal('Sample Data Failed', 'Failed to create sample data: ' + error.message);
+      }
+    };
 
     // Initialize
     loadLecturerData();

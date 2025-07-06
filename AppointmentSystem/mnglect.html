@@ -661,7 +661,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
-      getFirestore, collection, doc, getDocs,
+      getFirestore, collection, doc, getDocs, getDoc,
       setDoc, updateDoc, deleteDoc
     } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
@@ -702,6 +702,7 @@
     let editingDocId = null;
     let allLecturers = [];
     let faculties = [];
+    let currentAdminId = 'AD001'; // Default fallback
 
     const facultyPrefixes = {
       FCA: 'FCA',
@@ -831,12 +832,34 @@
       }
     }
 
+    // Load current admin data
+    async function loadCurrentAdmin() {
+      try {
+        const currentUserEmail = sessionStorage.getItem('userEmail');
+        if (currentUserEmail) {
+          const adminDoc = await getDoc(doc(db, 'admins', currentUserEmail));
+          if (adminDoc.exists()) {
+            const adminData = adminDoc.data();
+            currentAdminId = adminData.id || 'AD001';
+            console.log('Loaded current admin ID:', currentAdminId);
+          } else {
+            console.warn('Admin document not found for:', currentUserEmail);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading current admin:', error);
+        // Keep default fallback
+      }
+    }
+
     // Show modal
     function showModal(isEdit = false) {
       modalTitle.textContent = isEdit ? 'Edit Lecturer' : 'Add New Lecturer';
       
       if (!isEdit) {
         form.reset();
+        // Set current admin ID for new lecturers
+        lecturerCreatedByInput.value = currentAdminId;
       }
 
       modal.style.display = 'flex';
@@ -1145,7 +1168,9 @@
     }
 
     // Initialize
-    loadLecturers();
+    loadCurrentAdmin().then(() => {
+      loadLecturers();
+    });
 
     const facultyDropdown = document.getElementById('facultyDropdown');
     const newFacultyNameInput = document.getElementById('newFacultyName');

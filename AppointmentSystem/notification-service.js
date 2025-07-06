@@ -5,14 +5,26 @@ class NotificationService {
     this.userType = null;
     this.db = null;
     this.initialized = false;
+    // Initialize EmailService for dual notifications
+    this.emailService = null;
   }
 
   async initialize(db) {
     this.db = db;
     this.initialized = true;
+    
+    // Initialize EmailService
+    if (typeof EmailService !== 'undefined') {
+      this.emailService = new EmailService();
+      console.log('📧 EmailService initialized in NotificationService');
+    } else {
+      console.warn('⚠️ EmailService not available - email notifications will be skipped');
+    }
+    
     if (this.currentUser) {
       await this.loadNotifications();
     }
+    this.initializeDropdown();
   }
 
   setUser(email, type) {
@@ -108,8 +120,8 @@ class NotificationService {
     await this.addNotification({
       type: 'student_booked_appointment',
       title: 'Appointment Booked',
-      message: `You have booked an appointment for ${data.lecturerName} for ${data.time}`,
-      icon: 'fa-calendar-check',
+      message: `You have booked an appointment with ${data.lecturerName} at ${data.time}`,
+      icon: 'fa-user-clock',
       category: 'Appointments'
     });
   }
@@ -185,7 +197,7 @@ class NotificationService {
     });
   }
 
-  // HELPER FUNCTION TO SEND NOTIFICATIONS TO OTHER USERS
+  // ENHANCED FUNCTION TO SEND BOTH IN-APP AND EMAIL NOTIFICATIONS
   async sendNotificationToUser(userEmail, userType, notificationData) {
     if (!this.db) return;
     
@@ -202,14 +214,126 @@ class NotificationService {
         createdAt: serverTimestamp()
       };
       
+      // Send in-app notification
       await addDoc(collection(this.db, 'notifications'), newNotification);
-      console.log('Notification sent to:', userEmail);
+      console.log('📱 In-app notification sent to:', userEmail);
+      
+      // Send email notification
+      await this.sendEmailNotification(userEmail, userType, notificationData);
+      
     } catch (error) {
       console.error('Error sending notification to user:', error);
     }
   }
 
+  // NEW METHOD TO SEND EMAIL NOTIFICATIONS BASED ON NOTIFICATION TYPE
+  async sendEmailNotification(userEmail, userType, notificationData) {
+    if (!this.emailService) {
+      console.warn('⚠️ EmailService not available - skipping email notification');
+      return;
+    }
 
+    try {
+      const { type, title, message } = notificationData;
+      console.log(`📧 Sending email notification: ${type} to ${userEmail}`);
+
+      // Extract appointment details from message if available
+      let appointmentData = this.extractAppointmentData(message);
+      
+      // Handle different notification types
+      switch (type) {
+        case 'lecturer_approved_appointment':
+          await this.emailService.sendBookingConfirmation(
+            userEmail,
+            appointmentData.studentName || 'Student',
+            appointmentData.lecturerName || 'Lecturer',
+            appointmentData.date || 'TBD',
+            appointmentData.time || 'TBD',
+            appointmentData.meetingLink || null
+          );
+          break;
+
+        case 'lecturer_rejected_appointment':
+        case 'lecturer_cancelled_appointment':
+          await this.emailService.sendCancellationNotification(
+            userEmail,
+            appointmentData.studentName || 'Student',
+            appointmentData.date || 'TBD',
+            appointmentData.time || 'TBD',
+            appointmentData.reason || 'No reason provided',
+            appointmentData.lecturerName || 'Lecturer',
+            appointmentData.studentName || 'Student'
+          );
+          break;
+
+        case 'student_booked_slot':
+        case 'student_requested_slot':
+          await this.emailService.sendSlotBookedAlert(
+            userEmail,
+            appointmentData.lecturerName || 'Lecturer',
+            appointmentData.studentName || 'Student',
+            appointmentData.date || 'TBD',
+            appointmentData.time || 'TBD',
+            appointmentData.studentEmail || userEmail,
+            appointmentData.purpose || 'General consultation'
+          );
+          break;
+
+        case 'student_reschedule_request':
+        case 'student_cancel_request':
+          // For lecturer notifications about student requests
+          await this.emailService.sendPlainEmail(
+            userEmail,
+            `${title}\n\n${message}\n\nPlease check your appointment dashboard for more details.`
+          );
+          break;
+
+        default:
+          // Generic email notification
+          await this.emailService.sendPlainEmail(
+            userEmail,
+            `${title}\n\n${message}\n\nThis is an automated message from the University Booking System.`
+          );
+          break;
+      }
+
+      console.log(`✅ Email notification sent successfully: ${type}`);
+    } catch (error) {
+      console.error(`❌ Failed to send email notification: ${type}`, error);
+      // Don't throw error - email failures shouldn't break the notification system
+    }
+  }
+
+  // HELPER METHOD TO EXTRACT APPOINTMENT DATA FROM NOTIFICATION MESSAGES
+  extractAppointmentData(message) {
+    const data = {};
+    
+    // Extract names
+    const lecturerMatch = message.match(/(.+?) have (approved|rejected|cancelled)/);
+    if (lecturerMatch) {
+      data.lecturerName = lecturerMatch[1];
+    }
+    
+    const studentMatch = message.match(/(.+?) have (booked|requested|request)/);
+    if (studentMatch) {
+      data.studentName = studentMatch[1];
+    }
+    
+    // Extract date and time
+    const dateTimeMatch = message.match(/for (.+?) (\d{1,2}:\d{2} (?:AM|PM))/);
+    if (dateTimeMatch) {
+      data.date = dateTimeMatch[1];
+      data.time = dateTimeMatch[2];
+    }
+    
+    // Extract full time range
+    const timeRangeMatch = message.match(/(\d{1,2}:\d{2} (?:AM|PM) - \d{1,2}:\d{2} (?:AM|PM))/);
+    if (timeRangeMatch) {
+      data.time = timeRangeMatch[1];
+    }
+    
+    return data;
+  }
 
   async markAsRead(notificationId) {
     if (!this.db) return;
