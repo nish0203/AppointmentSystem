@@ -1032,10 +1032,7 @@
               <input type="time" id="slot-end-time" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
             </div>
           </div>
-          <div style="margin-bottom: 1rem;">
-            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Location</label>
-            <input type="text" id="slot-location" placeholder="e.g., Office Room 101, Online Meeting" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
-          </div>
+
           <div style="display: flex; gap: 1rem; align-items: center;">
             <button type="submit" style="background: #10b981; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 500; cursor: pointer;">
               <i class="fa fa-plus"></i> Create Slot
@@ -1232,6 +1229,21 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const storage = getStorage(app);
+    
+    // Make Firebase functions globally available
+    window.db = db;
+    window.collection = collection;
+    window.getDocs = getDocs;
+    window.doc = doc;
+    window.getDoc = getDoc;
+    window.query = query;
+    window.where = where;
+    window.orderBy = orderBy;
+    window.limit = limit;
+    window.addDoc = addDoc;
+    window.deleteDoc = deleteDoc;
+    window.updateDoc = updateDoc;
+    window.serverTimestamp = serverTimestamp;
 
     let currentSearchTab = 'students';
 
@@ -1937,7 +1949,7 @@
                <div style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">
                  <p style="margin: 0.25rem 0;"><i class="fa fa-calendar"></i> ${date}</p>
                  <p style="margin: 0.25rem 0;"><i class="fa fa-clock"></i> ${slot.startTime} - ${slot.endTime}</p>
-                 ${slot.location ? `<p style="margin: 0.25rem 0;"><i class="fa fa-map-marker-alt"></i> ${slot.location}</p>` : ''}
+ 
                </div>
                <div style="display: flex; gap: 0.5rem;">
                  <button onclick="deleteSlot('${slot.id}')" style="background: #ef4444; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
@@ -1957,7 +1969,6 @@
          const date = document.getElementById('slot-date').value;
          const startTime = document.getElementById('slot-start-time').value;
          const endTime = document.getElementById('slot-end-time').value;
-         const location = document.getElementById('slot-location').value;
          
          if (!lecturerEmail || !date || !startTime || !endTime) {
            showError('Please fill in all required fields.');
@@ -1975,7 +1986,6 @@
              date,
              startTime,
              endTime,
-             location: location || '',
              createdAt: serverTimestamp(),
              createdBy: sessionStorage.getItem('userName') || 'Admin'
            });
@@ -2007,7 +2017,10 @@
              return;
            }
 
-           // 1. Delete any pending appointment_requests for appointments that reference this slot
+           let deletedRequestsCount = 0;
+           let deletedAppointmentsCount = 0;
+
+           // 1. Delete appointments that reference this slot AND their related requests
            const appointmentsQuery = query(
              collection(db, 'appointments'),
              where('slotId', '==', slotId)
@@ -2027,11 +2040,17 @@
              
              for (const requestDoc of requestsSnapshot.docs) {
                await deleteDoc(doc(db, 'appointment_requests', requestDoc.id));
+               deletedRequestsCount++;
                console.log(`Deleted pending appointment request: ${requestDoc.id}`);
              }
+             
+             // Delete the appointment itself
+             await deleteDoc(doc(db, 'appointments', appointmentId));
+             deletedAppointmentsCount++;
+             console.log(`Deleted appointment: ${appointmentId}`);
            }
            
-           // 2. Delete any pending slot_requests that might reference this slot's details
+           // 2. Delete any pending slot_requests that match this slot's details
            const slotRequestsQuery = query(
              collection(db, 'slot_requests'),
              where('lecturerEmail', '==', slot.lecturerEmail),
@@ -2046,14 +2065,48 @@
                  requestData.startTime === slot.startTime && 
                  requestData.endTime === slot.endTime) {
                await deleteDoc(doc(db, 'slot_requests', slotRequestDoc.id));
+               deletedRequestsCount++;
                console.log(`Deleted matching slot request: ${slotRequestDoc.id}`);
              }
            }
            
-           // 3. Delete the slot itself
+           // 3. Clean up any other appointment_requests that might reference this slot indirectly
+           // (Get all pending requests and check if they reference appointments for this slot)
+           const allPendingRequestsQuery = query(
+             collection(db, 'appointment_requests'),
+             where('status', '==', 'pending')
+           );
+           const allPendingRequestsSnapshot = await getDocs(allPendingRequestsQuery);
+           
+           for (const requestDoc of allPendingRequestsSnapshot.docs) {
+             const requestData = requestDoc.data();
+             // Check if the appointment still exists
+             if (requestData.appointmentId) {
+               try {
+                 const appointmentDoc = await getDoc(doc(db, 'appointments', requestData.appointmentId));
+                 if (!appointmentDoc.exists()) {
+                   // Appointment doesn't exist anymore, clean up this orphaned request
+                   await deleteDoc(doc(db, 'appointment_requests', requestDoc.id));
+                   deletedRequestsCount++;
+                   console.log(`Deleted orphaned appointment request: ${requestDoc.id}`);
+                 }
+               } catch (error) {
+                 console.log(`Error checking appointment ${requestData.appointmentId}, deleting request ${requestDoc.id}`);
+                 await deleteDoc(doc(db, 'appointment_requests', requestDoc.id));
+                 deletedRequestsCount++;
+               }
+             }
+           }
+           
+           // 4. Delete the slot itself
            await deleteDoc(doc(db, 'appointment_slots', slotId));
            await loadSlots();
-           showSuccess('Slot and associated pending requests deleted successfully!');
+           
+           let message = 'Slot deleted successfully!';
+           if (deletedAppointmentsCount > 0 || deletedRequestsCount > 0) {
+             message += ` Also cleaned up ${deletedAppointmentsCount} appointment(s) and ${deletedRequestsCount} pending request(s).`;
+           }
+           showSuccess(message);
          } catch (error) {
            console.error('Error deleting slot:', error);
            showError('Error deleting slot. Please try again.');
@@ -2068,17 +2121,102 @@
            return;
          }
 
-         if (!(await showConfirm(`This will delete ${availableSlots.length} available slots. This action cannot be undone. Continue?`))) {
+         if (!(await showConfirm(`This will delete ${availableSlots.length} available slots and all related pending requests. This action cannot be undone. Continue?`))) {
            return;
          }
 
          try {
+           let deletedRequestsCount = 0;
+           let deletedAppointmentsCount = 0;
+           
            for (const slot of availableSlots) {
+             // 1. Delete appointments that reference this slot AND their related requests
+             const appointmentsQuery = query(
+               collection(db, 'appointments'),
+               where('slotId', '==', slot.id)
+             );
+             const appointmentsSnapshot = await getDocs(appointmentsQuery);
+             
+             for (const appointmentDoc of appointmentsSnapshot.docs) {
+               const appointmentId = appointmentDoc.id;
+               
+               // Find and delete any pending appointment_requests for this appointment
+               const requestsQuery = query(
+                 collection(db, 'appointment_requests'),
+                 where('appointmentId', '==', appointmentId),
+                 where('status', '==', 'pending')
+               );
+               const requestsSnapshot = await getDocs(requestsQuery);
+               
+               for (const requestDoc of requestsSnapshot.docs) {
+                 await deleteDoc(doc(db, 'appointment_requests', requestDoc.id));
+                 deletedRequestsCount++;
+                 console.log(`Deleted pending appointment request: ${requestDoc.id}`);
+               }
+               
+               // Delete the appointment itself
+               await deleteDoc(doc(db, 'appointments', appointmentId));
+               deletedAppointmentsCount++;
+               console.log(`Deleted appointment: ${appointmentId}`);
+             }
+             
+             // 2. Delete any pending slot_requests that match this slot's details
+             const slotRequestsQuery = query(
+               collection(db, 'slot_requests'),
+               where('lecturerEmail', '==', slot.lecturerEmail),
+               where('status', '==', 'pending')
+             );
+             const slotRequestsSnapshot = await getDocs(slotRequestsQuery);
+             
+             for (const slotRequestDoc of slotRequestsSnapshot.docs) {
+               const requestData = slotRequestDoc.data();
+               // Check if the request matches the slot being deleted
+               if (requestData.preferredDate === slot.date && 
+                   requestData.startTime === slot.startTime && 
+                   requestData.endTime === slot.endTime) {
+                 await deleteDoc(doc(db, 'slot_requests', slotRequestDoc.id));
+                 deletedRequestsCount++;
+                 console.log(`Deleted matching slot request: ${slotRequestDoc.id}`);
+               }
+             }
+             
+             // 3. Delete the slot itself
              await deleteDoc(doc(db, 'appointment_slots', slot.id));
            }
            
+           // 4. Clean up any orphaned appointment_requests after all deletions
+           const allPendingRequestsQuery = query(
+             collection(db, 'appointment_requests'),
+             where('status', '==', 'pending')
+           );
+           const allPendingRequestsSnapshot = await getDocs(allPendingRequestsQuery);
+           
+           for (const requestDoc of allPendingRequestsSnapshot.docs) {
+             const requestData = requestDoc.data();
+             // Check if the appointment still exists
+             if (requestData.appointmentId) {
+               try {
+                 const appointmentDoc = await getDoc(doc(db, 'appointments', requestData.appointmentId));
+                 if (!appointmentDoc.exists()) {
+                   // Appointment doesn't exist anymore, clean up this orphaned request
+                   await deleteDoc(doc(db, 'appointment_requests', requestDoc.id));
+                   deletedRequestsCount++;
+                   console.log(`Deleted orphaned appointment request: ${requestDoc.id}`);
+                 }
+               } catch (error) {
+                 console.log(`Error checking appointment ${requestData.appointmentId}, deleting request ${requestDoc.id}`);
+                 await deleteDoc(doc(db, 'appointment_requests', requestDoc.id));
+                 deletedRequestsCount++;
+               }
+             }
+           }
+           
            await loadSlots();
-           showSuccess(`Successfully deleted ${availableSlots.length} available slots!`);
+           let message = `Successfully deleted ${availableSlots.length} available slots!`;
+           if (deletedAppointmentsCount > 0 || deletedRequestsCount > 0) {
+             message += ` Also cleaned up ${deletedAppointmentsCount} appointment(s) and ${deletedRequestsCount} pending request(s).`;
+           }
+           showSuccess(message);
          } catch (error) {
            console.error('Error deleting slots:', error);
            showError('Error deleting slots. Please try again.');
