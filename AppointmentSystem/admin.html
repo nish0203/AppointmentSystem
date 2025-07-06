@@ -2238,6 +2238,9 @@
 
        window.closeInquiryResponseModal = function() {
          document.getElementById('inquiry-response-modal').style.display = 'none';
+         // Clear the form
+         document.getElementById('inquiry-response-form').reset();
+         document.getElementById('response-message').value = '';
          currentInquiry = null;
        };
 
@@ -2423,6 +2426,10 @@
          const inquiryIdDisplay = `INQ-${currentInquiry.id.slice(-8).toUpperCase()}`;
          const date = currentInquiry.createdAt?.toDate?.() || new Date(currentInquiry.createdAt) || new Date();
          
+         // Clear previous response text and reset form
+         document.getElementById('response-message').value = '';
+         document.getElementById('response-status').value = 'in-progress';
+         
          document.getElementById('inquiry-details').innerHTML = `
            <div style="margin-bottom: 1.5rem;">
              ${generateConversationThreadStudent(currentInquiry)}
@@ -2484,14 +2491,52 @@
            submitBtn.disabled = true;
            submitBtn.innerHTML = '<div style="width: 16px; height: 16px; border: 2px solid transparent; border-top: 2px solid currentColor; border-radius: 50%; animation: spin 1s linear infinite; display: inline-block; margin-right: 0.5rem;"></div> Sending...';
 
-           // Update inquiry with response
-           await updateDoc(doc(db, 'inquiries', currentInquiry.id), {
+           // Get current conversation to add new message
+           const currentConversation = currentInquiry?.conversation || [];
+           
+           // Create new admin message object
+           const newMessage = {
+             type: 'admin',
+             message: message,
+             timestamp: new Date(),
+             author: sessionStorage.getItem('userName') || 'Admin',
+             isAdmin: true
+           };
+           
+           // Check for duplicate messages (prevent double submission)
+           const isDuplicate = currentConversation.some(msg => 
+             msg.type === 'admin' && 
+             msg.message === message && 
+             msg.author === (sessionStorage.getItem('userName') || 'Admin') &&
+             Math.abs(new Date() - (msg.timestamp?.toDate?.() || new Date(msg.timestamp))) < 5000 // within 5 seconds
+           );
+           
+           if (isDuplicate) {
+             showError('Duplicate message detected. Please wait a moment before submitting again.');
+             return;
+           }
+           
+           // Add new message to conversation thread
+           const updatedConversation = [...currentConversation, newMessage];
+           
+           // Prepare update data
+           const updateData = {
              status: status,
-             response: message,
-             responseDate: serverTimestamp(),
-             respondedBy: sessionStorage.getItem('userName') || 'Admin',
-             updatedAt: serverTimestamp()
-           });
+             conversation: updatedConversation,
+             updatedAt: serverTimestamp(),
+             lastResponseBy: 'admin',
+             lastResponseDate: serverTimestamp()
+           };
+
+           // If this is the first admin response, keep legacy field for backward compatibility
+           if (!currentInquiry?.response) {
+             updateData.response = message;
+             updateData.responseDate = serverTimestamp();
+             updateData.respondedBy = sessionStorage.getItem('userName') || 'Admin';
+           }
+
+           // Update inquiry with new conversation thread
+           await updateDoc(doc(db, 'inquiries', currentInquiry.id), updateData);
 
            // Close modal and refresh
            closeInquiryResponseModal();
@@ -2570,34 +2615,12 @@
          let conversationHtml = '';
          // Get all messages from the conversation thread
          const messages = [];
-         // Add initial admin response if exists
-         if (inquiry.response) {
-           messages.push({
-             type: 'admin',
-             message: inquiry.response,
-             date: inquiry.responseDate?.toDate?.() || new Date(inquiry.responseDate) || null,
-             author: inquiry.respondedBy || 'Admin'
-           });
-         }
-         // Add user response if exists and NOT already in conversation array
-         let userResponseAdded = false;
-         if (inquiry.conversation && Array.isArray(inquiry.conversation)) {
-           inquiry.conversation.forEach(msg => {
-             if ((msg.type === 'user' || (!msg.type && !msg.isAdmin)) && (msg.message === inquiry.userResponse)) {
-               userResponseAdded = true;
-             }
-           });
-         }
-         if (inquiry.userResponse && !userResponseAdded) {
-           messages.push({
-             type: 'user',
-             message: inquiry.userResponse,
-             date: inquiry.userResponseDate?.toDate?.() || new Date(inquiry.userResponseDate) || null,
-             author: inquiry.userName || 'User'
-           });
-         }
-         // Add conversation thread if exists (new structure)
-         if (inquiry.conversation && Array.isArray(inquiry.conversation)) {
+         // Check if conversation array exists and has messages
+         const hasConversationThread = inquiry.conversation && Array.isArray(inquiry.conversation) && inquiry.conversation.length > 0;
+         
+         // If we have a conversation thread, use it as the primary source
+         if (hasConversationThread) {
+           // Use only the conversation thread to avoid duplicates
            inquiry.conversation.forEach(msg => {
              messages.push({
                type: msg.type || (msg.isAdmin ? 'admin' : 'user'),
@@ -2606,6 +2629,26 @@
                author: msg.isAdmin || msg.type === 'admin' ? (msg.author || 'Admin') : (inquiry.userName || msg.author || 'User')
              });
            });
+         } else {
+           // Fallback to legacy fields if no conversation thread exists
+           // Add initial admin response if exists
+           if (inquiry.response) {
+             messages.push({
+               type: 'admin',
+               message: inquiry.response,
+               date: inquiry.responseDate?.toDate?.() || new Date(inquiry.responseDate) || null,
+               author: inquiry.respondedBy || 'Admin'
+             });
+           }
+           // Add user response if exists
+           if (inquiry.userResponse) {
+             messages.push({
+               type: 'user',
+               message: inquiry.userResponse,
+               date: inquiry.userResponseDate?.toDate?.() || new Date(inquiry.userResponseDate) || null,
+               author: inquiry.userName || 'User'
+             });
+           }
          }
          // Sort messages by date
          messages.sort((a, b) => {

@@ -602,10 +602,7 @@
                   <i class="fa fa-map-marker-alt"></i>
                   <span>${lecturer.office || 'Office'}</span>
                 </div>
-                <div class="detail-row">
-                  <i class="fa fa-star" style="color: #f59e0b;"></i>
-                  <span>${lecturer.averageRating ? `${lecturer.averageRating} ★ (${lecturer.totalRatings || 0} reviews)` : 'No ratings yet'}</span>
-                </div>
+
                 <div class="availability-indicator ${lecturer.availableSlots > 0 ? 'available' : 'busy'}">
                   ${lecturer.availableSlots > 0 ? `${lecturer.availableSlots} slots available` : 'No available slots'}
                 </div>

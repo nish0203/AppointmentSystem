@@ -850,15 +850,7 @@
             <div class="row"><span class="label">Time:</span> <span class="value">${apt.startTime} - ${apt.endTime}</span></div>
             <div class="booked-by">${apt.status === 'rejected' ? 'Rejected request from' : 'Appointment with'}: <span class="student-name">${apt.studentName || apt.studentEmail || 'Student'}</span></div>
             ${apt.purpose ? `<div style="margin-top:6px;font-size:0.85rem;color:#666;"><strong>Purpose:</strong> ${apt.purpose}</div>` : ''}
-            ${apt.rating && apt.status === 'done' ? `
-              <div style="margin-top:8px;padding:8px;background:#f8f9fa;border-radius:4px;">
-                <div style="font-size:0.85rem;color:#666;"><strong>Student Rating:</strong></div>
-                <div style="color:#f59e0b;margin:2px 0;">
-                  ${'★'.repeat(apt.rating)}${'☆'.repeat(5 - apt.rating)} (${apt.rating}/5)
-                </div>
-                ${apt.ratingComment ? `<div style="font-size:0.8rem;color:#666;margin-top:4px;">"${apt.ratingComment}"</div>` : ''}
-              </div>
-            ` : ''}
+
           </div>
         `).join('');
       }

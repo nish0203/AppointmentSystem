@@ -79,31 +79,15 @@ minDate: "today",
 dateFormat: "Y-m-d"
 });
 
-let currentRating = 0;
 
-function openFeedback() {
-  document.getElementById('feedbackModal').style.display = 'flex';
-}
-
-function closeFeedback() {
-  document.getElementById('feedbackModal').style.display = 'none';
-}
-
-function setRating(rating) {
-  currentRating = rating;
-  const stars = document.querySelectorAll('#stars span');
-  stars.forEach((star, index) => {
-    star.textContent = index < rating ? '⭐' : '☆';
-  });
-}
 
 function submitFeedback() {
   const text = document.getElementById('feedbackText').value;
           // Show success notification instead of alert
         if (typeof showNotification === 'function') {
-          showNotification(`Thank you! Rating: ${currentRating} star(s) submitted successfully.`, 'success');
+          showNotification('Thank you! Feedback submitted successfully.', 'success');
         } else {
-          console.log(`Thank you!\nRating: ${currentRating} star(s)\nFeedback: ${text}`);
+          console.log(`Thank you!\nFeedback: ${text}`);
         }
   closeFeedback();
 }

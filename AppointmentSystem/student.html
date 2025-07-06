@@ -484,44 +484,7 @@
   <!-- Hidden file input for avatar -->
   <input type="file" id="avatar-input" accept="image/*" style="display: none;">
 
-  <!-- Rating Modal -->
-  <div id="rating-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
-    <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
-      <span style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #999;" onclick="closeRatingModal()">&times;</span>
-      <div style="text-align: center; margin-bottom: 20px;">
-        <i class="fa fa-star" style="font-size: 3rem; color: #f59e0b; margin-bottom: 10px;"></i>
-        <h3 style="margin: 0; color: #222;">Rate Your Appointment</h3>
-        <p style="color: #666; margin: 10px 0;">How was your appointment experience?</p>
-      </div>
-      <form id="rating-form">
-        <div style="margin-bottom: 20px;">
-          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Rating:</label>
-          <div style="text-align: center; margin-bottom: 15px;">
-            <div id="star-rating" style="font-size: 2rem; color: #e5e7eb; cursor: pointer;">
-              <span data-rating="1">☆</span>
-              <span data-rating="2">☆</span>
-              <span data-rating="3">☆</span>
-              <span data-rating="4">☆</span>
-              <span data-rating="5">☆</span>
-            </div>
-            <p style="font-size: 0.9rem; color: #666; margin: 8px 0;">Click the stars to rate</p>
-          </div>
-        </div>
-        <div style="margin-bottom: 20px;">
-          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Comment (optional):</label>
-          <textarea id="rating-comment" rows="3" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-family: inherit; resize: vertical;" placeholder="Share your experience..."></textarea>
-        </div>
-        <div style="display: flex; gap: 12px; justify-content: flex-end;">
-          <button type="button" onclick="closeRatingModal()" style="background: #6b7280; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
-            Cancel
-          </button>
-          <button type="submit" style="background: #f59e0b; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
-            Submit Rating
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
@@ -972,22 +935,7 @@
             </div>
             <div class="row"><span class="label">Time:</span> <span class="value">${apt.startTime} - ${apt.endTime}</span></div>
             ${apt.purpose ? `<div style="margin-top:6px;font-size:0.85rem;color:#666;"><strong>Purpose:</strong> ${apt.purpose}</div>` : ''}
-            ${apt.status === 'done' && !apt.rating ? `
-              <div style="margin-top:12px;">
-                <button onclick="openRatingModal('${apt.id}', '${apt.lecturerEmail}')" style="background:#6366f1;color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:0.8rem;">
-                  <i class="fa fa-star"></i> Rate Appointment
-                </button>
-              </div>
-            ` : ''}
-            ${apt.rating ? `
-              <div style="margin-top:8px;padding:8px;background:#f8f9fa;border-radius:4px;">
-                <div style="font-size:0.85rem;color:#666;"><strong>Your Rating:</strong></div>
-                <div style="color:#f59e0b;margin:2px 0;">
-                  ${'★'.repeat(apt.rating)}${'☆'.repeat(5 - apt.rating)}
-                </div>
-                ${apt.ratingComment ? `<div style="font-size:0.8rem;color:#666;margin-top:4px;">"${apt.ratingComment}"</div>` : ''}
-              </div>
-            ` : ''}
+
           </div>
         `).join('');
       }
@@ -1097,163 +1045,7 @@
       closeInquiryModal();
     });
 
-    // Rating system
-    let currentRating = 0;
-    let selectedAppointmentId = '';
-    let selectedLecturerEmail = '';
 
-    // Rating modal functions
-    function openRatingModal(appointmentId, lecturerEmail) {
-      selectedAppointmentId = appointmentId;
-      selectedLecturerEmail = lecturerEmail;
-      currentRating = 0;
-      updateStarDisplay();
-      document.getElementById('rating-comment').value = '';
-      document.getElementById('rating-modal').style.display = 'flex';
-    }
-
-    function closeRatingModal() {
-      document.getElementById('rating-modal').style.display = 'none';
-      selectedAppointmentId = '';
-      selectedLecturerEmail = '';
-      currentRating = 0;
-    }
-
-    function updateStarDisplay() {
-      const stars = document.querySelectorAll('#star-rating span');
-      stars.forEach((star, index) => {
-        if (index < currentRating) {
-          star.textContent = '★';
-          star.style.color = '#f59e0b';
-        } else {
-          star.textContent = '☆';
-          star.style.color = '#e5e7eb';
-        }
-      });
-    }
-
-    // Star rating click handlers
-    document.querySelectorAll('#star-rating span').forEach(star => {
-      star.addEventListener('click', () => {
-        currentRating = parseInt(star.dataset.rating);
-        updateStarDisplay();
-      });
-      
-      star.addEventListener('mouseover', () => {
-        const rating = parseInt(star.dataset.rating);
-        document.querySelectorAll('#star-rating span').forEach((s, index) => {
-          if (index < rating) {
-            s.style.color = '#f59e0b';
-          } else {
-            s.style.color = '#e5e7eb';
-          }
-        });
-      });
-    });
-
-    document.getElementById('star-rating').addEventListener('mouseleave', () => {
-      updateStarDisplay();
-    });
-
-    // Handle rating form submission
-    document.getElementById('rating-form').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      if (currentRating === 0) {
-        showNotification('Please select a rating', 'error');
-        return;
-      }
-      
-      const comment = document.getElementById('rating-comment').value;
-      
-      try {
-        // Import Firebase functions dynamically to ensure they're available
-        const { updateDoc: updateDocFunc, doc: docFunc, getFirestore } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
-        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js");
-        
-        // Initialize Firebase
-        const firebaseConfig = {
-          apiKey: "AIzaSyD3TSVMe8Ub-JL0y7M0VlXvPdskeOG1DaA",
-          authDomain: "appointment-management-c2531.firebaseapp.com",
-          projectId: "appointment-management-c2531",
-          storageBucket: "appointment-management-c2531.firebasestorage.app",
-          messagingSenderId: "428786083628",
-          appId: "1:428786083628:web:d9d9576b12581cc697ee89",
-          measurementId: "G-9FM8F1WJMF"
-        };
-        const app = initializeApp(firebaseConfig);
-        const dynamicDb = getFirestore(app);
-        
-        // Update appointment with rating
-        await updateDocFunc(docFunc(dynamicDb, 'appointments', selectedAppointmentId), {
-          rating: currentRating,
-          ratingComment: comment,
-          ratedAt: new Date().toISOString()
-        });
-
-        // Update lecturer's average rating
-        await updateLecturerRating(selectedLecturerEmail, dynamicDb);
-        
-        closeRatingModal();
-        
-        // Show success message
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Submitted!';
-        submitBtn.style.background = '#10B981';
-        setTimeout(() => {
-          submitBtn.textContent = originalText;
-          submitBtn.style.background = '#f59e0b';
-        }, 2000);
-        
-        // Reload appointments to show the rating
-        if (typeof window.loadAppointments === 'function') {
-          const studentEmail = currentStudentEmail || sessionStorage.getItem('userEmail');
-          await window.loadAppointments(studentEmail);
-        } else {
-          // If loadAppointments is not available, reload the page
-          window.location.reload();
-        }
-      } catch (error) {
-        console.error('Error submitting rating:', error);
-        showNotification('Failed to submit rating. Please try again.', 'error');
-      }
-    });
-
-    // Update lecturer's average rating
-    async function updateLecturerRating(lecturerEmail, database) {
-      try {
-        // Import Firebase functions dynamically
-        const { getDocs, query, collection, where, updateDoc, doc } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
-        
-        // Get all appointments for this lecturer that have ratings
-        const appointmentsSnapshot = await getDocs(query(
-          collection(database, 'appointments'),
-          where('lecturerEmail', '==', lecturerEmail)
-        ));
-        
-        const ratings = [];
-        appointmentsSnapshot.docs.forEach(docSnap => {
-          const data = docSnap.data();
-          if (data.rating) {
-            ratings.push(data.rating);
-          }
-        });
-        
-        if (ratings.length > 0) {
-          const averageRating = ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
-          const roundedRating = Math.round(averageRating * 10) / 10; // Round to 1 decimal place
-          
-          // Update lecturer document
-          await updateDoc(doc(database, 'lecturers', lecturerEmail), {
-            averageRating: roundedRating,
-            totalRatings: ratings.length
-          });
-        }
-      } catch (error) {
-        console.error('Error updating lecturer rating:', error);
-      }
-    }
 
     // Avatar functionality
     function changeAvatar() {
@@ -1437,8 +1229,6 @@
     }
 
     // Make functions global
-    window.openRatingModal = openRatingModal;
-    window.closeRatingModal = closeRatingModal;
     window.changeAvatar = changeAvatar;
   </script>
 

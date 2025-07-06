@@ -987,40 +987,12 @@
       // Get all messages from the conversation thread
       const messages = [];
       
-      // Add initial admin response if exists
-      if (inquiry.response) {
-        messages.push({
-          type: 'admin',
-          message: inquiry.response,
-          date: inquiry.responseDate?.toDate?.() || new Date(inquiry.responseDate) || null,
-          author: inquiry.respondedBy || 'Admin'
-        });
-      }
+      // Check if conversation array exists and has messages
+      const hasConversationThread = inquiry.conversation && Array.isArray(inquiry.conversation) && inquiry.conversation.length > 0;
       
-      // Add user response if exists and NOT already in conversation array
-      let userResponseAdded = false;
-      if (inquiry.userResponse) {
-        // Check if conversation array contains a user message with the same text
-        let duplicate = false;
-        if (inquiry.conversation && Array.isArray(inquiry.conversation)) {
-          duplicate = inquiry.conversation.some(msg => {
-            const isUser = (msg.type === 'user' || (!msg.type && !msg.isAdmin));
-            return isUser && (msg.message === inquiry.userResponse || msg.response === inquiry.userResponse);
-          });
-        }
-        if (!duplicate) {
-          messages.push({
-            type: 'user',
-            message: inquiry.userResponse,
-            date: inquiry.userResponseDate?.toDate?.() || new Date(inquiry.userResponseDate) || null,
-            author: 'You'
-          });
-          userResponseAdded = true;
-        }
-      }
-      
-      // Add conversation thread if exists (new structure)
-      if (inquiry.conversation && Array.isArray(inquiry.conversation)) {
+      // If we have a conversation thread, use it as the primary source
+      if (hasConversationThread) {
+        // Use only the conversation thread to avoid duplicates
         inquiry.conversation.forEach(msg => {
           messages.push({
             type: msg.type || (msg.isAdmin ? 'admin' : 'user'),
@@ -1029,6 +1001,27 @@
             author: msg.isAdmin || msg.type === 'admin' ? (msg.author || 'Admin') : 'You'
           });
         });
+      } else {
+        // Fallback to legacy fields if no conversation thread exists
+        // Add initial admin response if exists
+        if (inquiry.response) {
+          messages.push({
+            type: 'admin',
+            message: inquiry.response,
+            date: inquiry.responseDate?.toDate?.() || new Date(inquiry.responseDate) || null,
+            author: inquiry.respondedBy || 'Admin'
+          });
+        }
+        
+        // Add user response if exists
+        if (inquiry.userResponse) {
+          messages.push({
+            type: 'user',
+            message: inquiry.userResponse,
+            date: inquiry.userResponseDate?.toDate?.() || new Date(inquiry.userResponseDate) || null,
+            author: 'You'
+          });
+        }
       }
       
       // Sort messages by date
