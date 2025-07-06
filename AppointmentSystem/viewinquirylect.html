@@ -933,7 +933,7 @@
       try {
         const userEmail = sessionStorage.getItem('userEmail');
         if (!userEmail) {
-          window.location.href = 'login.html';
+          window.location.href = 'index.html';
           return;
         }
 
@@ -1339,7 +1339,7 @@
 
     window.logout = function() {
       sessionStorage.clear();
-      window.location.href = 'login.html';
+      window.location.href = 'index.html';
     };
 
     // Close logout dropdown when clicking outside

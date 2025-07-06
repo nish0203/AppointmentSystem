@@ -218,7 +218,7 @@ class NotificationService {
       await addDoc(collection(this.db, 'notifications'), newNotification);
       console.log('📱 In-app notification sent to:', userEmail);
       
-      // Send email notification
+      // Send email notification with real data
       await this.sendEmailNotification(userEmail, userType, notificationData);
       
     } catch (error) {
@@ -234,57 +234,97 @@ class NotificationService {
     }
 
     try {
-      const { type, title, message } = notificationData;
+      const { type, title, message, appointmentData = {} } = notificationData;
       console.log(`📧 Sending email notification: ${type} to ${userEmail}`);
 
-      // Extract appointment details from message if available
-      let appointmentData = this.extractAppointmentData(message);
+      // Use direct appointment data if provided, otherwise extract from message
+      let realAppointmentData = appointmentData;
+      if (!realAppointmentData || Object.keys(realAppointmentData).length === 0) {
+        realAppointmentData = this.extractAppointmentData(message);
+      }
       
-      // Handle different notification types
+      // Handle different notification types using correct email service methods with REAL data
       switch (type) {
         case 'lecturer_approved_appointment':
           await this.emailService.sendBookingConfirmation(
             userEmail,
-            appointmentData.studentName || 'Student',
-            appointmentData.lecturerName || 'Lecturer',
-            appointmentData.date || 'TBD',
-            appointmentData.time || 'TBD',
-            appointmentData.meetingLink || null
+            realAppointmentData.studentName,
+            realAppointmentData.lecturerName,
+            realAppointmentData.date,
+            realAppointmentData.time,
+            realAppointmentData.meetingLink || null
           );
           break;
 
         case 'lecturer_rejected_appointment':
+          await this.emailService.sendLecturerRejectedAppointment(
+            userEmail,  // Student email
+            realAppointmentData.studentName,
+            realAppointmentData.lecturerName,
+            realAppointmentData.date,
+            realAppointmentData.time,
+            realAppointmentData.reason || 'No specific reason provided'
+          );
+          break;
+
         case 'lecturer_cancelled_appointment':
-          await this.emailService.sendCancellationNotification(
-            userEmail,
-            appointmentData.studentName || 'Student',
-            appointmentData.date || 'TBD',
-            appointmentData.time || 'TBD',
-            appointmentData.reason || 'No reason provided',
-            appointmentData.lecturerName || 'Lecturer',
-            appointmentData.studentName || 'Student'
+          await this.emailService.sendLecturerCancelledAppointment(
+            userEmail,  // Student email
+            realAppointmentData.studentName,
+            realAppointmentData.lecturerName,
+            realAppointmentData.date,
+            realAppointmentData.time,
+            realAppointmentData.reason || 'No specific reason provided'
           );
           break;
 
         case 'student_booked_slot':
+          await this.emailService.sendStudentBookedSlot(
+            userEmail,  // Lecturer email
+            realAppointmentData.lecturerName,
+            realAppointmentData.studentName,
+            realAppointmentData.studentEmail,
+            realAppointmentData.date,
+            realAppointmentData.time,
+            realAppointmentData.purpose || 'General consultation'
+          );
+          break;
+
         case 'student_requested_slot':
-          await this.emailService.sendSlotBookedAlert(
-            userEmail,
-            appointmentData.lecturerName || 'Lecturer',
-            appointmentData.studentName || 'Student',
-            appointmentData.date || 'TBD',
-            appointmentData.time || 'TBD',
-            appointmentData.studentEmail || userEmail,
-            appointmentData.purpose || 'General consultation'
+          await this.emailService.sendStudentRequestedSlot(
+            userEmail,  // Lecturer email
+            realAppointmentData.lecturerName,
+            realAppointmentData.studentName,
+            realAppointmentData.studentEmail,
+            realAppointmentData.date,
+            realAppointmentData.time,
+            realAppointmentData.purpose || 'General consultation'
           );
           break;
 
         case 'student_reschedule_request':
+          await this.emailService.sendStudentRescheduleRequest(
+            userEmail,  // Lecturer email
+            realAppointmentData.lecturerName,
+            realAppointmentData.studentName,
+            realAppointmentData.studentEmail,
+            realAppointmentData.originalDate || realAppointmentData.date,
+            realAppointmentData.originalTime || realAppointmentData.time,
+            realAppointmentData.newDate,
+            realAppointmentData.newTime,
+            realAppointmentData.reason || 'No specific reason provided'
+          );
+          break;
+
         case 'student_cancel_request':
-          // For lecturer notifications about student requests
-          await this.emailService.sendPlainEmail(
-            userEmail,
-            `${title}\n\n${message}\n\nPlease check your appointment dashboard for more details.`
+          await this.emailService.sendStudentCancelRequest(
+            userEmail,  // Lecturer email
+            realAppointmentData.lecturerName,
+            realAppointmentData.studentName,
+            realAppointmentData.studentEmail,
+            realAppointmentData.date,
+            realAppointmentData.time,
+            realAppointmentData.reason || 'No specific reason provided'
           );
           break;
 
@@ -330,6 +370,45 @@ class NotificationService {
     const timeRangeMatch = message.match(/(\d{1,2}:\d{2} (?:AM|PM) - \d{1,2}:\d{2} (?:AM|PM))/);
     if (timeRangeMatch) {
       data.time = timeRangeMatch[1];
+    }
+    
+    // Extract date and time patterns for various message formats
+    const datePattern = /(\w+,?\s+\w+\s+\d{1,2},?\s+\d{4})/;
+    const timePattern = /(\d{1,2}:\d{2}\s+(?:AM|PM)(?:\s+-\s+\d{1,2}:\d{2}\s+(?:AM|PM))?)/;
+    
+    const dateMatch = message.match(datePattern);
+    if (dateMatch) {
+      data.date = dateMatch[1];
+    }
+    
+    const timeMatchFull = message.match(timePattern);
+    if (timeMatchFull) {
+      data.time = timeMatchFull[1];
+    }
+    
+    // Extract reason from messages
+    const reasonMatch = message.match(/reason:?\s*(.+?)(?:\.|$)/i);
+    if (reasonMatch) {
+      data.reason = reasonMatch[1].trim();
+    }
+    
+    // Extract new date/time for reschedule requests
+    const rescheduleMatch = message.match(/reschedule.*?to\s+(.+?)\s+(\d{1,2}:\d{2}\s+(?:AM|PM))/i);
+    if (rescheduleMatch) {
+      data.newDate = rescheduleMatch[1];
+      data.newTime = rescheduleMatch[2];
+    }
+    
+    // Extract student email from message context or use a default
+    const emailMatch = message.match(/([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/);
+    if (emailMatch) {
+      data.studentEmail = emailMatch[1];
+    }
+    
+    // Extract purpose
+    const purposeMatch = message.match(/purpose:?\s*(.+?)(?:\.|$)/i);
+    if (purposeMatch) {
+      data.purpose = purposeMatch[1].trim();
     }
     
     return data;

@@ -727,7 +727,7 @@
           }, 500);
         }
       } else {
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
       }
     })();
 
@@ -1453,9 +1453,18 @@
           await window.NotificationService.sendNotificationToUser(appointmentData.lecturerEmail, 'lecturer', {
             type: 'student_cancel_request',
             title: 'Cancellation Request',
-            message: `${currentStudentName || 'Student'} have requested cancellation of appointment slot at ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
+            message: `${currentStudentName} have requested cancellation of appointment slot at ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
             icon: 'fa-user-times',
-            category: 'Bookings'
+            category: 'Bookings',
+            appointmentData: {
+              studentName: currentStudentName,
+              lecturerName: appointmentData.lecturerName,
+              studentEmail: currentStudentEmail,
+              date: appointmentData.date,
+              time: `${appointmentData.startTime} - ${appointmentData.endTime}`,
+              purpose: appointmentData.purpose || 'General consultation',
+              reason: reason
+            }
           });
         }
         closeCancellationModal();
@@ -1522,9 +1531,22 @@
           await window.NotificationService.sendNotificationToUser(appointmentData.lecturerEmail, 'lecturer', {
             type: 'student_reschedule_request',
             title: 'Reschedule Request',
-            message: `${currentStudentName || 'Student'} have requested reschedule of appointment for ${preferredDate} ${preferredTime} - ${preferredEndTime}`,
+            message: `${currentStudentName} have requested reschedule of appointment for ${preferredDate} ${preferredTime} - ${preferredEndTime}`,
             icon: 'fa-user-edit',
-            category: 'Bookings'
+            category: 'Bookings',
+            appointmentData: {
+              studentName: currentStudentName,
+              lecturerName: appointmentData.lecturerName,
+              studentEmail: currentStudentEmail,
+              originalDate: appointmentData.date,
+              originalTime: `${appointmentData.startTime} - ${appointmentData.endTime}`,
+              date: appointmentData.date,
+              time: `${appointmentData.startTime} - ${appointmentData.endTime}`,
+              newDate: preferredDate,
+              newTime: `${preferredTime} - ${preferredEndTime}`,
+              purpose: appointmentData.purpose || 'General consultation',
+              reason: reason
+            }
           });
         }
         closeRescheduleModal();
@@ -1678,7 +1700,7 @@
       if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
           sessionStorage.clear();
-          window.location.href = 'login.html';
+          window.location.href = 'index.html';
         });
       }
     }

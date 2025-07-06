@@ -470,10 +470,10 @@
         logoutDropdown.classList.remove('show');
       }
     });
-    document.getElementById('logout-btn').addEventListener('click', () => {
-      sessionStorage.clear();
-      window.location.href = 'login.html';
-    });
+      document.getElementById('logout-btn').addEventListener('click', () => {
+    sessionStorage.clear();
+    window.location.href = 'index.html';
+  });
 
     // Inquiry dropdown
     const inquiryDropdown = document.getElementById('inquiry-dropdown');

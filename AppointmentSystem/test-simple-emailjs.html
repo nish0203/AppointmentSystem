@@ -162,7 +162,7 @@
                     );
                     break;
                     
-                case 'booked_slot':
+                case 'student_booked_slot':
                     await emailService.sendStudentBookedSlot(
                         userEmail,
                         appointmentData.lecturerName || 'Lecturer',
@@ -174,7 +174,7 @@
                     );
                     break;
                     
-                case 'requested_slot':
+                case 'student_requested_slot':
                     await emailService.sendStudentRequestedSlot(
                         userEmail,
                         appointmentData.lecturerName || 'Lecturer',
@@ -186,7 +186,7 @@
                     );
                     break;
                     
-                case 'cancel_request':
+                case 'student_cancel_request':
                     await emailService.sendStudentCancelRequest(
                         userEmail,
                         appointmentData.lecturerName || 'Lecturer',
@@ -198,7 +198,7 @@
                     );
                     break;
                     
-                case 'reschedule_request':
+                case 'student_reschedule_request':
                     await emailService.sendStudentRescheduleRequest(
                         userEmail,
                         appointmentData.lecturerName || 'Lecturer',
@@ -265,7 +265,15 @@
                 const notificationData = {
                     type: 'lecturer_approved_appointment',
                     title: 'Appointment Approved',
-                    message: 'Dr. Sarah Smith have approved your appointment booking for Monday, January 15, 2024 10:00 AM - 11:00 AM'
+                    message: 'Dr. Sarah Smith have approved your appointment booking for Monday, January 15, 2024 10:00 AM - 11:00 AM',
+                    appointmentData: {
+                        studentName: 'John Doe',
+                        lecturerName: 'Dr. Sarah Smith',
+                        studentEmail: 'john.doe@student.tarc.edu.my',
+                        date: 'Monday, January 15, 2024',
+                        time: '10:00 AM - 11:00 AM',
+                        purpose: 'Assignment discussion'
+                    }
                 };
                 
                 await sendNotificationEmail(email, 'student', notificationData);
@@ -287,9 +295,18 @@
                 addResult('❌ Testing lecturer rejection notification...');
                 
                 const notificationData = {
-                    type: 'rejected_appointment',
+                    type: 'lecturer_rejected_appointment',
                     title: 'Appointment Rejected',
-                    message: 'Dr. Sarah Smith have rejected your appointment slot request for Monday, January 15, 2024 10:00 AM - 11:00 AM'
+                    message: 'Dr. Sarah Smith have rejected your appointment slot request for Monday, January 15, 2024 10:00 AM - 11:00 AM',
+                    appointmentData: {
+                        studentName: 'John Doe',
+                        lecturerName: 'Dr. Sarah Smith',
+                        studentEmail: 'john.doe@student.tarc.edu.my',
+                        date: 'Monday, January 15, 2024',
+                        time: '10:00 AM - 11:00 AM',
+                        purpose: 'Assignment discussion',
+                        reason: 'Schedule conflict'
+                    }
                 };
                 
                 await sendNotificationEmail(email, 'student', notificationData);
@@ -311,9 +328,18 @@
                 addResult('🗑️ Testing lecturer cancellation notification...');
                 
                 const notificationData = {
-                    type: 'cancelled_appointment',
+                    type: 'lecturer_cancelled_appointment',
                     title: 'Appointment Cancelled',
-                    message: 'Dr. Sarah Smith have cancelled your appointment booking for Monday, January 15, 2024 10:00 AM - 11:00 AM'
+                    message: 'Dr. Sarah Smith have cancelled your appointment booking for Monday, January 15, 2024 10:00 AM - 11:00 AM',
+                    appointmentData: {
+                        studentName: 'John Doe',
+                        lecturerName: 'Dr. Sarah Smith',
+                        studentEmail: 'john.doe@student.tarc.edu.my',
+                        date: 'Monday, January 15, 2024',
+                        time: '10:00 AM - 11:00 AM',
+                        purpose: 'Assignment discussion',
+                        reason: 'Emergency meeting'
+                    }
                 };
                 
                 await sendNotificationEmail(email, 'student', notificationData);
@@ -336,9 +362,17 @@
                 addResult('📅 Testing student booked slot notification...');
                 
                 const notificationData = {
-                    type: 'booked_slot',
+                    type: 'student_booked_slot',
                     title: 'Slot Booked',
-                    message: 'John Doe have booked your appointment slot for Monday, January 15, 2024 10:00 AM - 11:00 AM'
+                    message: 'John Doe have booked your appointment slot for Monday, January 15, 2024 10:00 AM - 11:00 AM',
+                    appointmentData: {
+                        studentName: 'John Doe',
+                        lecturerName: 'Dr. Sarah Smith',
+                        studentEmail: 'john.doe@student.tarc.edu.my',
+                        date: 'Monday, January 15, 2024',
+                        time: '10:00 AM - 11:00 AM',
+                        purpose: 'Assignment discussion'
+                    }
                 };
                 
                 await sendNotificationEmail(email, 'lecturer', notificationData);
@@ -362,9 +396,17 @@
                 addResult('📝 Testing student requested slot notification...');
                 
                 const notificationData = {
-                    type: 'requested_slot',
+                    type: 'student_requested_slot',
                     title: 'Slot Request',
-                    message: 'John Doe have request for appointment slot for Monday, January 15, 2024 10:00 AM - 11:00 AM'
+                    message: 'John Doe have request for appointment slot for Monday, January 15, 2024 10:00 AM - 11:00 AM',
+                    appointmentData: {
+                        studentName: 'John Doe',
+                        lecturerName: 'Dr. Sarah Smith',
+                        studentEmail: 'john.doe@student.tarc.edu.my',
+                        date: 'Monday, January 15, 2024',
+                        time: '10:00 AM - 11:00 AM',
+                        purpose: 'Assignment discussion'
+                    }
                 };
                 
                 await sendNotificationEmail(email, 'lecturer', notificationData);
@@ -386,9 +428,18 @@
                 addResult('❌ Testing student cancel request notification...');
                 
                 const notificationData = {
-                    type: 'cancel_request',
+                    type: 'student_cancel_request',
                     title: 'Cancellation Request',
-                    message: 'John Doe have requested cancellation of appointment slot at Monday, January 15, 2024 10:00 AM - 11:00 AM'
+                    message: 'John Doe have requested cancellation of appointment slot at Monday, January 15, 2024 10:00 AM - 11:00 AM',
+                    appointmentData: {
+                        studentName: 'John Doe',
+                        lecturerName: 'Dr. Sarah Smith',
+                        studentEmail: 'john.doe@student.tarc.edu.my',
+                        date: 'Monday, January 15, 2024',
+                        time: '10:00 AM - 11:00 AM',
+                        purpose: 'Assignment discussion',
+                        reason: 'Personal emergency'
+                    }
                 };
                 
                 await sendNotificationEmail(email, 'lecturer', notificationData);
@@ -410,9 +461,22 @@
                 addResult('🔄 Testing student reschedule request notification...');
                 
                 const notificationData = {
-                    type: 'reschedule_request',
+                    type: 'student_reschedule_request',
                     title: 'Reschedule Request',
-                    message: 'John Doe have requested reschedule of appointment for Tuesday, January 16, 2024 2:00 PM - 3:00 PM'
+                    message: 'John Doe have requested reschedule of appointment for Tuesday, January 16, 2024 2:00 PM - 3:00 PM',
+                    appointmentData: {
+                        studentName: 'John Doe',
+                        lecturerName: 'Dr. Sarah Smith',
+                        studentEmail: 'john.doe@student.tarc.edu.my',
+                        originalDate: 'Monday, January 15, 2024',
+                        originalTime: '10:00 AM - 11:00 AM',
+                        date: 'Monday, January 15, 2024',
+                        time: '10:00 AM - 11:00 AM',
+                        newDate: 'Tuesday, January 16, 2024',
+                        newTime: '2:00 PM - 3:00 PM',
+                        purpose: 'Assignment discussion',
+                        reason: 'Schedule conflict'
+                    }
                 };
                 
                 await sendNotificationEmail(email, 'lecturer', notificationData);

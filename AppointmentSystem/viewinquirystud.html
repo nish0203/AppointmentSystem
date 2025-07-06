@@ -833,7 +833,7 @@
       try {
         const userEmail = sessionStorage.getItem('userEmail');
         if (!userEmail) {
-          window.location.href = 'login.html';
+          window.location.href = 'index.html';
           return;
         }
 
@@ -1219,7 +1219,7 @@
       if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
       sessionStorage.clear();
-      window.location.href = 'login.html';
+      window.location.href = 'index.html';
         });
       }
     }

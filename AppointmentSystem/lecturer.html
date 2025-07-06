@@ -606,7 +606,7 @@
     });
     document.getElementById('logout-btn').addEventListener('click', () => {
       sessionStorage.clear();
-      window.location.href = 'login.html';
+      window.location.href = 'index.html';
     });
 
     // --- Instant Avatar Loading (cached from login) ---
@@ -884,9 +884,17 @@
           await window.NotificationService.sendNotificationToUser(appointmentData.studentEmail, 'student', {
             type: 'lecturer_approved_appointment',
             title: 'Appointment Approved',
-            message: `${appointmentData.lecturerName || 'Lecturer'} have approved your appointment booking for ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
+            message: `${appointmentData.lecturerName} have approved your appointment booking for ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
             icon: 'fa-check-circle',
-            category: 'Appointments'
+            category: 'Appointments',
+            appointmentData: {
+              studentName: appointmentData.studentName,
+              lecturerName: appointmentData.lecturerName,
+              studentEmail: appointmentData.studentEmail,
+              date: appointmentData.date,
+              time: `${appointmentData.startTime} - ${appointmentData.endTime}`,
+              purpose: appointmentData.purpose || 'General consultation'
+            }
           });
         }
         
@@ -926,9 +934,18 @@
           await window.NotificationService.sendNotificationToUser(appointmentData.studentEmail, 'student', {
             type: 'lecturer_rejected_appointment',
             title: 'Appointment Rejected',
-            message: `${appointmentData.lecturerName || 'Lecturer'} have rejected your appointment slot request for ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
+            message: `${appointmentData.lecturerName} have rejected your appointment slot request for ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
             icon: 'fa-times-circle',
-            category: 'Appointments'
+            category: 'Appointments',
+            appointmentData: {
+              studentName: appointmentData.studentName,
+              lecturerName: appointmentData.lecturerName,
+              studentEmail: appointmentData.studentEmail,
+              date: appointmentData.date,
+              time: `${appointmentData.startTime} - ${appointmentData.endTime}`,
+              purpose: appointmentData.purpose || 'General consultation',
+              reason: 'Lecturer rejected the appointment request'
+            }
           });
         }
         
@@ -1296,9 +1313,17 @@
           await window.NotificationService.sendNotificationToUser(currentRequest.studentEmail, 'student', {
             type: 'lecturer_approved_appointment',
             title: 'Appointment Approved',
-            message: `${currentRequest.lecturerName || 'Lecturer'} have approved your appointment booking for ${currentRequest.preferredDate} ${currentRequest.startTime} - ${currentRequest.endTime}`,
+            message: `${currentRequest.lecturerName} have approved your appointment booking for ${currentRequest.preferredDate} ${currentRequest.startTime} - ${currentRequest.endTime}`,
             icon: 'fa-check-circle',
-            category: 'Appointments'
+            category: 'Appointments',
+            appointmentData: {
+              studentName: currentRequest.studentName,
+              lecturerName: currentRequest.lecturerName,
+              studentEmail: currentRequest.studentEmail,
+              date: currentRequest.preferredDate,
+              time: `${currentRequest.startTime} - ${currentRequest.endTime}`,
+              purpose: currentRequest.purpose || 'General consultation'
+            }
           });
         }
 
@@ -1342,9 +1367,18 @@
           await window.NotificationService.sendNotificationToUser(currentRequest.studentEmail, 'student', {
             type: 'lecturer_rejected_appointment',
             title: 'Appointment Rejected',
-            message: `${currentRequest.lecturerName || 'Lecturer'} have rejected your appointment slot request for ${currentRequest.preferredDate} ${currentRequest.startTime} - ${currentRequest.endTime}`,
+            message: `${currentRequest.lecturerName} have rejected your appointment slot request for ${currentRequest.preferredDate} ${currentRequest.startTime} - ${currentRequest.endTime}`,
             icon: 'fa-times-circle',
-            category: 'Appointments'
+            category: 'Appointments',
+            appointmentData: {
+              studentName: currentRequest.studentName,
+              lecturerName: currentRequest.lecturerName,
+              studentEmail: currentRequest.studentEmail,
+              date: currentRequest.preferredDate,
+              time: `${currentRequest.startTime} - ${currentRequest.endTime}`,
+              purpose: currentRequest.purpose || 'General consultation',
+              reason: 'Lecturer rejected the slot request'
+            }
           });
         }
 
