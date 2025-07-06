@@ -1216,7 +1216,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-    import { getFirestore, collection, getDocs, doc, getDoc, query, orderBy, limit, addDoc, deleteDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, doc, getDoc, query, where, orderBy, limit, addDoc, deleteDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-storage.js";
 
     const firebaseConfig = {
@@ -2512,6 +2512,31 @@
            hour: '2-digit',
            minute: '2-digit'
          });
+       }
+
+       function getTimeAgo(date) {
+         const now = new Date();
+         const diffInMs = now - date;
+         const diffInSeconds = Math.floor(diffInMs / 1000);
+         const diffInMinutes = Math.floor(diffInSeconds / 60);
+         const diffInHours = Math.floor(diffInMinutes / 60);
+         const diffInDays = Math.floor(diffInHours / 24);
+         const diffInMonths = Math.floor(diffInDays / 30);
+         const diffInYears = Math.floor(diffInDays / 365);
+
+         if (diffInYears > 0) {
+           return `${diffInYears} year${diffInYears > 1 ? 's' : ''} ago`;
+         } else if (diffInMonths > 0) {
+           return `${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`;
+         } else if (diffInDays > 0) {
+           return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+         } else if (diffInHours > 0) {
+           return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+         } else if (diffInMinutes > 0) {
+           return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+         } else {
+           return 'Just now';
+         }
        }
 
        // Notification system

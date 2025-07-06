@@ -582,6 +582,12 @@
     window.where = where;
     window.orderBy = orderBy;
     
+    // Make Firebase Storage functions globally available
+    window.storage = storage;
+    window.ref = ref;
+    window.uploadBytes = uploadBytes;
+    window.getDownloadURL = getDownloadURL;
+    
     // Make data loading functions globally available (needed by global functions)
     window.loadAppointments = loadAppointments;
     window.loadStudentRequests = loadStudentRequests;
@@ -1426,8 +1432,50 @@
       }
     });
 
+    // Notification system
+    function showNotification(message, type = 'info', duration = 3000) {
+      // Create notification element if it doesn't exist
+      let notification = document.getElementById('notification-toast');
+      if (!notification) {
+        notification = document.createElement('div');
+        notification.id = 'notification-toast';
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          z-index: 10000;
+          min-width: 300px;
+          padding: 16px;
+          border-radius: 8px;
+          color: white;
+          font-weight: 500;
+          display: none;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        `;
+        document.body.appendChild(notification);
+      }
+
+      // Set background color based on type
+      const colors = {
+        success: '#10b981',
+        error: '#ef4444',
+        warning: '#f59e0b',
+        info: '#3b82f6'
+      };
+      
+      notification.style.backgroundColor = colors[type] || colors.info;
+      notification.textContent = message;
+      notification.style.display = 'block';
+
+      // Auto-hide after duration
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, duration);
+    }
+
     // Make functions global
     window.changeAvatar = changeAvatar;
+    window.showNotification = showNotification;
   </script>
 
   <!-- EmailJS Library -->
