@@ -1,6 +1,34 @@
 // Ultra Simple EmailJS Service - Plain Text Only
 // Uses EXACTLY the same format as your working OTP emails
 
+/**
+ * REQUIRED EMAILJS TEMPLATES:
+ * You need to create these templates in your EmailJS dashboard (service_mailgun):
+ * 
+ * EXISTING TEMPLATES:
+ * 1. template_otp                     - OTP and fallback emails
+ * 2. booking_confirmation             - Appointment booking confirmations  
+ * 3. slot_booked_alert               - Lecturer notifications when student books
+ * 4. cancellation_notification       - General cancellation notifications
+ * 5. appointment_reminder            - 24-hour appointment reminders
+ * 
+ * NEW TEMPLATES TO CREATE:
+ * 6. rejected_appointment   - When lecturer rejects student appointment
+ * 7. cancelled_appointment  - When lecturer cancels confirmed appointment
+ * 8. booked_slot            - When student books appointment slot
+ * 9. requested_slot         - When student requests new slot creation
+ * 10. cancel_request        - When student requests cancellation
+ * 11. reschedule_request    - When student requests reschedule
+ * 
+ * TEMPLATE PARAMETERS:
+ * All templates should include these basic fields:
+ * - {{email}} (required recipient field)
+ * - {{student_name}}, {{lecturer_name}}
+ * - {{appointment_date}}, {{appointment_time}}
+ * - {{rejection_reason}}, {{cancellation_reason}}, {{reschedule_reason}}
+ * - Additional fields as documented in each method below
+ */
+
 class EmailService {
     constructor() {
         // Your existing EmailJS credentials (already working for OTP)
@@ -243,6 +271,224 @@ This is an automated message from the University Booking System.
             
         } catch (error) {
             console.error('❌ Failed to send appointment reminder:', error);
+            console.error('❌ Error details:', error);
+            throw error;
+        }
+    }
+
+    // NEW EMAIL TEMPLATES - Following lecturer approved appointment style
+
+    async sendLecturerRejectedAppointment(studentEmail, studentName, lecturerName, appointmentDate, appointmentTime, rejectionReason = '') {
+        try {
+            console.log(`📧 Sending lecturer rejection notification to ${studentEmail} via EmailJS...`);
+            
+            const templateParams = {
+                email: studentEmail,             // Required: recipient email
+                student_name: studentName,
+                lecturer_name: lecturerName,
+                appointment_date: appointmentDate,
+                appointment_time: appointmentTime,
+                rejection_reason: rejectionReason || 'No specific reason provided'
+            };
+            
+            console.log('📤 Template params:', templateParams);
+            console.log('📧 Using template ID: rejected_appointment');
+            console.log('🔑 Using service ID:', this.serviceId);
+            console.log('🔑 Using public key:', this.publicKey);
+            
+            const response = await emailjs.send(
+                this.serviceId,
+                'rejected_appointment',
+                templateParams,
+                { publicKey: this.publicKey }
+            );
+
+            console.log('✅ Lecturer rejection notification sent successfully via EmailJS');
+            return { success: true, result: response };
+            
+        } catch (error) {
+            console.error('❌ Failed to send lecturer rejection notification:', error);
+            console.error('❌ Error details:', error);
+            throw error;
+        }
+    }
+
+    async sendLecturerCancelledAppointment(studentEmail, studentName, lecturerName, appointmentDate, appointmentTime, cancellationReason = '') {
+        try {
+            console.log(`📧 Sending lecturer cancellation notification to ${studentEmail} via EmailJS...`);
+            
+            const templateParams = {
+                email: studentEmail,             // Required: recipient email
+                student_name: studentName,
+                lecturer_name: lecturerName,
+                appointment_date: appointmentDate,
+                appointment_time: appointmentTime,
+                cancellation_reason: cancellationReason || 'No specific reason provided'
+            };
+            
+            console.log('📤 Template params:', templateParams);
+            console.log('📧 Using template ID: cancelled_appointment');
+            console.log('🔑 Using service ID:', this.serviceId);
+            console.log('🔑 Using public key:', this.publicKey);
+            
+            const response = await emailjs.send(
+                this.serviceId,
+                'cancelled_appointment',
+                templateParams,
+                { publicKey: this.publicKey }
+            );
+
+            console.log('✅ Lecturer cancellation notification sent successfully via EmailJS');
+            return { success: true, result: response };
+            
+        } catch (error) {
+            console.error('❌ Failed to send lecturer cancellation notification:', error);
+            console.error('❌ Error details:', error);
+            throw error;
+        }
+    }
+
+    async sendStudentBookedSlot(lecturerEmail, lecturerName, studentName, studentEmail, appointmentDate, appointmentTime, purpose = 'General consultation') {
+        try {
+            console.log(`📧 Sending student booking notification to ${lecturerEmail} via EmailJS...`);
+            
+            const templateParams = {
+                email: lecturerEmail,            // Required: recipient email
+                lecturer_name: lecturerName,
+                student_name: studentName,
+                student_email: studentEmail,
+                appointment_date: appointmentDate,
+                appointment_time: appointmentTime,
+                purpose: purpose
+            };
+            
+            console.log('📤 Template params:', templateParams);
+            console.log('📧 Using template ID: booked_slot');
+            console.log('🔑 Using service ID:', this.serviceId);
+            console.log('🔑 Using public key:', this.publicKey);
+            
+            const response = await emailjs.send(
+                this.serviceId,
+                'booked_slot',
+                templateParams,
+                { publicKey: this.publicKey }
+            );
+
+            console.log('✅ Student booking notification sent successfully via EmailJS');
+            return { success: true, result: response };
+            
+        } catch (error) {
+            console.error('❌ Failed to send student booking notification:', error);
+            console.error('❌ Error details:', error);
+            throw error;
+        }
+    }
+
+    async sendStudentRequestedSlot(lecturerEmail, lecturerName, studentName, studentEmail, appointmentDate, appointmentTime, purpose = 'General consultation') {
+        try {
+            console.log(`📧 Sending student slot request notification to ${lecturerEmail} via EmailJS...`);
+            
+            const templateParams = {
+                email: lecturerEmail,            // Required: recipient email
+                lecturer_name: lecturerName,
+                student_name: studentName,
+                student_email: studentEmail,
+                appointment_date: appointmentDate,
+                appointment_time: appointmentTime,
+                purpose: purpose
+            };
+            
+            console.log('📤 Template params:', templateParams);
+            console.log('📧 Using template ID: requested_slot');
+            console.log('🔑 Using service ID:', this.serviceId);
+            console.log('🔑 Using public key:', this.publicKey);
+            
+            const response = await emailjs.send(
+                this.serviceId,
+                'requested_slot',
+                templateParams,
+                { publicKey: this.publicKey }
+            );
+
+            console.log('✅ Student slot request notification sent successfully via EmailJS');
+            return { success: true, result: response };
+            
+        } catch (error) {
+            console.error('❌ Failed to send student slot request notification:', error);
+            console.error('❌ Error details:', error);
+            throw error;
+        }
+    }
+
+    async sendStudentCancelRequest(lecturerEmail, lecturerName, studentName, studentEmail, appointmentDate, appointmentTime, cancellationReason = '') {
+        try {
+            console.log(`📧 Sending student cancellation request to ${lecturerEmail} via EmailJS...`);
+            
+            const templateParams = {
+                email: lecturerEmail,            // Required: recipient email
+                lecturer_name: lecturerName,
+                student_name: studentName,
+                student_email: studentEmail,
+                appointment_date: appointmentDate,
+                appointment_time: appointmentTime,
+                cancellation_reason: cancellationReason || 'No specific reason provided'
+            };
+            
+            console.log('📤 Template params:', templateParams);
+            console.log('📧 Using template ID: cancel_request');
+            console.log('🔑 Using service ID:', this.serviceId);
+            console.log('🔑 Using public key:', this.publicKey);
+            
+            const response = await emailjs.send(
+                this.serviceId,
+                'cancel_request',
+                templateParams,
+                { publicKey: this.publicKey }
+            );
+
+            console.log('✅ Student cancellation request sent successfully via EmailJS');
+            return { success: true, result: response };
+            
+        } catch (error) {
+            console.error('❌ Failed to send student cancellation request:', error);
+            console.error('❌ Error details:', error);
+            throw error;
+        }
+    }
+
+    async sendStudentRescheduleRequest(lecturerEmail, lecturerName, studentName, studentEmail, originalDate, originalTime, newDate, newTime, rescheduleReason = '') {
+        try {
+            console.log(`📧 Sending student reschedule request to ${lecturerEmail} via EmailJS...`);
+            
+            const templateParams = {
+                email: lecturerEmail,            // Required: recipient email
+                lecturer_name: lecturerName,
+                student_name: studentName,
+                student_email: studentEmail,
+                original_date: originalDate,
+                original_time: originalTime,
+                new_date: newDate,
+                new_time: newTime,
+                reschedule_reason: rescheduleReason || 'No specific reason provided'
+            };
+            
+            console.log('📤 Template params:', templateParams);
+            console.log('📧 Using template ID: reschedule_request');
+            console.log('🔑 Using service ID:', this.serviceId);
+            console.log('🔑 Using public key:', this.publicKey);
+            
+            const response = await emailjs.send(
+                this.serviceId,
+                'reschedule_request',
+                templateParams,
+                { publicKey: this.publicKey }
+            );
+
+            console.log('✅ Student reschedule request sent successfully via EmailJS');
+            return { success: true, result: response };
+            
+        } catch (error) {
+            console.error('❌ Failed to send student reschedule request:', error);
             console.error('❌ Error details:', error);
             throw error;
         }

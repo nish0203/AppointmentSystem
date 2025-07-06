@@ -121,14 +121,14 @@
             results.insertBefore(div, results.firstChild);
         }
 
-        // Helper function to send email notifications like the enhanced NotificationService
+        // Helper function to send email notifications using the NEW specific email templates
         async function sendNotificationEmail(userEmail, userType, notificationData) {
             const { type, title, message } = notificationData;
             
             // Extract appointment data from message
             const appointmentData = extractAppointmentData(message);
             
-            // Handle different notification types
+            // Handle different notification types using the NEW specific templates
             switch (type) {
                 case 'lecturer_approved_appointment':
                     await emailService.sendBookingConfirmation(
@@ -140,37 +140,75 @@
                     );
                     break;
                     
-                case 'lecturer_rejected_appointment':
-                case 'lecturer_cancelled_appointment':
-                    await emailService.sendCancellationNotification(
+                case 'rejected_appointment':
+                    await emailService.sendLecturerRejectedAppointment(
                         userEmail,
                         appointmentData.studentName || 'Student',
+                        appointmentData.lecturerName || 'Lecturer',
                         appointmentData.date || 'TBD',
                         appointmentData.time || 'TBD',
-                        appointmentData.reason || 'No reason provided',
-                        appointmentData.lecturerName || 'Lecturer',
-                        appointmentData.studentName || 'Student'
+                        'No specific reason provided'
                     );
                     break;
                     
-                case 'student_booked_slot':
-                case 'student_requested_slot':
-                    await emailService.sendSlotBookedAlert(
+                case 'cancelled_appointment':
+                    await emailService.sendLecturerCancelledAppointment(
                         userEmail,
-                        appointmentData.lecturerName || 'Lecturer',
                         appointmentData.studentName || 'Student',
+                        appointmentData.lecturerName || 'Lecturer',
                         appointmentData.date || 'TBD',
                         appointmentData.time || 'TBD',
-                        appointmentData.studentEmail || 'student@example.com',
-                        appointmentData.purpose || 'General consultation'
+                        'No specific reason provided'
                     );
                     break;
                     
-                case 'student_reschedule_request':
-                case 'student_cancel_request':
-                    await emailService.sendPlainEmail(
+                case 'booked_slot':
+                    await emailService.sendStudentBookedSlot(
                         userEmail,
-                        `${title}\n\n${message}\n\nPlease check your appointment dashboard for more details.`
+                        appointmentData.lecturerName || 'Lecturer',
+                        appointmentData.studentName || 'Student',
+                        'student@example.com',
+                        appointmentData.date || 'TBD',
+                        appointmentData.time || 'TBD',
+                        'General consultation'
+                    );
+                    break;
+                    
+                case 'requested_slot':
+                    await emailService.sendStudentRequestedSlot(
+                        userEmail,
+                        appointmentData.lecturerName || 'Lecturer',
+                        appointmentData.studentName || 'Student',
+                        'student@example.com',
+                        appointmentData.date || 'TBD',
+                        appointmentData.time || 'TBD',
+                        'General consultation'
+                    );
+                    break;
+                    
+                case 'cancel_request':
+                    await emailService.sendStudentCancelRequest(
+                        userEmail,
+                        appointmentData.lecturerName || 'Lecturer',
+                        appointmentData.studentName || 'Student',
+                        'student@example.com',
+                        appointmentData.date || 'TBD',
+                        appointmentData.time || 'TBD',
+                        'No specific reason provided'
+                    );
+                    break;
+                    
+                case 'reschedule_request':
+                    await emailService.sendStudentRescheduleRequest(
+                        userEmail,
+                        appointmentData.lecturerName || 'Lecturer',
+                        appointmentData.studentName || 'Student',
+                        'student@example.com',
+                        appointmentData.date || 'TBD',
+                        appointmentData.time || 'TBD',
+                        'Tuesday, January 16, 2024',
+                        '2:00 PM - 3:00 PM',
+                        'Schedule conflict'
                     );
                     break;
                     
@@ -249,7 +287,7 @@
                 addResult('❌ Testing lecturer rejection notification...');
                 
                 const notificationData = {
-                    type: 'lecturer_rejected_appointment',
+                    type: 'rejected_appointment',
                     title: 'Appointment Rejected',
                     message: 'Dr. Sarah Smith have rejected your appointment slot request for Monday, January 15, 2024 10:00 AM - 11:00 AM'
                 };
@@ -273,7 +311,7 @@
                 addResult('🗑️ Testing lecturer cancellation notification...');
                 
                 const notificationData = {
-                    type: 'lecturer_cancelled_appointment',
+                    type: 'cancelled_appointment',
                     title: 'Appointment Cancelled',
                     message: 'Dr. Sarah Smith have cancelled your appointment booking for Monday, January 15, 2024 10:00 AM - 11:00 AM'
                 };
@@ -298,7 +336,7 @@
                 addResult('📅 Testing student booked slot notification...');
                 
                 const notificationData = {
-                    type: 'student_booked_slot',
+                    type: 'booked_slot',
                     title: 'Slot Booked',
                     message: 'John Doe have booked your appointment slot for Monday, January 15, 2024 10:00 AM - 11:00 AM'
                 };
@@ -324,7 +362,7 @@
                 addResult('📝 Testing student requested slot notification...');
                 
                 const notificationData = {
-                    type: 'student_requested_slot',
+                    type: 'requested_slot',
                     title: 'Slot Request',
                     message: 'John Doe have request for appointment slot for Monday, January 15, 2024 10:00 AM - 11:00 AM'
                 };
@@ -348,7 +386,7 @@
                 addResult('❌ Testing student cancel request notification...');
                 
                 const notificationData = {
-                    type: 'student_cancel_request',
+                    type: 'cancel_request',
                     title: 'Cancellation Request',
                     message: 'John Doe have requested cancellation of appointment slot at Monday, January 15, 2024 10:00 AM - 11:00 AM'
                 };
@@ -372,7 +410,7 @@
                 addResult('🔄 Testing student reschedule request notification...');
                 
                 const notificationData = {
-                    type: 'student_reschedule_request',
+                    type: 'reschedule_request',
                     title: 'Reschedule Request',
                     message: 'John Doe have requested reschedule of appointment for Tuesday, January 16, 2024 2:00 PM - 3:00 PM'
                 };

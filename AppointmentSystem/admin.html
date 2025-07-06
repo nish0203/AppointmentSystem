@@ -670,6 +670,16 @@
         <div class="stat-value" id="total-students">-</div>
         <div class="stat-label">Total Students</div>
       </div>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-icon red">
+            <i class="fa fa-question-circle"></i>
+          </div>
+        </div>
+        <div class="stat-value" id="unresolved-inquiries">-</div>
+        <div class="stat-label">Unresolved Inquiries</div>
+      </div>
     </div>
 
     <!-- Search Section -->
@@ -688,16 +698,7 @@
       <div id="search-results" style="margin-top: 1rem; padding: 1rem; background: #f8fafc; border-radius: 6px; display: none;"></div>
     </div>
 
-    <!-- Recent Activity -->
-    <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
-      <h2 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;">Recent Activity</h2>
-      <div id="activity-list">
-        <div style="display: inline-flex; align-items: center; gap: 8px; color: #64748b;">
-          <div style="width: 16px; height: 16px; border: 2px solid #e2e8f0; border-top: 2px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-          <span>Loading recent activity...</span>
-        </div>
-      </div>
-    </div>
+
 
     <!-- Manage Users Section -->
     <div style="margin-bottom: 2rem;">
@@ -1039,56 +1040,12 @@
             <button type="submit" style="background: #10b981; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 500; cursor: pointer;">
               <i class="fa fa-plus"></i> Create Slot
             </button>
-            <button type="button" onclick="createBulkSlots()" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 500; cursor: pointer;">
-              <i class="fa fa-layer-group"></i> Create Multiple Slots
-            </button>
+
           </div>
         </form>
       </div>
 
-      <!-- Bulk Creation Section (Hidden by default) -->
-      <div id="bulk-creation" style="background: #eff6ff; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; display: none;">
-        <h3 style="margin-bottom: 1rem; color: #1e293b;">Bulk Slot Creation</h3>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
-          <div>
-            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Start Date *</label>
-            <input type="date" id="bulk-start-date" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
-          </div>
-          <div>
-            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">End Date *</label>
-            <input type="date" id="bulk-end-date" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
-          </div>
-          <div>
-            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Duration (minutes) *</label>
-            <select id="bulk-duration" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
-              <option value="30">30 minutes</option>
-              <option value="60">1 hour</option>
-              <option value="90">1.5 hours</option>
-              <option value="120">2 hours</option>
-            </select>
-          </div>
-        </div>
-        <div style="margin-bottom: 1rem;">
-          <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Days of Week</label>
-          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" value="1"> Monday</label>
-            <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" value="2"> Tuesday</label>
-            <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" value="3"> Wednesday</label>
-            <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" value="4"> Thursday</label>
-            <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" value="5"> Friday</label>
-            <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" value="6"> Saturday</label>
-            <label style="display: flex; align-items: center; gap: 0.5rem;"><input type="checkbox" value="0"> Sunday</label>
-          </div>
-        </div>
-        <div style="display: flex; gap: 1rem;">
-          <button type="button" onclick="generateBulkSlots()" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 500; cursor: pointer;">
-            <i class="fa fa-magic"></i> Generate Slots
-          </button>
-          <button type="button" onclick="hideBulkCreation()" style="background: #6b7280; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 500; cursor: pointer;">
-            Cancel
-          </button>
-        </div>
-      </div>
+
       
       <!-- Filter and Search Section -->
       <div style="background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid #e2e8f0;">
@@ -1281,7 +1238,6 @@
     window.addEventListener('DOMContentLoaded', async () => {
       await loadAdminProfile();
       await loadStatistics();
-      await loadRecentActivity();
     });
 
     async function loadAdminProfile() {
@@ -1329,12 +1285,17 @@
         const totalStudents = studentsSnapshot.size;
         const totalLecturers = lecturersSnapshot.size;
 
+        // Load unresolved inquiries count
+        const inquiriesSnapshot = await getDocs(collection(db, 'inquiries'));
+        const unresolvedInquiries = inquiriesSnapshot.docs.filter(doc => doc.data().status !== 'resolved').length;
+
         document.getElementById('total-appointments').textContent = totalAppointments;
         document.getElementById('approved-appointments').textContent = approvedAppointments;
         document.getElementById('pending-appointments').textContent = pendingAppointments;
         document.getElementById('cancelled-appointments').textContent = cancelledAppointments;
         document.getElementById('total-students').textContent = totalStudents;
         document.getElementById('total-lecturers').textContent = totalLecturers;
+        document.getElementById('unresolved-inquiries').textContent = unresolvedInquiries;
 
       } catch (error) {
         console.error('Error loading statistics:', error);
@@ -1374,124 +1335,7 @@
         }
       }
 
-      async function loadRecentActivity() {
-        try {
-          const activityList = document.getElementById('activity-list');
-          
-          // Get recent appointments
-          let appointmentsQuery;
-          try {
-            appointmentsQuery = query(
-              collection(db, 'appointments'),
-              orderBy('bookedAt', 'desc'),
-              limit(5)
-            );
-          } catch (indexError) {
-            // Fallback without orderBy
-            appointmentsQuery = query(collection(db, 'appointments'));
-          }
-          
-          const appointmentsSnapshot = await getDocs(appointmentsQuery);
-          const recentAppointments = appointmentsSnapshot.docs.map(doc => ({ 
-            id: doc.id, 
-            ...doc.data(),
-            type: 'appointment'
-          }));
 
-          // Sort manually if needed and limit
-          recentAppointments.sort((a, b) => {
-            const aTime = a.bookedAt ? new Date(a.bookedAt) : new Date(0);
-            const bTime = b.bookedAt ? new Date(b.bookedAt) : new Date(0);
-            return bTime - aTime;
-          });
-
-          const limitedAppointments = recentAppointments.slice(0, 5);
-
-          if (limitedAppointments.length === 0) {
-            activityList.innerHTML = `
-              <div class="activity-item">
-                <div class="activity-icon" style="background: #64748b;">
-                  <i class="fa fa-info"></i>
-                </div>
-                <div class="activity-content">
-                  <div class="activity-text">No recent activity found</div>
-                  <div class="activity-time">System is ready for new appointments</div>
-                </div>
-              </div>
-            `;
-            return;
-          }
-
-          activityList.innerHTML = limitedAppointments.map(activity => {
-            const timeAgo = getTimeAgo(activity.bookedAt);
-            const statusColor = getStatusColor(activity.status);
-            
-            return `
-              <div class="activity-item appointment">
-                <div class="activity-icon" style="background: ${statusColor};">
-                  <i class="fa fa-calendar"></i>
-                </div>
-                <div class="activity-content">
-                  <div class="activity-text">
-                    <strong>${activity.studentName || 'Student'}</strong> ${getActionText(activity.status)} an appointment with <strong>${activity.lecturerName || 'Lecturer'}</strong>
-                  </div>
-                  <div class="activity-time">${timeAgo}</div>
-                </div>
-              </div>
-            `;
-          }).join('');
-
-        } catch (error) {
-          console.error('Error loading recent activity:', error);
-          document.getElementById('activity-list').innerHTML = `
-            <div class="activity-item">
-              <div class="activity-icon" style="background: #ef4444;">
-                <i class="fa fa-exclamation"></i>
-              </div>
-              <div class="activity-content">
-                <div class="activity-text">Error loading recent activity</div>
-                <div class="activity-time">Please try refreshing the page</div>
-              </div>
-            </div>
-          `;
-        }
-      }
-
-      // Helper functions
-      function getTimeAgo(timestamp) {
-        if (!timestamp) return 'Unknown time';
-        
-        const now = new Date();
-        const time = new Date(timestamp);
-        const diffInSeconds = Math.floor((now - time) / 1000);
-        
-        if (diffInSeconds < 60) return 'Just now';
-        if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-        if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-        if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
-        
-        return time.toLocaleDateString();
-      }
-
-      function getStatusColor(status) {
-        switch (status) {
-          case 'approved': return '#10b981';
-          case 'pending': return '#f59e0b';
-          case 'rejected': return '#ef4444';
-          case 'cancelled': return '#6b7280';
-          default: return '#3b82f6';
-        }
-      }
-
-      function getActionText(status) {
-        switch (status) {
-          case 'approved': return 'confirmed';
-          case 'pending': return 'requested';
-          case 'rejected': return 'had rejected';
-          case 'cancelled': return 'cancelled';
-          default: return 'booked';
-        }
-      }
 
       // Search functionality
       window.switchSearchTab = function(tab, element) {
@@ -2149,91 +1993,7 @@
          }
        });
 
-       window.createBulkSlots = function() {
-         document.getElementById('bulk-creation').style.display = 'block';
-       };
 
-       window.hideBulkCreation = function() {
-         document.getElementById('bulk-creation').style.display = 'none';
-       };
-
-       window.generateBulkSlots = async function() {
-         const lecturerEmail = document.getElementById('slot-lecturer').value;
-         const startDate = document.getElementById('bulk-start-date').value;
-         const endDate = document.getElementById('bulk-end-date').value;
-         const duration = parseInt(document.getElementById('bulk-duration').value);
-         
-         const selectedDays = Array.from(document.querySelectorAll('#bulk-creation input[type="checkbox"]:checked'))
-           .map(cb => parseInt(cb.value));
-         
-         if (!lecturerEmail || !startDate || !endDate || selectedDays.length === 0) {
-           showError('Please fill in all required fields and select at least one day.');
-           return;
-         }
-
-         // Get lecturer name
-         const lecturerDoc = await getDoc(doc(db, 'lecturers', lecturerEmail));
-         const lecturerName = lecturerDoc.exists() ? lecturerDoc.data().name : 'Unknown';
-
-         const slots = [];
-         const start = new Date(startDate);
-         const end = new Date(endDate);
-         
-         // Generate slots for each day in the range
-         for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
-           if (selectedDays.includes(date.getDay())) {
-             const dateStr = date.toISOString().split('T')[0];
-             
-             // Create slots throughout the day (9 AM to 5 PM)
-             for (let hour = 9; hour <= 17 - (duration / 60); hour++) {
-               const startTime = `${hour.toString().padStart(2, '0')}:00`;
-               const endHour = hour + Math.floor(duration / 60);
-               const endMinute = (hour * 60 + duration) % 60;
-               const endTime = `${endHour.toString().padStart(2, '0')}:${endMinute.toString().padStart(2, '0')}`;
-               
-               if (endHour <= 17) {
-                 slots.push({
-                   lecturerEmail,
-                   lecturerName,
-                   date: dateStr,
-                   startTime,
-                   endTime,
-                   location: '',
-                   createdAt: serverTimestamp(),
-                   createdBy: sessionStorage.getItem('userName') || 'Admin'
-                 });
-               }
-             }
-           }
-         }
-
-         if (slots.length === 0) {
-           showError('No slots to create with the selected criteria.');
-           return;
-         }
-
-         if (!(await showConfirm(`This will create ${slots.length} slots. Continue?`))) {
-           return;
-         }
-
-         try {
-           // Create all slots
-           for (const slot of slots) {
-             await addDoc(collection(db, 'appointment_slots'), slot);
-           }
-           
-           // Hide bulk creation form
-           hideBulkCreation();
-           
-           // Reload slots
-           await loadSlots();
-           
-           showSuccess(`Successfully created ${slots.length} slots!`);
-         } catch (error) {
-           console.error('Error creating bulk slots:', error);
-           showError('Error creating slots. Please try again.');
-         }
-       };
 
        window.deleteSlot = async function(slotId) {
          if (!(await showConfirm('Are you sure you want to delete this slot?'))) {
