@@ -2241,9 +2241,59 @@
          }
 
          try {
+           const slot = allSlots.find(s => s.id === slotId);
+           if (!slot) {
+             showError('Slot not found.');
+             return;
+           }
+
+           // 1. Delete any pending appointment_requests for appointments that reference this slot
+           const appointmentsQuery = query(
+             collection(db, 'appointments'),
+             where('slotId', '==', slotId)
+           );
+           const appointmentsSnapshot = await getDocs(appointmentsQuery);
+           
+           for (const appointmentDoc of appointmentsSnapshot.docs) {
+             const appointmentId = appointmentDoc.id;
+             
+             // Find and delete any pending appointment_requests for this appointment
+             const requestsQuery = query(
+               collection(db, 'appointment_requests'),
+               where('appointmentId', '==', appointmentId),
+               where('status', '==', 'pending')
+             );
+             const requestsSnapshot = await getDocs(requestsQuery);
+             
+             for (const requestDoc of requestsSnapshot.docs) {
+               await deleteDoc(doc(db, 'appointment_requests', requestDoc.id));
+               console.log(`Deleted pending appointment request: ${requestDoc.id}`);
+             }
+           }
+           
+           // 2. Delete any pending slot_requests that might reference this slot's details
+           const slotRequestsQuery = query(
+             collection(db, 'slot_requests'),
+             where('lecturerEmail', '==', slot.lecturerEmail),
+             where('status', '==', 'pending')
+           );
+           const slotRequestsSnapshot = await getDocs(slotRequestsQuery);
+           
+           for (const slotRequestDoc of slotRequestsSnapshot.docs) {
+             const requestData = slotRequestDoc.data();
+             // Check if the request matches the slot being deleted
+             if (requestData.preferredDate === slot.date && 
+                 requestData.startTime === slot.startTime && 
+                 requestData.endTime === slot.endTime) {
+               await deleteDoc(doc(db, 'slot_requests', slotRequestDoc.id));
+               console.log(`Deleted matching slot request: ${slotRequestDoc.id}`);
+             }
+           }
+           
+           // 3. Delete the slot itself
            await deleteDoc(doc(db, 'appointment_slots', slotId));
            await loadSlots();
-           showSuccess('Slot deleted successfully!');
+           showSuccess('Slot and associated pending requests deleted successfully!');
          } catch (error) {
            console.error('Error deleting slot:', error);
            showError('Error deleting slot. Please try again.');

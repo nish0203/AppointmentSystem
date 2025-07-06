@@ -735,7 +735,7 @@
       // Display lecturer info
       const infoEl = document.getElementById('lecturer-info');
       if (email) {
-        infoEl.textContent = `Logged in as: ${email}`;
+        infoEl.textContent = '';
         sessionStorage.setItem('userEmail', email);
         await loadAppointments(email);
       } else {
