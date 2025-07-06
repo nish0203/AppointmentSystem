@@ -1267,7 +1267,7 @@
           lastMessage.author === newMessage.author &&
           new Date(lastMessage.timestamp).getTime() === newMessage.timestamp.getTime()
         ) {
-          alert('Duplicate response detected. Not submitting again.');
+          showNotification('Duplicate response detected. Not submitting again.', 'error');
           submitBtn.textContent = originalText;
           submitBtn.disabled = false;
           return;
@@ -1290,7 +1290,7 @@
         await loadInquiries();
       } catch (error) {
         console.error('Error submitting response:', error);
-        alert('Failed to submit response. Please try again.');
+        showNotification('Failed to submit response. Please try again.', 'error');
       } finally {
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;

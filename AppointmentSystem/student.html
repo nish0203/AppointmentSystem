@@ -1160,7 +1160,7 @@
       e.preventDefault();
       
       if (currentRating === 0) {
-        alert('Please select a rating');
+        showNotification('Please select a rating', 'error');
         return;
       }
       
@@ -1216,7 +1216,7 @@
         }
       } catch (error) {
         console.error('Error submitting rating:', error);
-        alert('Failed to submit rating. Please try again.');
+        showNotification('Failed to submit rating. Please try again.', 'error');
       }
     });
 

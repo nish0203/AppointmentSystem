@@ -1833,14 +1833,14 @@
          if (file) {
            // Validate file size (5MB limit)
            if (file.size > 5 * 1024 * 1024) {
-             alert('File size must be less than 5MB');
+             showError('File size must be less than 5MB');
              e.target.value = '';
              return;
            }
 
            // Validate file type
            if (!file.type.startsWith('image/')) {
-             alert('Please select a valid image file');
+             showError('Please select a valid image file');
              e.target.value = '';
              return;
            }
@@ -1872,7 +1872,7 @@
          const pictureFile = document.getElementById('announcement-picture').files[0];
          
          if (!title || !content) {
-           alert('Please fill in all required fields.');
+           showError('Please fill in all required fields.');
            return;
          }
 
@@ -1912,10 +1912,10 @@
            // Reload announcements
            await loadAnnouncements();
            
-           alert('Announcement created successfully!');
+           showSuccess('Announcement created successfully!');
          } catch (error) {
            console.error('Error creating announcement:', error);
-           alert('Error creating announcement. Please try again.');
+           showError('Error creating announcement. Please try again.');
          } finally {
            createBtn.disabled = false;
            createBtn.innerHTML = '<i class="fa fa-plus"></i> Create Announcement';
@@ -1924,17 +1924,17 @@
 
        // Delete announcement
        window.deleteAnnouncement = async function(announcementId) {
-         if (!confirm('Are you sure you want to delete this announcement?')) {
+         if (!(await showConfirm('Are you sure you want to delete this announcement?'))) {
            return;
          }
 
          try {
            await deleteDoc(doc(db, 'announcements', announcementId));
            await loadAnnouncements();
-           alert('Announcement deleted successfully!');
+           showSuccess('Announcement deleted successfully!');
          } catch (error) {
            console.error('Error deleting announcement:', error);
-           alert('Error deleting announcement. Please try again.');
+           showError('Error deleting announcement. Please try again.');
          }
        };
 
@@ -2116,7 +2116,7 @@
          const location = document.getElementById('slot-location').value;
          
          if (!lecturerEmail || !date || !startTime || !endTime) {
-           alert('Please fill in all required fields.');
+           showError('Please fill in all required fields.');
            return;
          }
 
@@ -2142,10 +2142,10 @@
            // Reload slots
            await loadSlots();
            
-           alert('Slot created successfully!');
+           showSuccess('Slot created successfully!');
          } catch (error) {
            console.error('Error creating slot:', error);
-           alert('Error creating slot. Please try again.');
+           showError('Error creating slot. Please try again.');
          }
        });
 
@@ -2167,7 +2167,7 @@
            .map(cb => parseInt(cb.value));
          
          if (!lecturerEmail || !startDate || !endDate || selectedDays.length === 0) {
-           alert('Please fill in all required fields and select at least one day.');
+           showError('Please fill in all required fields and select at least one day.');
            return;
          }
 
@@ -2208,11 +2208,11 @@
          }
 
          if (slots.length === 0) {
-           alert('No slots to create with the selected criteria.');
+           showError('No slots to create with the selected criteria.');
            return;
          }
 
-         if (!confirm(`This will create ${slots.length} slots. Continue?`)) {
+         if (!(await showConfirm(`This will create ${slots.length} slots. Continue?`))) {
            return;
          }
 
@@ -2228,25 +2228,25 @@
            // Reload slots
            await loadSlots();
            
-           alert(`Successfully created ${slots.length} slots!`);
+           showSuccess(`Successfully created ${slots.length} slots!`);
          } catch (error) {
            console.error('Error creating bulk slots:', error);
-           alert('Error creating slots. Please try again.');
+           showError('Error creating slots. Please try again.');
          }
        };
 
        window.deleteSlot = async function(slotId) {
-         if (!confirm('Are you sure you want to delete this slot?')) {
+         if (!(await showConfirm('Are you sure you want to delete this slot?'))) {
            return;
          }
 
          try {
            await deleteDoc(doc(db, 'appointment_slots', slotId));
            await loadSlots();
-           alert('Slot deleted successfully!');
+           showSuccess('Slot deleted successfully!');
          } catch (error) {
            console.error('Error deleting slot:', error);
-           alert('Error deleting slot. Please try again.');
+           showError('Error deleting slot. Please try again.');
          }
        };
 
@@ -2254,11 +2254,11 @@
          const availableSlots = allSlots.filter(slot => !slot.isBooked);
          
          if (availableSlots.length === 0) {
-           alert('No available slots to delete.');
+           showError('No available slots to delete.');
            return;
          }
 
-         if (!confirm(`This will delete ${availableSlots.length} available slots. This action cannot be undone. Continue?`)) {
+         if (!(await showConfirm(`This will delete ${availableSlots.length} available slots. This action cannot be undone. Continue?`))) {
            return;
          }
 
@@ -2268,10 +2268,10 @@
            }
            
            await loadSlots();
-           alert(`Successfully deleted ${availableSlots.length} available slots!`);
+           showSuccess(`Successfully deleted ${availableSlots.length} available slots!`);
          } catch (error) {
            console.error('Error deleting slots:', error);
-           alert('Error deleting slots. Please try again.');
+           showError('Error deleting slots. Please try again.');
          }
        };
 
@@ -2485,7 +2485,7 @@
        };
 
        window.markInquiryResolved = async function(inquiryId) {
-         if (!confirm('Mark this inquiry as resolved?')) return;
+         if (!(await showConfirm('Mark this inquiry as resolved?'))) return;
 
          try {
            await updateDoc(doc(db, 'inquiries', inquiryId), {
@@ -2495,23 +2495,23 @@
            });
 
            await loadInquiries();
-           alert('Inquiry marked as resolved!');
+           showSuccess('Inquiry marked as resolved!');
          } catch (error) {
            console.error('Error updating inquiry:', error);
-           alert('Error updating inquiry. Please try again.');
+           showError('Error updating inquiry. Please try again.');
          }
        };
 
        window.deleteInquiry = async function(inquiryId) {
-         if (!confirm('Are you sure you want to delete this inquiry? This action cannot be undone.')) return;
+         if (!(await showConfirm('Are you sure you want to delete this inquiry? This action cannot be undone.'))) return;
 
          try {
            await deleteDoc(doc(db, 'inquiries', inquiryId));
            await loadInquiries();
-           alert('Inquiry deleted successfully!');
+           showSuccess('Inquiry deleted successfully!');
          } catch (error) {
            console.error('Error deleting inquiry:', error);
-           alert('Error deleting inquiry. Please try again.');
+           showError('Error deleting inquiry. Please try again.');
          }
        };
 
@@ -2525,7 +2525,7 @@
          const message = document.getElementById('response-message').value.trim();
 
          if (!message) {
-           alert('Please enter a response message.');
+           showError('Please enter a response message.');
            return;
          }
 
@@ -2549,10 +2549,10 @@
            closeInquiryResponseModal();
            await loadInquiries();
            
-           alert('Response sent successfully!');
+           showSuccess('Response sent successfully!');
          } catch (error) {
            console.error('Error sending response:', error);
-           alert('Error sending response. Please try again.');
+           showError('Error sending response. Please try again.');
          } finally {
            submitBtn.disabled = false;
            submitBtn.innerHTML = originalText;
@@ -2566,7 +2566,7 @@
          // Double-check super admin status
          const isSuper = sessionStorage.getItem('isSuper') === 'true';
          if (!isSuper) {
-           alert('Access denied. Only Super Administrators can edit profiles.');
+           showError('Access denied. Only Super Administrators can edit profiles.');
            return;
          }
 
@@ -2576,7 +2576,7 @@
          const email = sessionStorage.getItem('userEmail');
 
          if (!name) {
-           alert('Please enter your full name.');
+           showError('Please enter your full name.');
            return;
          }
 
@@ -2607,10 +2607,10 @@
            // Close modal
            closeEditProfileModal();
            
-           alert('Profile updated successfully!');
+           showSuccess('Profile updated successfully!');
          } catch (error) {
            console.error('Error updating profile:', error);
-           alert('Error updating profile. Please try again.');
+           showError('Error updating profile. Please try again.');
          } finally {
            submitBtn.disabled = false;
            submitBtn.innerHTML = originalText;
@@ -2701,6 +2701,109 @@
            day: 'numeric',
            hour: '2-digit',
            minute: '2-digit'
+         });
+       }
+
+       // Notification system
+       function showNotification(message, type = 'info', duration = 3000) {
+         // Create notification element if it doesn't exist
+         let notification = document.getElementById('notification-toast');
+         if (!notification) {
+           notification = document.createElement('div');
+           notification.id = 'notification-toast';
+           notification.style.cssText = `
+             position: fixed;
+             top: 20px;
+             right: 20px;
+             z-index: 10000;
+             min-width: 300px;
+             padding: 16px;
+             border-radius: 8px;
+             color: white;
+             font-weight: 500;
+             display: none;
+             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+           `;
+           document.body.appendChild(notification);
+         }
+
+         // Set background color based on type
+         const colors = {
+           success: '#10b981',
+           error: '#ef4444',
+           warning: '#f59e0b',
+           info: '#3b82f6'
+         };
+         
+         notification.style.backgroundColor = colors[type] || colors.info;
+         notification.textContent = message;
+         notification.style.display = 'block';
+
+         // Auto-hide after duration
+         setTimeout(() => {
+           notification.style.display = 'none';
+         }, duration);
+       }
+
+       function showError(message) {
+         showNotification(message, 'error');
+       }
+
+       function showSuccess(message) {
+         showNotification(message, 'success');
+       }
+
+       // Custom Confirm Modal
+       function showConfirm(message) {
+         return new Promise(resolve => {
+           // Create modal if it doesn't exist
+           let modal = document.getElementById('custom-confirm-modal');
+           if (!modal) {
+             modal = document.createElement('div');
+             modal.id = 'custom-confirm-modal';
+             modal.style.cssText = `
+               position: fixed;
+               top: 0;
+               left: 0;
+               width: 100%;
+               height: 100%;
+               background: rgba(0, 0, 0, 0.5);
+               display: flex;
+               align-items: center;
+               justify-content: center;
+               z-index: 10000;
+             `;
+             
+             modal.innerHTML = `
+               <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 400px; text-align: center; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
+                 <h3 style="margin: 0 0 1rem 0; color: #1e293b; font-size: 1.2rem;">Confirm Action</h3>
+                 <p id="confirm-message" style="margin: 0 0 1.5rem 0; color: #64748b; line-height: 1.5;"></p>
+                 <div style="display: flex; gap: 1rem; justify-content: center;">
+                   <button id="confirm-yes" style="background: #ef4444; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: 500;">Yes</button>
+                   <button id="confirm-no" style="background: #6b7280; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: 500;">No</button>
+                 </div>
+               </div>
+             `;
+             
+             document.body.appendChild(modal);
+           }
+           
+           const msg = document.getElementById('confirm-message');
+           const yesBtn = document.getElementById('confirm-yes');
+           const noBtn = document.getElementById('confirm-no');
+           
+           msg.textContent = message;
+           modal.style.display = 'flex';
+           
+           function cleanup(result) {
+             modal.style.display = 'none';
+             yesBtn.onclick = null;
+             noBtn.onclick = null;
+             resolve(result);
+           }
+           
+           yesBtn.onclick = () => cleanup(true);
+           noBtn.onclick = () => cleanup(false);
          });
        }
     </script>

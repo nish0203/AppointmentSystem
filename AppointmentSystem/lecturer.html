@@ -1176,7 +1176,7 @@
       // Find the request from stored data
       const request = window.studentRequests?.find(r => r.id === requestId);
       if (!request) {
-        alert('Request not found');
+        showNotification('Request not found', 'error');
         return;
       }
 
@@ -1228,7 +1228,7 @@
     // Handle student request actions
     window.acceptStudentRequest = async function() {
       if (!currentRequest) {
-        alert('No request selected');
+        showNotification('No request selected', 'error');
         return;
       }
 
@@ -1305,13 +1305,13 @@
 
       } catch (error) {
         console.error('Error accepting request:', error);
-        alert(`Failed to accept request: ${error.message}`);
+        showNotification(`Failed to accept request: ${error.message}`, 'error');
       }
     };
 
     window.rejectStudentRequest = async function() {
       if (!currentRequest) {
-        alert('No request selected');
+        showNotification('No request selected', 'error');
         return;
       }
 
@@ -1350,7 +1350,7 @@
 
       } catch (error) {
         console.error('Error rejecting request:', error);
-        alert(`Failed to reject request: ${error.message}`);
+        showNotification(`Failed to reject request: ${error.message}`, 'error');
       }
     };
 
@@ -1376,14 +1376,14 @@
 
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
+        showNotification('Please select an image file', 'error');
         return;
       }
 
       // Validate file size (5MB limit)
       const maxSize = 5 * 1024 * 1024; // 5MB in bytes
       if (file.size > maxSize) {
-        alert('File size too large. Please select an image smaller than 5MB.');
+        showNotification('File size too large. Please select an image smaller than 5MB.', 'error');
         return;
       }
 
@@ -1393,7 +1393,7 @@
         const userEmail = sessionStorage.getItem('userEmail');
         
         if (!userEmail) {
-          alert('Please log in first');
+          showNotification('Please log in first', 'error');
           return;
         }
 
@@ -1418,11 +1418,11 @@
         sessionStorage.setItem('userAvatarUrl', downloadURL);
 
         console.log('Avatar updated successfully');
-        alert('Avatar updated successfully!');
+        showNotification('Avatar updated successfully!', 'success');
 
       } catch (error) {
         console.error('Error uploading avatar:', error);
-        alert('Failed to upload avatar. Please try again.');
+        showNotification('Failed to upload avatar. Please try again.', 'error');
       }
     });
 

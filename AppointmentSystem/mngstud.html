@@ -568,12 +568,7 @@
           <label class="form-label">Faculty</label>
           <select id="studentFaculty" class="form-select" required>
             <option value="" disabled selected>Select Faculty</option>
-            <option value="FCM">Faculty of Computing and Multimedia (FCM)</option>
-            <option value="FCA">Faculty of Creative Arts (FCA)</option>
-            <option value="FAC">Faculty of Accountancy (FAC)</option>
-            <option value="FCI">Faculty of Communication and Information (FCI)</option>
-            <option value="FOM">Faculty of Management (FOM)</option>
-            <option value="FOE">Faculty of Engineering (FOE)</option>
+            <!-- Faculty options will be populated dynamically from database -->
           </select>
         </div>
 
@@ -659,6 +654,7 @@
 
     let editingDocId = null;
     let allStudents = [];
+    let faculties = [];
     let currentAdminId = 'AD001'; // Default fallback
 
     // Load students
@@ -842,6 +838,23 @@
 
     // Show error message
     function showError(message) { showNotification(message, 'error'); }
+
+    // Fetch faculties from Firestore and populate dropdown
+    async function fetchFaculties() {
+      try {
+        const facultiesSnap = await getDocs(collection(db, 'faculties'));
+        faculties = facultiesSnap.docs.map(doc => ({ code: doc.id, ...doc.data() }));
+        populateFacultyDropdown();
+      } catch (error) {
+        console.error('Error loading faculties:', error);
+        showError('Failed to load faculties');
+      }
+    }
+
+    function populateFacultyDropdown() {
+      studentFacultyInput.innerHTML = '<option value="" disabled selected>Select Faculty</option>' +
+        faculties.map(f => `<option value="${f.code}">${f.name} (${f.code})</option>`).join('');
+    }
     function showSuccess(message) { showNotification(message, 'success'); }
 
     // Event listeners
@@ -965,6 +978,7 @@
     // Initialize
     loadCurrentAdmin().then(() => {
       loadStudents();
+      fetchFaculties();
     });
   </script>
   <script src="notification-service.js"></script>

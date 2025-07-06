@@ -1698,14 +1698,14 @@
       const slot = slots.find(s => s.id === slotId);
       
       if (slot.isBooked) {
-        if (!confirm('This slot is booked by a student. Deleting it will cancel the appointment. Are you sure?')) {
-          return;
+                  if (!(await showConfirm('This slot is booked by a student. Deleting it will cancel the appointment. Are you sure?'))) {
+            return;
+          }
+              } else {
+          if (!(await showConfirm('Are you sure you want to delete this appointment slot?'))) {
+            return;
+          }
         }
-      } else {
-        if (!confirm('Are you sure you want to delete this appointment slot?')) {
-          return;
-        }
-      }
       
       try {
         // If slot is booked, also need to handle the appointment
@@ -1785,6 +1785,60 @@
       }
     };
 
+    // Custom Confirm Modal
+    function showConfirm(message) {
+      return new Promise(resolve => {
+        // Create modal if it doesn't exist
+        let modal = document.getElementById('custom-confirm-modal');
+        if (!modal) {
+          modal = document.createElement('div');
+          modal.id = 'custom-confirm-modal';
+          modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+          `;
+          
+          modal.innerHTML = `
+            <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 400px; text-align: center; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
+              <h3 style="margin: 0 0 1rem 0; color: #1e293b; font-size: 1.2rem;">Confirm Action</h3>
+              <p id="confirm-message" style="margin: 0 0 1.5rem 0; color: #64748b; line-height: 1.5;"></p>
+              <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="confirm-yes" style="background: #ef4444; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: 500;">Yes</button>
+                <button id="confirm-no" style="background: #6b7280; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: 500;">No</button>
+              </div>
+            </div>
+          `;
+          
+          document.body.appendChild(modal);
+        }
+        
+        const msg = document.getElementById('confirm-message');
+        const yesBtn = document.getElementById('confirm-yes');
+        const noBtn = document.getElementById('confirm-no');
+        
+        msg.textContent = message;
+        modal.style.display = 'flex';
+        
+        function cleanup(result) {
+          modal.style.display = 'none';
+          yesBtn.onclick = null;
+          noBtn.onclick = null;
+          resolve(result);
+        }
+        
+        yesBtn.onclick = () => cleanup(true);
+        noBtn.onclick = () => cleanup(false);
+      });
+    }
+
     // Initialize the page
     await loadSlots();
     await removeExpiredSlots();
@@ -1833,7 +1887,7 @@
       const subject = document.getElementById('inquiry-subject').value;
       const message = document.getElementById('inquiry-message').value;
       
-      alert('Inquiry submitted successfully!');
+              showNotification('Inquiry submitted successfully!', 'success');
       closeInquiryModal();
     });
   </script>

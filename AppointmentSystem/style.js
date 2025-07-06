@@ -99,6 +99,11 @@ function setRating(rating) {
 
 function submitFeedback() {
   const text = document.getElementById('feedbackText').value;
-  alert(`Thank you!\nRating: ${currentRating} star(s)\nFeedback: ${text}`);
+          // Show success notification instead of alert
+        if (typeof showNotification === 'function') {
+          showNotification(`Thank you! Rating: ${currentRating} star(s) submitted successfully.`, 'success');
+        } else {
+          console.log(`Thank you!\nRating: ${currentRating} star(s)\nFeedback: ${text}`);
+        }
   closeFeedback();
 }

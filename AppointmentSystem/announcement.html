@@ -192,9 +192,104 @@
     });
     const db = getFirestore(app);
 
+    // Custom Confirm Modal
+    function showConfirm(message) {
+      return new Promise(resolve => {
+        // Create modal if it doesn't exist
+        let modal = document.getElementById('custom-confirm-modal');
+        if (!modal) {
+          modal = document.createElement('div');
+          modal.id = 'custom-confirm-modal';
+          modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+          `;
+          
+          modal.innerHTML = `
+            <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 400px; text-align: center; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);">
+              <h3 style="margin: 0 0 1rem 0; color: #1e293b; font-size: 1.2rem;">Confirm Action</h3>
+              <p id="confirm-message" style="margin: 0 0 1.5rem 0; color: #64748b; line-height: 1.5;"></p>
+              <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button id="confirm-yes" style="background: #ef4444; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: 500;">Yes</button>
+                <button id="confirm-no" style="background: #6b7280; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: 500;">No</button>
+              </div>
+            </div>
+          `;
+          
+          document.body.appendChild(modal);
+        }
+        
+        const msg = document.getElementById('confirm-message');
+        const yesBtn = document.getElementById('confirm-yes');
+        const noBtn = document.getElementById('confirm-no');
+        
+        msg.textContent = message;
+        modal.style.display = 'flex';
+        
+        function cleanup(result) {
+          modal.style.display = 'none';
+          yesBtn.onclick = null;
+          noBtn.onclick = null;
+          resolve(result);
+        }
+        
+        yesBtn.onclick = () => cleanup(true);
+        noBtn.onclick = () => cleanup(false);
+      });
+    }
+
+    // Notification system
+    function showNotification(message, type = 'info', duration = 3000) {
+      // Create notification element if it doesn't exist
+      let notification = document.getElementById('notification-toast');
+      if (!notification) {
+        notification = document.createElement('div');
+        notification.id = 'notification-toast';
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          z-index: 10000;
+          min-width: 300px;
+          padding: 16px;
+          border-radius: 8px;
+          color: white;
+          font-weight: 500;
+          display: none;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        `;
+        document.body.appendChild(notification);
+      }
+
+      // Set background color based on type
+      const colors = {
+        success: '#10b981',
+        error: '#ef4444',
+        warning: '#f59e0b',
+        info: '#3b82f6'
+      };
+      
+      notification.style.backgroundColor = colors[type] || colors.info;
+      notification.textContent = message;
+      notification.style.display = 'block';
+
+      // Auto-hide after duration
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, duration);
+    }
+
     // back button logic
-    document.getElementById('backBtn').addEventListener('click', () => {
-      if (confirm('Are you sure you want to go back to the homepage?')) {
+    document.getElementById('backBtn').addEventListener('click', async () => {
+      if (await showConfirm('Are you sure you want to go back to the homepage?')) {
         window.location.href = 'admin.html'; // adjust as needed
       }
     });
@@ -253,7 +348,7 @@
       const title   = document.getElementById('titleInput').value.trim();
       const content = document.getElementById('contentInput').value.trim();
       if (!title || !content) {
-        alert('Please enter both title and content.');
+        showNotification('Please enter both title and content.', 'error');
         return;
       }
 
