@@ -1062,7 +1062,7 @@
       const studentEmail = sessionStorage.getItem('userEmail');
       const studentName = sessionStorage.getItem('userName') || 'Student';
       if (!studentEmail) {
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
         return;
       }
 
@@ -1158,15 +1158,7 @@
             title: 'Slot Request',
             message: `${studentName} have request for appointment slot for ${preferredDate} ${startTime} - ${endTime}`,
             icon: 'fa-user-plus',
-            category: 'Bookings',
-            appointmentData: {
-              studentName: studentName,
-              lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
-              studentEmail: studentEmail,
-              date: preferredDate,
-              time: `${startTime} - ${endTime}`,
-              purpose: purpose
-            }
+            category: 'Bookings'
           });
           console.log('Lecturer notification created successfully');
         } catch (err) {
@@ -1232,7 +1224,7 @@
       const studentEmail = sessionStorage.getItem('userEmail');
       const studentName = sessionStorage.getItem('userName') || 'Student';
       if (!studentEmail) {
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
         return;
       }
 
@@ -1366,15 +1358,7 @@
             title: 'Slot Booked',
             message: `${studentName} have booked your appointment slot for ${selectedSlot.date} ${selectedSlot.startTime} - ${selectedSlot.endTime}`,
             icon: 'fa-user-clock',
-            category: 'Bookings',
-            appointmentData: {
-              studentName: studentName,
-              lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
-              studentEmail: studentEmail,
-              date: selectedSlot.date,
-              time: `${selectedSlot.startTime} - ${selectedSlot.endTime}`,
-              purpose: purpose
-            }
+            category: 'Bookings'
           });
         }
         
@@ -1731,7 +1715,7 @@
       if (logoutBtn) {
         logoutBtn.addEventListener('click', () => {
           sessionStorage.clear();
-          window.location.href = 'index.html';
+          window.location.href = 'login.html';
         });
       }
     }
