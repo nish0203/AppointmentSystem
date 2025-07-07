@@ -921,7 +921,14 @@
       <button class="modal-close" onclick="closeAppointmentModal()">
         <i class="fa fa-times"></i>
       </button>
-      <h2 style="margin-bottom: 1.5rem; color: #1e293b;">📅 Appointment Overview</h2>
+      <h2 style="margin-bottom: 1.5rem; color: #1e293b;">📅 Appointment Management</h2>
+      
+      <!-- Add New Appointment Button -->
+      <div style="margin-bottom: 1.5rem;">
+        <button onclick="showCreateAppointmentModal()" style="background: #10b981; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; font-weight: 500; cursor: pointer; margin-right: 1rem;">
+          <i class="fa fa-plus"></i> Create New Appointment
+        </button>
+      </div>
       
       <div style="margin-bottom: 1.5rem;">
         <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
@@ -952,7 +959,7 @@
       
       <!-- Create Announcement Form -->
       <div style="background: #f8fafc; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
-        <h3 style="margin-bottom: 1rem; color: #1e293b;">Create New Announcement</h3>
+        <h3 id="announcement-form-title" style="margin-bottom: 1rem; color: #1e293b;">Create New Announcement</h3>
         <form id="announcement-form">
           <div style="margin-bottom: 1rem;">
             <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Title *</label>
@@ -1086,6 +1093,117 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Edit Slot Modal -->
+  <div id="edit-slot-modal" class="modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <button class="modal-close" onclick="closeEditSlotModal()">
+        <i class="fa fa-times"></i>
+      </button>
+      <h2 style="margin-bottom: 1.5rem; color: #1e293b;">✏️ Edit Appointment Slot</h2>
+      
+      <form id="edit-slot-form">
+        <div style="display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Lecturer *</label>
+            <select id="edit-slot-lecturer" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+              <option value="">Select Lecturer</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Date *</label>
+            <input type="date" id="edit-slot-date" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Start Time *</label>
+              <input type="time" id="edit-slot-start-time" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+            </div>
+            <div>
+              <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">End Time *</label>
+              <input type="time" id="edit-slot-end-time" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+          <button type="button" onclick="closeEditSlotModal()" style="background: #f3f4f6; color: #374151; padding: 0.75rem 1.5rem; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer;">
+            Cancel
+          </button>
+          <button type="submit" id="update-slot-btn" style="background: #3b82f6; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; cursor: pointer;">
+            <i class="fa fa-save"></i> Update Slot
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create/Edit Appointment Modal -->
+  <div id="appointment-form-modal" class="modal">
+    <div class="modal-content" style="max-width: 700px;">
+      <button class="modal-close" onclick="closeAppointmentFormModal()">
+        <i class="fa fa-times"></i>
+      </button>
+      <h2 id="appointment-form-title" style="margin-bottom: 1.5rem; color: #1e293b;">📝 Create New Appointment</h2>
+      
+      <form id="appointment-form">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Student *</label>
+            <select id="appointment-student" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+              <option value="">Select Student</option>
+            </select>
+          </div>
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Lecturer *</label>
+            <select id="appointment-lecturer" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+              <option value="">Select Lecturer</option>
+            </select>
+          </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Date *</label>
+            <input type="date" id="appointment-date" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Start Time *</label>
+            <input type="time" id="appointment-start-time" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+          <div>
+            <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">End Time *</label>
+            <input type="time" id="appointment-end-time" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+          </div>
+        </div>
+        
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Purpose *</label>
+          <textarea id="appointment-purpose" required rows="3" placeholder="Enter the purpose of the appointment..." style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; resize: vertical;"></textarea>
+        </div>
+        
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: #374151;">Status *</label>
+          <select id="appointment-status" required style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.9rem;">
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="done">Completed</option>
+          </select>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+          <button type="button" onclick="closeAppointmentFormModal()" style="background: #f3f4f6; color: #374151; padding: 0.75rem 1.5rem; border: 1px solid #d1d5db; border-radius: 6px; cursor: pointer;">
+            Cancel
+          </button>
+          <button type="submit" id="save-appointment-btn" style="background: #10b981; color: white; padding: 0.75rem 1.5rem; border: none; border-radius: 6px; cursor: pointer;">
+            <i class="fa fa-save"></i> Save Appointment
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -1598,11 +1716,19 @@
                  <h4 style="margin: 0; color: #1e293b;">${appointment.studentName || 'Student'} → ${appointment.lecturerName || appointment.lecturerEmail || 'Lecturer'}</h4>
                  <span class="appointment-status ${appointment.status || 'pending'}">${(appointment.status || 'pending').toUpperCase()}</span>
                </div>
-               <div style="color: #64748b; font-size: 0.9rem;">
+               <div style="color: #64748b; font-size: 0.9rem; margin-bottom: 1rem;">
                  <p><i class="fa fa-calendar"></i> ${date} at ${time}</p>
                  <p><i class="fa fa-envelope"></i> ${appointment.studentEmail || 'No email'}</p>
                  ${appointment.purpose ? `<p><i class="fa fa-comment"></i> ${appointment.purpose}</p>` : ''}
                  ${appointment.rejectionReason ? `<p style="color: #ef4444;"><i class="fa fa-times-circle"></i> Rejection Reason: ${appointment.rejectionReason}</p>` : ''}
+               </div>
+               <div style="display: flex; gap: 0.5rem;">
+                 <button onclick="editAppointment('${appointment.id}')" style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+                   <i class="fa fa-edit"></i> Edit
+                 </button>
+                 <button onclick="deleteAppointment('${appointment.id}')" style="background: #ef4444; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+                   <i class="fa fa-trash"></i> Delete
+                 </button>
                </div>
              </div>
            `;
@@ -1611,30 +1737,32 @@
 
        // Announcement Management Functions
        window.showAnnouncementManager = async function() {
+         resetAnnouncementForm(); // Reset to create mode
          document.getElementById('announcement-modal').style.display = 'flex';
          await loadAnnouncements();
        };
 
        window.closeAnnouncementModal = function() {
          document.getElementById('announcement-modal').style.display = 'none';
+         resetAnnouncementForm(); // Reset form when closing
        };
 
        async function loadAnnouncements() {
          try {
            const announcementsSnapshot = await getDocs(collection(db, 'announcements'));
-           const announcements = announcementsSnapshot.docs.map(doc => ({
+           allAnnouncements = announcementsSnapshot.docs.map(doc => ({
              id: doc.id,
              ...doc.data()
            }));
 
            // Sort by date (newest first)
-           announcements.sort((a, b) => {
+           allAnnouncements.sort((a, b) => {
              const aDate = new Date(a.createdAt?.toDate?.() || a.createdAt || 0);
              const bDate = new Date(b.createdAt?.toDate?.() || b.createdAt || 0);
              return bDate - aDate;
            });
 
-           displayAnnouncements(announcements);
+           displayAnnouncements(allAnnouncements);
          } catch (error) {
            console.error('Error loading announcements:', error);
            document.getElementById('announcements-list').innerHTML = `
@@ -1674,9 +1802,14 @@
                <p style="color: #64748b; margin: 0 0 1rem 0; line-height: 1.5;">${announcement.content}</p>
                <div style="display: flex; justify-content: space-between; align-items: center;">
                  <small style="color: #9ca3af;">Created on ${date}</small>
-                 <button class="delete-btn" onclick="deleteAnnouncement('${announcement.id}')">
-                   <i class="fa fa-trash"></i> Delete
-                 </button>
+                 <div style="display: flex; gap: 0.5rem;">
+                   <button onclick="editAnnouncement('${announcement.id}')" style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+                     <i class="fa fa-edit"></i> Edit
+                   </button>
+                   <button class="delete-btn" onclick="deleteAnnouncement('${announcement.id}')">
+                     <i class="fa fa-trash"></i> Delete
+                   </button>
+                 </div>
                </div>
              </div>
            `;
@@ -1718,6 +1851,10 @@
          document.getElementById('picture-preview').style.display = 'none';
        };
 
+       // Announcement editing functionality
+       let currentEditingAnnouncement = null;
+       let allAnnouncements = [];
+
        // Create announcement with optional picture
        document.getElementById('announcement-form').addEventListener('submit', async function(e) {
          e.preventDefault();
@@ -1733,8 +1870,10 @@
          }
 
          const createBtn = document.getElementById('create-announcement-btn');
+         const isEditing = currentEditingAnnouncement !== null;
+         
          createBtn.disabled = true;
-         createBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Creating...';
+         createBtn.innerHTML = `<i class="fa fa-spinner fa-spin"></i> ${isEditing ? 'Updating...' : 'Creating...'}`;
 
          try {
            let pictureUrl = null;
@@ -1746,37 +1885,92 @@
              pictureUrl = await getDownloadURL(snapshot.ref);
            }
 
-           // Create announcement document
+           // Prepare announcement data
            const announcementData = {
              title,
              content,
-             priority,
-             createdAt: serverTimestamp(),
-             createdBy: sessionStorage.getItem('userName') || 'Admin'
+             priority
            };
 
-           if (pictureUrl) {
-             announcementData.pictureUrl = pictureUrl;
+           if (isEditing) {
+             // Update existing announcement
+             announcementData.updatedAt = serverTimestamp();
+             announcementData.updatedBy = sessionStorage.getItem('userName') || 'Admin';
+             
+             // Only update picture if a new one was uploaded
+             if (pictureUrl) {
+               announcementData.pictureUrl = pictureUrl;
+             }
+             
+             await updateDoc(doc(db, 'announcements', currentEditingAnnouncement.id), announcementData);
+             showSuccess('Announcement updated successfully!');
+           } else {
+             // Create new announcement
+             announcementData.createdAt = serverTimestamp();
+             announcementData.createdBy = sessionStorage.getItem('userName') || 'Admin';
+             
+             if (pictureUrl) {
+               announcementData.pictureUrl = pictureUrl;
+             }
+
+             await addDoc(collection(db, 'announcements'), announcementData);
+             showSuccess('Announcement created successfully!');
            }
 
-           await addDoc(collection(db, 'announcements'), announcementData);
-
-           // Clear form
-           document.getElementById('announcement-form').reset();
-           removePicturePreview();
-           
-           // Reload announcements
+           // Reset form and reload announcements
+           resetAnnouncementForm();
            await loadAnnouncements();
            
-           showSuccess('Announcement created successfully!');
          } catch (error) {
-           console.error('Error creating announcement:', error);
-           showError('Error creating announcement. Please try again.');
+           console.error(`Error ${isEditing ? 'updating' : 'creating'} announcement:`, error);
+           showError(`Error ${isEditing ? 'updating' : 'creating'} announcement. Please try again.`);
          } finally {
            createBtn.disabled = false;
-           createBtn.innerHTML = '<i class="fa fa-plus"></i> Create Announcement';
+           createBtn.innerHTML = `<i class="fa fa-${isEditing ? 'save' : 'plus'}"></i> ${isEditing ? 'Update Announcement' : 'Create Announcement'}`;
          }
        });
+
+       // Reset announcement form
+       function resetAnnouncementForm() {
+         document.getElementById('announcement-form').reset();
+         removePicturePreview();
+         currentEditingAnnouncement = null;
+         
+         // Reset form title and button
+         const formTitle = document.getElementById('announcement-form-title');
+         const createBtn = document.getElementById('create-announcement-btn');
+         
+         if (formTitle) formTitle.textContent = 'Create New Announcement';
+         createBtn.innerHTML = '<i class="fa fa-plus"></i> Create Announcement';
+       }
+
+       // Edit announcement
+       window.editAnnouncement = function(announcementId) {
+         const announcement = allAnnouncements.find(a => a.id === announcementId);
+         if (!announcement) return;
+
+         currentEditingAnnouncement = announcement;
+
+         // Populate the form
+         document.getElementById('announcement-title').value = announcement.title || '';
+         document.getElementById('announcement-content').value = announcement.content || '';
+         document.getElementById('announcement-priority').value = announcement.priority || 'normal';
+
+         // Show existing picture if available
+         if (announcement.pictureUrl) {
+           document.getElementById('preview-image').src = announcement.pictureUrl;
+           document.getElementById('picture-preview').style.display = 'block';
+         } else {
+           document.getElementById('picture-preview').style.display = 'none';
+         }
+
+         // Update form title and button
+         const formTitle = document.getElementById('announcement-form-title');
+         const createBtn = document.getElementById('create-announcement-btn');
+         
+         if (formTitle) formTitle.textContent = 'Edit Announcement';
+         createBtn.innerHTML = '<i class="fa fa-save"></i> Update Announcement';
+       };
 
        // Delete announcement
        window.deleteAnnouncement = async function(announcementId) {
@@ -1819,14 +2013,17 @@
            // Populate lecturer dropdowns
            const lecturerSelect = document.getElementById('slot-lecturer');
            const filterLecturerSelect = document.getElementById('filter-lecturer');
+           const editLecturerSelect = document.getElementById('edit-slot-lecturer');
            
            lecturerSelect.innerHTML = '<option value="">Select Lecturer</option>';
            filterLecturerSelect.innerHTML = '<option value="">All Lecturers</option>';
+           if (editLecturerSelect) editLecturerSelect.innerHTML = '<option value="">Select Lecturer</option>';
            
            lecturers.forEach(lecturer => {
              const option = `<option value="${lecturer.email}">${lecturer.name} (${lecturer.email})</option>`;
              lecturerSelect.innerHTML += option;
              filterLecturerSelect.innerHTML += option;
+             if (editLecturerSelect) editLecturerSelect.innerHTML += option;
            });
          } catch (error) {
            console.error('Error loading lecturers:', error);
@@ -1952,6 +2149,9 @@
  
                </div>
                <div style="display: flex; gap: 0.5rem;">
+                 <button onclick="editSlot('${slot.id}')" style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;" ${slot.isBooked ? 'disabled title="Cannot edit booked slots"' : ''}>
+                   <i class="fa fa-edit"></i> Edit
+                 </button>
                  <button onclick="deleteSlot('${slot.id}')" style="background: #ef4444; color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
                    <i class="fa fa-trash"></i> Delete
                  </button>
@@ -2822,6 +3022,271 @@
            noBtn.onclick = () => cleanup(false);
          });
        }
+
+       // ========== NEW FUNCTIONALITY ==========
+
+       // Edit Slot Functionality
+       let currentEditingSlot = null;
+
+       window.editSlot = async function(slotId) {
+         const slot = allSlots.find(s => s.id === slotId);
+         if (!slot) return;
+
+         currentEditingSlot = slot;
+
+         // Populate the edit form
+         document.getElementById('edit-slot-lecturer').value = slot.lecturerEmail;
+         document.getElementById('edit-slot-date').value = slot.date;
+         document.getElementById('edit-slot-start-time').value = slot.startTime;
+         document.getElementById('edit-slot-end-time').value = slot.endTime;
+
+         // Load lecturers for the edit dropdown
+         await loadLecturersForSlots();
+         document.getElementById('edit-slot-lecturer').value = slot.lecturerEmail;
+
+         // Show the edit modal
+         document.getElementById('edit-slot-modal').style.display = 'flex';
+       };
+
+       window.closeEditSlotModal = function() {
+         document.getElementById('edit-slot-modal').style.display = 'none';
+         currentEditingSlot = null;
+       };
+
+       // Handle edit slot form submission
+       document.getElementById('edit-slot-form').addEventListener('submit', async function(e) {
+         e.preventDefault();
+
+         if (!currentEditingSlot) return;
+
+         const lecturerEmail = document.getElementById('edit-slot-lecturer').value;
+         const date = document.getElementById('edit-slot-date').value;
+         const startTime = document.getElementById('edit-slot-start-time').value;
+         const endTime = document.getElementById('edit-slot-end-time').value;
+
+         if (!lecturerEmail || !date || !startTime || !endTime) {
+           showError('Please fill in all required fields.');
+           return;
+         }
+
+         // Get lecturer name
+         const lecturerDoc = await getDoc(doc(db, 'lecturers', lecturerEmail));
+         const lecturerName = lecturerDoc.exists() ? lecturerDoc.data().name : 'Unknown';
+
+         try {
+           const updateBtn = document.getElementById('update-slot-btn');
+           updateBtn.disabled = true;
+           updateBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Updating...';
+
+           await updateDoc(doc(db, 'appointment_slots', currentEditingSlot.id), {
+             lecturerEmail,
+             lecturerName,
+             date,
+             startTime,
+             endTime,
+             updatedAt: serverTimestamp(),
+             updatedBy: sessionStorage.getItem('userName') || 'Admin'
+           });
+
+           closeEditSlotModal();
+           await loadSlots();
+           showSuccess('Slot updated successfully!');
+
+         } catch (error) {
+           console.error('Error updating slot:', error);
+           showError('Failed to update slot. Please try again.');
+         } finally {
+           const updateBtn = document.getElementById('update-slot-btn');
+           updateBtn.disabled = false;
+           updateBtn.innerHTML = '<i class="fa fa-save"></i> Update Slot';
+         }
+       });
+
+       // Appointment Management Functionality
+       let currentEditingAppointment = null;
+       let allStudents = [];
+       let allLecturers = [];
+
+       // Load students and lecturers for appointment form
+       async function loadUsersForAppointments() {
+         try {
+           // Load students
+           const studentsSnapshot = await getDocs(collection(db, 'students'));
+           allStudents = studentsSnapshot.docs.map(doc => ({
+             email: doc.id,
+             ...doc.data()
+           }));
+
+           // Load lecturers
+           const lecturersSnapshot = await getDocs(collection(db, 'lecturers'));
+           allLecturers = lecturersSnapshot.docs.map(doc => ({
+             email: doc.id,
+             ...doc.data()
+           }));
+
+           // Populate dropdowns
+           const studentSelect = document.getElementById('appointment-student');
+           const lecturerSelect = document.getElementById('appointment-lecturer');
+
+           studentSelect.innerHTML = '<option value="">Select Student</option>';
+           lecturerSelect.innerHTML = '<option value="">Select Lecturer</option>';
+
+           allStudents.forEach(student => {
+             studentSelect.innerHTML += `<option value="${student.email}">${student.name} (${student.email})</option>`;
+           });
+
+           allLecturers.forEach(lecturer => {
+             lecturerSelect.innerHTML += `<option value="${lecturer.email}">${lecturer.name} (${lecturer.email})</option>`;
+           });
+
+         } catch (error) {
+           console.error('Error loading users:', error);
+         }
+       }
+
+       window.showCreateAppointmentModal = async function() {
+         currentEditingAppointment = null;
+         document.getElementById('appointment-form-title').textContent = '📝 Create New Appointment';
+         document.getElementById('appointment-form').reset();
+         document.getElementById('save-appointment-btn').innerHTML = '<i class="fa fa-save"></i> Save Appointment';
+
+         await loadUsersForAppointments();
+         document.getElementById('appointment-form-modal').style.display = 'flex';
+       };
+
+       window.editAppointment = async function(appointmentId) {
+         const appointment = allAppointments.find(a => a.id === appointmentId);
+         if (!appointment) return;
+
+         currentEditingAppointment = appointment;
+         document.getElementById('appointment-form-title').textContent = '✏️ Edit Appointment';
+
+         // Populate the form
+         document.getElementById('appointment-student').value = appointment.studentEmail;
+         document.getElementById('appointment-lecturer').value = appointment.lecturerEmail;
+         document.getElementById('appointment-date').value = appointment.date;
+         document.getElementById('appointment-start-time').value = appointment.startTime;
+         document.getElementById('appointment-end-time').value = appointment.endTime;
+         document.getElementById('appointment-purpose').value = appointment.purpose || '';
+         document.getElementById('appointment-status').value = appointment.status || 'pending';
+
+         await loadUsersForAppointments();
+         
+         // Set the values again after loading (in case they were reset)
+         document.getElementById('appointment-student').value = appointment.studentEmail;
+         document.getElementById('appointment-lecturer').value = appointment.lecturerEmail;
+
+         document.getElementById('save-appointment-btn').innerHTML = '<i class="fa fa-save"></i> Update Appointment';
+         document.getElementById('appointment-form-modal').style.display = 'flex';
+       };
+
+       window.deleteAppointment = async function(appointmentId) {
+         if (!(await showConfirm('Are you sure you want to delete this appointment? This action cannot be undone.'))) {
+           return;
+         }
+
+         try {
+           const appointment = allAppointments.find(a => a.id === appointmentId);
+           
+           // Delete the appointment
+           await deleteDoc(doc(db, 'appointments', appointmentId));
+
+           // Make slot available again if it was booked
+           if (appointment && appointment.slotId) {
+             await updateDoc(doc(db, 'appointment_slots', appointment.slotId), {
+               isBooked: false,
+               bookedBy: null,
+               appointmentId: null
+             });
+           }
+
+           await loadAppointments();
+           showSuccess('Appointment deleted successfully!');
+
+         } catch (error) {
+           console.error('Error deleting appointment:', error);
+           showError('Failed to delete appointment. Please try again.');
+         }
+       };
+
+       window.closeAppointmentFormModal = function() {
+         document.getElementById('appointment-form-modal').style.display = 'none';
+         currentEditingAppointment = null;
+       };
+
+       // Handle appointment form submission
+       document.getElementById('appointment-form').addEventListener('submit', async function(e) {
+         e.preventDefault();
+
+         const studentEmail = document.getElementById('appointment-student').value;
+         const lecturerEmail = document.getElementById('appointment-lecturer').value;
+         const date = document.getElementById('appointment-date').value;
+         const startTime = document.getElementById('appointment-start-time').value;
+         const endTime = document.getElementById('appointment-end-time').value;
+         const purpose = document.getElementById('appointment-purpose').value;
+         const status = document.getElementById('appointment-status').value;
+
+         if (!studentEmail || !lecturerEmail || !date || !startTime || !endTime || !purpose) {
+           showError('Please fill in all required fields.');
+           return;
+         }
+
+         // Get student and lecturer names
+         const student = allStudents.find(s => s.email === studentEmail);
+         const lecturer = allLecturers.find(l => l.email === lecturerEmail);
+
+         if (!student || !lecturer) {
+           showError('Invalid student or lecturer selected.');
+           return;
+         }
+
+         try {
+           const saveBtn = document.getElementById('save-appointment-btn');
+           saveBtn.disabled = true;
+           saveBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving...';
+
+           const appointmentData = {
+             studentName: student.name,
+             studentEmail: studentEmail,
+             lecturerName: lecturer.name,
+             lecturerEmail: lecturerEmail,
+             date,
+             startTime,
+             endTime,
+             purpose,
+             status,
+             createdBy: sessionStorage.getItem('userName') || 'Admin',
+             bookedAt: new Date().toISOString()
+           };
+
+           if (currentEditingAppointment) {
+             // Update existing appointment
+             await updateDoc(doc(db, 'appointments', currentEditingAppointment.id), {
+               ...appointmentData,
+               updatedAt: new Date().toISOString(),
+               updatedBy: sessionStorage.getItem('userName') || 'Admin'
+             });
+             showSuccess('Appointment updated successfully!');
+           } else {
+             // Create new appointment
+             await addDoc(collection(db, 'appointments'), appointmentData);
+             showSuccess('Appointment created successfully!');
+           }
+
+           closeAppointmentFormModal();
+           await loadAppointments();
+
+         } catch (error) {
+           console.error('Error saving appointment:', error);
+           showError('Failed to save appointment. Please try again.');
+         } finally {
+           const saveBtn = document.getElementById('save-appointment-btn');
+           saveBtn.disabled = false;
+           saveBtn.innerHTML = currentEditingAppointment ? 
+             '<i class="fa fa-save"></i> Update Appointment' : 
+             '<i class="fa fa-save"></i> Save Appointment';
+         }
+       });
     </script>
     <script src="notification-service.js"></script>
   </body>
