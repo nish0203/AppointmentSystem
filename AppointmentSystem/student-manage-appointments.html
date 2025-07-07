@@ -617,9 +617,9 @@
     <div style="background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 500px; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2);">
       <span style="position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #999;" onclick="closeCancellationReasonModal()">&times;</span>
       <div style="text-align: center; margin-bottom: 20px;">
-        <i class="fa fa-info-circle" style="font-size: 3rem; color: #6366f1; margin-bottom: 10px;"></i>
-        <h3 style="margin: 0; color: #222;">Cancellation Reason</h3>
-        <p style="color: #666; margin: 10px 0;">Your lecturer provided the following reason for cancelling this appointment:</p>
+        <i id="cancellation-reason-icon" class="fa fa-info-circle" style="font-size: 3rem; color: #6366f1; margin-bottom: 10px;"></i>
+        <h3 id="cancellation-reason-title" style="margin: 0; color: #222;">Cancellation Reason</h3>
+        <p id="cancellation-reason-subtitle" style="color: #666; margin: 10px 0;">Your lecturer provided the following reason for cancelling this appointment:</p>
       </div>
       <div id="cancellation-reason-content" style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #6366f1;">
         <!-- Content will be populated by JavaScript -->
@@ -1253,6 +1253,12 @@
 
     // View cancellation reason
     function viewCancellationReason(appointmentId, reason) {
+      // Reset modal to default cancellation state
+      document.getElementById('cancellation-reason-title').textContent = 'Cancellation Reason';
+      document.getElementById('cancellation-reason-subtitle').textContent = 'Your lecturer provided the following reason for cancelling this appointment:';
+      document.getElementById('cancellation-reason-icon').className = 'fa fa-info-circle';
+      document.getElementById('cancellation-reason-icon').style.color = '#6366f1';
+      
       document.getElementById('cancellation-reason-content').innerHTML = `
         <h4 style="margin: 0 0 10px 0; color: #374151;">Cancellation Reason:</h4>
         <p style="margin: 0; color: #374151; line-height: 1.6; font-size: 1rem;">
@@ -1264,6 +1270,12 @@
 
     // View rejection reason
     function viewRejectionReason(appointmentId, reason) {
+      // Update modal title and styling for rejection
+      document.getElementById('cancellation-reason-title').textContent = 'Rejection Reason';
+      document.getElementById('cancellation-reason-subtitle').textContent = 'Your lecturer provided the following reason for rejecting this appointment:';
+      document.getElementById('cancellation-reason-icon').className = 'fa fa-times-circle';
+      document.getElementById('cancellation-reason-icon').style.color = '#ef4444';
+      
       document.getElementById('cancellation-reason-content').innerHTML = `
         <h4 style="margin: 0 0 10px 0; color: #ef4444;">Rejection Reason:</h4>
         <p style="margin: 0; color: #374151; line-height: 1.6; font-size: 1rem;">
@@ -1283,6 +1295,12 @@
         // Find the appointment in our loaded data
         const appointmentData = currentAppointments.find(apt => apt.id === appointmentId);
         if (appointmentData && appointmentData.pendingRequestReason) {
+          // Reset modal to cancellation request state
+          document.getElementById('cancellation-reason-title').textContent = 'Cancellation Request';
+          document.getElementById('cancellation-reason-subtitle').textContent = 'Your cancellation request is pending review:';
+          document.getElementById('cancellation-reason-icon').className = 'fa fa-clock';
+          document.getElementById('cancellation-reason-icon').style.color = '#f59e0b';
+          
           document.getElementById('cancellation-reason-content').innerHTML = `
             <h4 style="margin: 0 0 10px 0; color: #374151;">Your Cancellation Request:</h4>
             <p style="margin: 0; color: #374151; line-height: 1.6; font-size: 1rem;">
@@ -1306,6 +1324,12 @@
         // Find the appointment in our loaded data
         const appointmentData = currentAppointments.find(apt => apt.id === appointmentId);
         if (appointmentData) {
+          // Reset modal to reschedule request state
+          document.getElementById('cancellation-reason-title').textContent = 'Reschedule Request';
+          document.getElementById('cancellation-reason-subtitle').textContent = 'Your reschedule request is pending review:';
+          document.getElementById('cancellation-reason-icon').className = 'fa fa-calendar-alt';
+          document.getElementById('cancellation-reason-icon').style.color = '#f59e0b';
+          
           const rescheduleDetails = appointmentData.pendingRequestData || {};
           document.getElementById('cancellation-reason-content').innerHTML = `
             <h4 style="margin: 0 0 15px 0; color: #374151; display: flex; align-items: center; gap: 8px;">
