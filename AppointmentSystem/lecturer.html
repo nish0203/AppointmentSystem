@@ -1293,12 +1293,11 @@
 
         // Add notification for lecturer (accepted request)
         if (window.NotificationService) {
-          window.NotificationService.addNotification({
-            type: 'slot_request',
-            title: 'Student Slot Request Accepted',
-            message: `${currentRequest.studentName} (${currentRequest.studentEmail})'s slot request for ${currentRequest.preferredDate} at ${currentRequest.startTime} - ${currentRequest.endTime} has been accepted and a slot was created.`,
-            icon: 'fa-calendar-check',
-            category: 'Appointments'
+          await window.NotificationService.addLecturerAcceptedSlotRequest({
+            studentName: currentRequest.studentName,
+            studentEmail: currentRequest.studentEmail,
+            date: currentRequest.preferredDate,
+            time: `${currentRequest.startTime} - ${currentRequest.endTime}`
           });
           
           // Send notification to student about acceptance
@@ -1347,12 +1346,11 @@
 
         // Add notification for lecturer (rejected request)
         if (window.NotificationService) {
-          window.NotificationService.addNotification({
-            type: 'slot_request',
-            title: 'Student Slot Request Rejected',
-            message: `${currentRequest.studentName} (${currentRequest.studentEmail})'s slot request for ${currentRequest.preferredDate} at ${currentRequest.startTime} - ${currentRequest.endTime} was rejected.`,
-            icon: 'fa-times-circle',
-            category: 'Appointments'
+          await window.NotificationService.addLecturerRejectedSlotRequest({
+            studentName: currentRequest.studentName,
+            studentEmail: currentRequest.studentEmail,
+            date: currentRequest.preferredDate,
+            time: `${currentRequest.startTime} - ${currentRequest.endTime}`
           });
           
           // Send notification to student about rejection

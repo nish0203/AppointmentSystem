@@ -1029,7 +1029,16 @@
               title: 'Appointment Cancelled',
               message: `${appointmentData.lecturerName || 'Lecturer'} have cancelled your appointment booking for ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
               icon: 'fa-calendar-times',
-              category: 'Appointments'
+              category: 'Appointments',
+              appointmentData: {
+                studentName: appointmentData.studentName,
+                lecturerName: appointmentData.lecturerName,
+                studentEmail: appointmentData.studentEmail,
+                date: appointmentData.date,
+                time: `${appointmentData.startTime} - ${appointmentData.endTime}`,
+                purpose: appointmentData.purpose || 'General consultation',
+                reason: 'Lecturer approved cancellation request'
+              }
             });
           }
         } else if (requestType === 'reschedule') {
@@ -1063,7 +1072,15 @@
               title: 'Appointment Approved',
               message: `${appointmentData.lecturerName || 'Lecturer'} have approved your appointment booking for ${requestData.preferredDate} ${requestData.preferredTime} - ${requestData.preferredEndTime}`,
               icon: 'fa-check-circle',
-              category: 'Appointments'
+              category: 'Appointments',
+              appointmentData: {
+                studentName: appointmentData.studentName,
+                lecturerName: appointmentData.lecturerName,
+                studentEmail: appointmentData.studentEmail,
+                date: requestData.preferredDate,
+                time: `${requestData.preferredTime} - ${requestData.preferredEndTime}`,
+                purpose: appointmentData.purpose || 'General consultation'
+              }
             });
           }
         }
@@ -1118,7 +1135,16 @@
               title: 'Appointment Rejected',
               message: `${appointmentData.lecturerName || 'Lecturer'} have rejected your appointment slot request for ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
               icon: 'fa-times-circle',
-              category: 'Appointments'
+              category: 'Appointments',
+              appointmentData: {
+                studentName: appointmentData.studentName,
+                lecturerName: appointmentData.lecturerName,
+                studentEmail: appointmentData.studentEmail,
+                date: appointmentData.date,
+                time: `${appointmentData.startTime} - ${appointmentData.endTime}`,
+                purpose: appointmentData.purpose || 'General consultation',
+                reason: 'Lecturer rejected the request'
+              }
             });
             console.log('Rejection notification sent');
           } catch (notificationError) {
@@ -1330,7 +1356,16 @@
               title: 'Appointment Rejected',
               message: `${appointmentData.lecturerName || 'Lecturer'} have rejected your appointment slot request for ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
               icon: 'fa-times-circle',
-              category: 'Appointments'
+              category: 'Appointments',
+              appointmentData: {
+                studentName: appointmentData.studentName,
+                lecturerName: appointmentData.lecturerName,
+                studentEmail: appointmentData.studentEmail,
+                date: appointmentData.date,
+                time: `${appointmentData.startTime} - ${appointmentData.endTime}`,
+                purpose: appointmentData.purpose || 'General consultation',
+                reason: rejectionReason || 'Lecturer rejected the appointment'
+              }
             });
           } catch (notificationError) {
             console.error('Error sending rejection notification:', notificationError);
@@ -1378,7 +1413,16 @@
             title: 'Appointment Cancelled',
             message: `${appointmentData.lecturerName || 'Lecturer'} have cancelled your appointment booking for ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
             icon: 'fa-calendar-times',
-            category: 'Appointments'
+            category: 'Appointments',
+            appointmentData: {
+              studentName: appointmentData.studentName,
+              lecturerName: appointmentData.lecturerName,
+              studentEmail: appointmentData.studentEmail,
+              date: appointmentData.date,
+              time: `${appointmentData.startTime} - ${appointmentData.endTime}`,
+              purpose: appointmentData.purpose || 'General consultation',
+              reason: reason || 'Lecturer cancelled the appointment'
+            }
           });
         }
         
@@ -1412,7 +1456,15 @@
             title: 'Appointment Approved',
             message: `${appointmentData.lecturerName || 'Lecturer'} have approved your appointment booking for ${appointmentData.date} ${appointmentData.startTime} - ${appointmentData.endTime}`,
             icon: 'fa-check-circle',
-            category: 'Appointments'
+            category: 'Appointments',
+            appointmentData: {
+              studentName: appointmentData.studentName,
+              lecturerName: appointmentData.lecturerName,
+              studentEmail: appointmentData.studentEmail,
+              date: appointmentData.date,
+              time: `${appointmentData.startTime} - ${appointmentData.endTime}`,
+              purpose: appointmentData.purpose || 'General consultation'
+            }
           });
         }
         

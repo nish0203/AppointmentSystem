@@ -1114,15 +1114,13 @@
         
         // Add in-app notification for student
         if (window.NotificationService) {
-          await window.NotificationService.addStudentBookedAppointment({
+          await window.NotificationService.addStudentRequestedNewSlot({
             lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
             time: `${preferredDate} ${startTime} - ${endTime}`
           });
         }
         
         console.log('Slot request created successfully');
-        showSuccessModal('Request Sent Successfully!', 'Your slot request has been sent to the lecturer. They will review it and create a slot if approved.');
-        closeRequestSlotModal();
         
         // Add in-app notification for lecturer
         try {
@@ -1131,7 +1129,15 @@
             title: 'Slot Request',
             message: `${studentName} have request for appointment slot for ${preferredDate} ${startTime} - ${endTime}`,
             icon: 'fa-user-plus',
-            category: 'Bookings'
+            category: 'Bookings',
+            appointmentData: {
+              studentName: studentName,
+              lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
+              studentEmail: studentEmail,
+              date: preferredDate,
+              time: `${startTime} - ${endTime}`,
+              purpose: purpose || 'General consultation'
+            }
           });
           console.log('Lecturer notification created successfully');
         } catch (err) {
@@ -1171,8 +1177,8 @@
           // Don't fail the booking if email fails
         }
         
-        showSuccessModal('Appointment booked successfully!', 'Your appointment request has been submitted for approval. You and your lecturer will receive email notifications.');
-        closeBookingModal();
+        showSuccessModal('Request Sent Successfully!', 'Your slot request has been sent to the lecturer. They will review it and create a slot if approved.');
+        closeRequestSlotModal();
         
         // Reload slots to reflect changes
         await loadAvailableSlots();
@@ -1331,7 +1337,15 @@
             title: 'Slot Booked',
             message: `${studentName} have booked your appointment slot for ${selectedSlot.date} ${selectedSlot.startTime} - ${selectedSlot.endTime}`,
             icon: 'fa-user-clock',
-            category: 'Bookings'
+            category: 'Bookings',
+            appointmentData: {
+              studentName: studentName,
+              lecturerName: currentLecturer?.name || lecturerName || 'Lecturer',
+              studentEmail: studentEmail,
+              date: selectedSlot.date,
+              time: `${selectedSlot.startTime} - ${selectedSlot.endTime}`,
+              purpose: purpose || 'General consultation'
+            }
           });
         }
         

@@ -156,6 +156,16 @@ class NotificationService {
     });
   }
 
+  async addStudentRequestedNewSlot(data) {
+    await this.addNotification({
+      type: 'student_requested_new_slot',
+      title: 'Slot Request Sent',
+      message: `Your slot request has been sent to ${data.lecturerName} for ${data.time}`,
+      icon: 'fa-paper-plane',
+      category: 'Requests'
+    });
+  }
+
   // LECTURER NOTIFICATIONS
   async addStudentBookedSlot(data) {
     await this.addNotification({
@@ -194,6 +204,27 @@ class NotificationService {
       message: `${data.studentName} have requested cancellation of appointment slot at ${data.time}`,
       icon: 'fa-user-times',
       category: 'Bookings'
+    });
+  }
+
+  // LECTURER ACTION NOTIFICATIONS
+  async addLecturerAcceptedSlotRequest(data) {
+    await this.addNotification({
+      type: 'lecturer_accepted_slot_request',
+      title: 'Slot Request Accepted',
+      message: `${data.studentName} (${data.studentEmail})'s slot request for ${data.date} at ${data.time} has been accepted and a slot was created.`,
+      icon: 'fa-calendar-check',
+      category: 'Appointments'
+    });
+  }
+
+  async addLecturerRejectedSlotRequest(data) {
+    await this.addNotification({
+      type: 'lecturer_rejected_slot_request',
+      title: 'Slot Request Rejected',
+      message: `${data.studentName} (${data.studentEmail})'s slot request for ${data.date} at ${data.time} was rejected.`,
+      icon: 'fa-times-circle',
+      category: 'Appointments'
     });
   }
 
@@ -302,6 +333,14 @@ class NotificationService {
           );
           break;
 
+        case 'student_requested_new_slot':
+          // This is a confirmation to the student that their request was sent
+          await this.emailService.sendPlainEmail(
+            userEmail,
+            `Slot Request Sent\n\nYour request for an appointment slot has been successfully sent to ${realAppointmentData.lecturerName}.\n\nRequested Details:\nDate: ${realAppointmentData.date}\nTime: ${realAppointmentData.time}\nPurpose: ${realAppointmentData.purpose}\n\nThe lecturer will review your request and create a slot if approved.\n\nThis is an automated message from the University Booking System.`
+          );
+          break;
+
         case 'student_reschedule_request':
           await this.emailService.sendStudentRescheduleRequest(
             userEmail,  // Lecturer email
@@ -325,6 +364,24 @@ class NotificationService {
             realAppointmentData.date,
             realAppointmentData.time,
             realAppointmentData.reason || 'No specific reason provided'
+          );
+          break;
+
+        case 'lecturer_accepted_slot_request':
+          // This is a notification for the lecturer about their own action
+          // Usually no email needed, but we can send a confirmation
+          await this.emailService.sendPlainEmail(
+            userEmail,
+            `Slot Request Accepted\n\nYou have successfully accepted a slot request from ${realAppointmentData.studentName} for ${realAppointmentData.date} at ${realAppointmentData.time}.\n\nThis is an automated message from the University Booking System.`
+          );
+          break;
+
+        case 'lecturer_rejected_slot_request':
+          // This is a notification for the lecturer about their own action
+          // Usually no email needed, but we can send a confirmation
+          await this.emailService.sendPlainEmail(
+            userEmail,
+            `Slot Request Rejected\n\nYou have rejected a slot request from ${realAppointmentData.studentName} for ${realAppointmentData.date} at ${realAppointmentData.time}.\n\nThis is an automated message from the University Booking System.`
           );
           break;
 

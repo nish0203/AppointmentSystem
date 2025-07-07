@@ -1069,7 +1069,7 @@
       } else if (type === 'cancelled') {
         actionButtons = `
           <div class="action-buttons">
-            <button class="btn" style="background: #ef4444; color: white;" onclick="viewCancellationReason('${appointment.id}', '${appointment.cancellationReason || 'No reason provided'}')">
+            <button class="btn" style="background: #ef4444; color: white;" onclick="viewCancellationReason('${appointment.id}', \`${(appointment.cancellationReason || 'No reason provided').replace(/[`\\$]/g, '\\$&')}\`)">
               <i class="fa fa-info-circle"></i> View Cancelled Reason
             </button>
           </div>
@@ -1077,7 +1077,7 @@
       } else if (type === 'rejected') {
         actionButtons = `
           <div class="action-buttons">
-            <button class="btn" style="background: #ef4444; color: white;" onclick="viewRejectionReason('${appointment.id}', '${appointment.rejectionReason || 'No reason provided'}')">
+            <button class="btn" style="background: #ef4444; color: white;" onclick="viewRejectionReason('${appointment.id}', \`${(appointment.rejectionReason || 'No reason provided').replace(/[`\\$]/g, '\\$&')}\`)">
               <i class="fa fa-info-circle"></i> View Rejection Reason
             </button>
           </div>
@@ -1385,7 +1385,7 @@
             <div class="document-item" style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 6px;">
               <i class="fa fa-file" style="color: #10B981;"></i>
               <a href="${doc.url}" target="_blank" style="color: #10B981; text-decoration: none; font-size: 0.9rem; font-weight: 500; flex: 1;">${doc.name}</a>
-              <button type="button" onclick="removeDocument('${appointmentId}', '${doc.name}')" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">
+              <button type="button" onclick="removeDocument('${appointmentId}', \`${doc.name.replace(/[`\\$]/g, '\\$&')}\`)" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem;">
                 <i class="fa fa-trash"></i>
               </button>
             </div>
