@@ -581,7 +581,7 @@
       container.innerHTML = `
         <div class="lecturers-grid">
           ${lecturers.map(lecturer => `
-            <div class="lecturer-card" onclick="viewLecturerSlots('${lecturer.email}', '${lecturer.name}')">
+            <div class="lecturer-card" onclick="viewLecturerSlots('${lecturer.email}', \`${(lecturer.name || 'Lecturer').replace(/[`\\$]/g, '\\$&')}\`)">
               <div class="lecturer-header">
                 <img src="${lecturer.avatarUrl || 'placeholder.png'}" alt="Lecturer Avatar" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 3px solid #e5e7eb;" />
                 <div class="lecturer-info">
@@ -608,7 +608,7 @@
                 </div>
               </div>
               <div class="lecturer-actions">
-                <button class="btn btn-primary" onclick="event.stopPropagation(); viewLecturerSlots('${lecturer.email}', '${lecturer.name}')">
+                <button class="btn btn-primary" onclick="event.stopPropagation(); viewLecturerSlots('${lecturer.email}', \`${(lecturer.name || 'Lecturer').replace(/[`\\$]/g, '\\$&')}\`)">
                   <i class="fa fa-calendar"></i> Book Appointment
                 </button>
               </div>
