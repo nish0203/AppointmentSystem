@@ -808,6 +808,70 @@
     // window.debugDatabase = debugDatabase;
     // window.reloadAppointments = reloadAppointments;
 
+    // Enrich appointments with student names
+    async function enrichAppointmentsWithStudentNames(appointments) {
+      const enrichedAppointments = [];
+      
+      for (const appointment of appointments) {
+        try {
+          // Fetch student data
+          const studentDoc = await getDoc(doc(db, 'students', appointment.studentEmail));
+          let studentName = appointment.studentEmail; // Fallback to email
+          
+          if (studentDoc.exists()) {
+            const studentData = studentDoc.data();
+            studentName = studentData.name || appointment.studentEmail;
+          }
+          
+          enrichedAppointments.push({
+            ...appointment,
+            studentName: studentName
+          });
+        } catch (error) {
+          console.error('Error fetching student data for', appointment.studentEmail, ':', error);
+          // Fallback: use email as name
+          enrichedAppointments.push({
+            ...appointment,
+            studentName: appointment.studentEmail
+          });
+        }
+      }
+      
+      return enrichedAppointments;
+    }
+
+    // Enrich student requests with student names
+    async function enrichRequestsWithStudentNames(requests) {
+      const enrichedRequests = [];
+      
+      for (const request of requests) {
+        try {
+          // Fetch student data
+          const studentDoc = await getDoc(doc(db, 'students', request.studentEmail));
+          let studentName = request.studentEmail; // Fallback to email
+          
+          if (studentDoc.exists()) {
+            const studentData = studentDoc.data();
+            studentName = studentData.name || request.studentEmail;
+          }
+          
+          enrichedRequests.push({
+            ...request,
+            studentName: studentName
+          });
+        } catch (error) {
+          console.error('Error fetching student data for', request.studentEmail, ':', error);
+          // Fallback: use email as name
+          enrichedRequests.push({
+            ...request,
+            studentName: request.studentEmail
+          });
+        }
+      }
+      
+      return enrichedRequests;
+    }
+
     // Load appointments from Firestore
     async function loadAppointments(lecturerEmail) {
       try {
@@ -846,8 +910,11 @@
           return bTime - aTime;
         });
         
-        console.log('Processed appointments:', appointments);
-        renderAppointments(appointments);
+        // Fetch student names for each appointment
+        const enrichedAppointments = await enrichAppointmentsWithStudentNames(appointments);
+        
+        console.log('Processed appointments:', enrichedAppointments);
+        renderAppointments(enrichedAppointments);
         
         // Also load student requests
         await loadStudentRequests(lecturerEmail);
@@ -867,8 +934,11 @@
             }
           });
           
-          console.log('Fallback found', appointments.length, 'appointments');
-          renderAppointments(appointments);
+          // Fetch student names for each appointment
+          const enrichedAppointments = await enrichAppointmentsWithStudentNames(appointments);
+          
+          console.log('Fallback found', enrichedAppointments.length, 'appointments');
+          renderAppointments(enrichedAppointments);
           
           // Also load student requests in fallback
           await loadStudentRequests(lecturerEmail);
@@ -907,8 +977,11 @@
           }
         });
         
-        console.log('Found student requests:', studentRequests);
-        renderStudentRequests(studentRequests);
+        // Enrich student requests with student names
+        const enrichedRequests = await enrichRequestsWithStudentNames(studentRequests);
+        
+        console.log('Found student requests:', enrichedRequests);
+        renderStudentRequests(enrichedRequests);
       } catch (error) {
         console.error('Error loading student requests:', error);
         renderStudentRequests([]);
@@ -954,6 +1027,7 @@
                 ${request.type === 'cancellation' ? 'Cancellation Request' : 'Reschedule Request'}
               </h3>
               <div class="meta">
+                <span><i class="fa fa-user"></i> ${request.studentName}</span>
                 <span><i class="fa fa-envelope"></i> ${request.studentEmail}</span>
                 <span><i class="fa fa-clock"></i> Requested: ${new Date(request.requestedAt).toLocaleDateString()}</span>
               </div>
@@ -1201,7 +1275,7 @@
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
             <div>
               <strong style="color: #374151;">Student Name:</strong><br>
-              <span style="color: #1f2937;">${appointment.studentName || 'N/A'}</span>
+              <span style="color: #1f2937;">${appointment.studentName || appointment.studentEmail}</span>
             </div>
             <div>
               <strong style="color: #374151;">Student ID:</strong><br>
@@ -1633,6 +1707,8 @@
                 ${appointment.purpose || 'Untitled Appointment'}
               </h3>
               <div class="meta">
+                <span><i class="fa fa-user"></i> ${appointment.studentName}</span>
+                <span><i class="fa fa-envelope"></i> ${appointment.studentEmail}</span>
                 <span><i class="fa fa-calendar"></i> ${appointment.date}</span>
                 <span><i class="fa fa-clock"></i> ${appointment.startTime} - ${appointment.endTime}</span>
               </div>
