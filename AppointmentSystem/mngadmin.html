@@ -1003,8 +1003,8 @@
         isSuper: isSuper
       };
 
-      // Check if OTP is required (super admin making changes)
-      if (isCurrentUserSuperAdmin()) {
+      // Check if OTP is required (super admin editing another super admin)
+      if (isCurrentUserSuperAdmin() && isSuper) {
         requiresOTP = true;
         pendingAdminData = adminData;
         
