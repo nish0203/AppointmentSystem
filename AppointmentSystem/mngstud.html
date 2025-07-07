@@ -617,7 +617,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
       getFirestore, collection, doc, getDocs, getDoc,
-      setDoc, updateDoc, deleteDoc
+      setDoc, updateDoc, deleteDoc, query, where
     } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
     // Initialize Firebase
@@ -910,6 +910,125 @@
       }
     });
 
+    // Function to update student email references in all related collections
+    async function updateStudentEmailReferences(oldEmail, newEmail, studentData) {
+      try {
+        console.log('Updating references from', oldEmail, 'to', newEmail);
+        
+        // Update appointments collection
+        const appointmentsQuery = query(
+          collection(db, 'appointments'),
+          where('studentEmail', '==', oldEmail)
+        );
+        const appointmentsSnapshot = await getDocs(appointmentsQuery);
+        
+        const appointmentUpdates = [];
+        appointmentsSnapshot.docs.forEach(doc => {
+          appointmentUpdates.push(
+            updateDoc(doc.ref, { 
+              studentEmail: newEmail,
+              studentName: studentData.name // Update name too in case it changed
+            })
+          );
+        });
+        
+        // Update appointment_slots collection (bookedBy field)
+        const slotsQuery = query(
+          collection(db, 'appointment_slots'),
+          where('bookedBy', '==', oldEmail)
+        );
+        const slotsSnapshot = await getDocs(slotsQuery);
+        
+        const slotUpdates = [];
+        slotsSnapshot.docs.forEach(doc => {
+          slotUpdates.push(
+            updateDoc(doc.ref, { bookedBy: newEmail })
+          );
+        });
+        
+        // Update slot_requests collection
+        const slotRequestsQuery = query(
+          collection(db, 'slot_requests'),
+          where('studentEmail', '==', oldEmail)
+        );
+        const slotRequestsSnapshot = await getDocs(slotRequestsQuery);
+        
+        const slotRequestUpdates = [];
+        slotRequestsSnapshot.docs.forEach(doc => {
+          slotRequestUpdates.push(
+            updateDoc(doc.ref, { 
+              studentEmail: newEmail,
+              studentName: studentData.name
+            })
+          );
+        });
+        
+        // Update appointment_requests collection
+        const appointmentRequestsQuery = query(
+          collection(db, 'appointment_requests'),
+          where('studentEmail', '==', oldEmail)
+        );
+        const appointmentRequestsSnapshot = await getDocs(appointmentRequestsQuery);
+        
+        const appointmentRequestUpdates = [];
+        appointmentRequestsSnapshot.docs.forEach(doc => {
+          appointmentRequestUpdates.push(
+            updateDoc(doc.ref, { 
+              studentEmail: newEmail,
+              studentName: studentData.name
+            })
+          );
+        });
+        
+        // Update notifications collection
+        const notificationsQuery = query(
+          collection(db, 'notifications'),
+          where('userEmail', '==', oldEmail)
+        );
+        const notificationsSnapshot = await getDocs(notificationsQuery);
+        
+        const notificationUpdates = [];
+        notificationsSnapshot.docs.forEach(doc => {
+          notificationUpdates.push(
+            updateDoc(doc.ref, { userEmail: newEmail })
+          );
+        });
+        
+        // Update inquiries collection
+        const inquiriesQuery = query(
+          collection(db, 'inquiries'),
+          where('userEmail', '==', oldEmail)
+        );
+        const inquiriesSnapshot = await getDocs(inquiriesQuery);
+        
+        const inquiryUpdates = [];
+        inquiriesSnapshot.docs.forEach(doc => {
+          inquiryUpdates.push(
+            updateDoc(doc.ref, { 
+              userEmail: newEmail,
+              userName: studentData.name
+            })
+          );
+        });
+        
+        // Execute all updates
+        await Promise.all([
+          ...appointmentUpdates,
+          ...slotUpdates,
+          ...slotRequestUpdates,
+          ...appointmentRequestUpdates,
+          ...notificationUpdates,
+          ...inquiryUpdates
+        ]);
+        
+        console.log('Successfully updated all references');
+        
+      } catch (error) {
+        console.error('Error updating student email references:', error);
+        throw new Error('Failed to update all student references');
+      }
+    }
+
     // Form submission
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -950,8 +1069,29 @@
         };
 
         if (editingDocId) {
-          await updateDoc(doc(db, 'students', editingDocId), studentData);
-          showSuccess('Student updated successfully');
+          // Check if email has changed
+          const oldEmail = editingDocId;
+          const newEmail = email;
+          
+          if (oldEmail !== newEmail) {
+            // Email has changed - need to create new document and delete old one
+            console.log('Email changed from', oldEmail, 'to', newEmail);
+            
+            // Create new document with new email as ID
+            await setDoc(doc(db, 'students', newEmail), studentData);
+            
+            // Update all related collections that reference this student
+            await updateStudentEmailReferences(oldEmail, newEmail, studentData);
+            
+            // Delete old document
+            await deleteDoc(doc(db, 'students', oldEmail));
+            
+            showSuccess('Student email updated successfully');
+          } else {
+            // Email hasn't changed - normal update
+            await updateDoc(doc(db, 'students', editingDocId), studentData);
+            showSuccess('Student updated successfully');
+          }
         } else {
           await setDoc(doc(db, 'students', email), studentData);
           showSuccess('Student added successfully');

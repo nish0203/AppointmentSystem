@@ -641,7 +641,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
       getFirestore, collection, doc, getDocs, getDoc,
-      setDoc, updateDoc, deleteDoc
+      setDoc, updateDoc, deleteDoc, query, where
     } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
     // Initialize Firebase
@@ -1029,6 +1029,98 @@
       }
     });
 
+    // Function to update admin email references in all related collections
+    async function updateAdminEmailReferences(oldEmail, newEmail, adminData) {
+      try {
+        console.log('Updating admin references from', oldEmail, 'to', newEmail);
+        
+        // Update students collection (createdBy field)
+        const studentsQuery = query(
+          collection(db, 'students'),
+          where('createdBy', '==', oldEmail)
+        );
+        const studentsSnapshot = await getDocs(studentsQuery);
+        
+        const studentUpdates = [];
+        studentsSnapshot.docs.forEach(doc => {
+          studentUpdates.push(
+            updateDoc(doc.ref, { createdBy: newEmail })
+          );
+        });
+        
+        // Update lecturers collection (createdBy field)
+        const lecturersQuery = query(
+          collection(db, 'lecturers'),
+          where('createdBy', '==', oldEmail)
+        );
+        const lecturersSnapshot = await getDocs(lecturersQuery);
+        
+        const lecturerUpdates = [];
+        lecturersSnapshot.docs.forEach(doc => {
+          lecturerUpdates.push(
+            updateDoc(doc.ref, { createdBy: newEmail })
+          );
+        });
+        
+        // Update faculties collection (createdBy field)
+        const facultiesQuery = query(
+          collection(db, 'faculties'),
+          where('createdBy', '==', oldEmail)
+        );
+        const facultiesSnapshot = await getDocs(facultiesQuery);
+        
+        const facultyUpdates = [];
+        facultiesSnapshot.docs.forEach(doc => {
+          facultyUpdates.push(
+            updateDoc(doc.ref, { createdBy: newEmail })
+          );
+        });
+        
+        // Update announcements collection (createdBy field)
+        const announcementsQuery = query(
+          collection(db, 'announcements'),
+          where('createdBy', '==', oldEmail)
+        );
+        const announcementsSnapshot = await getDocs(announcementsQuery);
+        
+        const announcementUpdates = [];
+        announcementsSnapshot.docs.forEach(doc => {
+          announcementUpdates.push(
+            updateDoc(doc.ref, { createdBy: newEmail })
+          );
+        });
+        
+        // Update notifications collection
+        const notificationsQuery = query(
+          collection(db, 'notifications'),
+          where('userEmail', '==', oldEmail)
+        );
+        const notificationsSnapshot = await getDocs(notificationsQuery);
+        
+        const notificationUpdates = [];
+        notificationsSnapshot.docs.forEach(doc => {
+          notificationUpdates.push(
+            updateDoc(doc.ref, { userEmail: newEmail })
+          );
+        });
+        
+        // Execute all updates
+        await Promise.all([
+          ...studentUpdates,
+          ...lecturerUpdates,
+          ...facultyUpdates,
+          ...announcementUpdates,
+          ...notificationUpdates
+        ]);
+        
+        console.log('Successfully updated all admin references');
+        
+      } catch (error) {
+        console.error('Error updating admin email references:', error);
+        throw new Error('Failed to update all admin references');
+      }
+    }
+
     // Save admin data function
     async function saveAdminData(adminData) {
       const confirmMessage = editingEmail ? 'Confirm update?' : 'Confirm addition?';
@@ -1039,8 +1131,29 @@
         saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
         if (editingEmail) {
-          await updateDoc(doc(db, 'admins', editingEmail), adminData);
-          showSuccess('Administrator updated successfully');
+          // Check if email has changed
+          const oldEmail = editingEmail;
+          const newEmail = adminData.email;
+          
+          if (oldEmail !== newEmail) {
+            // Email has changed - need to create new document and delete old one
+            console.log('Admin email changed from', oldEmail, 'to', newEmail);
+            
+            // Create new document with new email as ID
+            await setDoc(doc(db, 'admins', newEmail), adminData);
+            
+            // Update all related collections that reference this admin
+            await updateAdminEmailReferences(oldEmail, newEmail, adminData);
+            
+            // Delete old document
+            await deleteDoc(doc(db, 'admins', oldEmail));
+            
+            showSuccess('Administrator email updated successfully');
+          } else {
+            // Email hasn't changed - normal update
+            await updateDoc(doc(db, 'admins', editingEmail), adminData);
+            showSuccess('Administrator updated successfully');
+          }
         } else {
           await setDoc(doc(db, 'admins', adminData.email), adminData);
           showSuccess('Administrator added successfully');

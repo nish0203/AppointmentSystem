@@ -662,7 +662,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
     import {
       getFirestore, collection, doc, getDocs, getDoc,
-      setDoc, updateDoc, deleteDoc
+      setDoc, updateDoc, deleteDoc, query, where
     } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js";
 
     // Initialize Firebase
@@ -987,6 +987,128 @@
       }
     });
 
+    // Function to update lecturer email references in all related collections
+    async function updateLecturerEmailReferences(oldEmail, newEmail, lecturerData) {
+      try {
+        console.log('Updating lecturer references from', oldEmail, 'to', newEmail);
+        
+        // Update appointments collection
+        const appointmentsQuery = query(
+          collection(db, 'appointments'),
+          where('lecturerEmail', '==', oldEmail)
+        );
+        const appointmentsSnapshot = await getDocs(appointmentsQuery);
+        
+        const appointmentUpdates = [];
+        appointmentsSnapshot.docs.forEach(doc => {
+          appointmentUpdates.push(
+            updateDoc(doc.ref, { 
+              lecturerEmail: newEmail,
+              lecturerName: lecturerData.name
+            })
+          );
+        });
+        
+        // Update appointment_slots collection
+        const slotsQuery = query(
+          collection(db, 'appointment_slots'),
+          where('lecturerEmail', '==', oldEmail)
+        );
+        const slotsSnapshot = await getDocs(slotsQuery);
+        
+        const slotUpdates = [];
+        slotsSnapshot.docs.forEach(doc => {
+          slotUpdates.push(
+            updateDoc(doc.ref, { 
+              lecturerEmail: newEmail,
+              lecturerName: lecturerData.name
+            })
+          );
+        });
+        
+        // Update slot_requests collection
+        const slotRequestsQuery = query(
+          collection(db, 'slot_requests'),
+          where('lecturerEmail', '==', oldEmail)
+        );
+        const slotRequestsSnapshot = await getDocs(slotRequestsQuery);
+        
+        const slotRequestUpdates = [];
+        slotRequestsSnapshot.docs.forEach(doc => {
+          slotRequestUpdates.push(
+            updateDoc(doc.ref, { 
+              lecturerEmail: newEmail,
+              lecturerName: lecturerData.name
+            })
+          );
+        });
+        
+        // Update appointment_requests collection
+        const appointmentRequestsQuery = query(
+          collection(db, 'appointment_requests'),
+          where('lecturerEmail', '==', oldEmail)
+        );
+        const appointmentRequestsSnapshot = await getDocs(appointmentRequestsQuery);
+        
+        const appointmentRequestUpdates = [];
+        appointmentRequestsSnapshot.docs.forEach(doc => {
+          appointmentRequestUpdates.push(
+            updateDoc(doc.ref, { 
+              lecturerEmail: newEmail,
+              lecturerName: lecturerData.name
+            })
+          );
+        });
+        
+        // Update notifications collection
+        const notificationsQuery = query(
+          collection(db, 'notifications'),
+          where('userEmail', '==', oldEmail)
+        );
+        const notificationsSnapshot = await getDocs(notificationsQuery);
+        
+        const notificationUpdates = [];
+        notificationsSnapshot.docs.forEach(doc => {
+          notificationUpdates.push(
+            updateDoc(doc.ref, { userEmail: newEmail })
+          );
+        });
+        
+        // Update inquiries collection
+        const inquiriesQuery = query(
+          collection(db, 'inquiries'),
+          where('userEmail', '==', oldEmail)
+        );
+        const inquiriesSnapshot = await getDocs(inquiriesQuery);
+        
+        const inquiryUpdates = [];
+        inquiriesSnapshot.docs.forEach(doc => {
+          inquiryUpdates.push(
+            updateDoc(doc.ref, { 
+              userEmail: newEmail,
+              userName: lecturerData.name
+            })
+          );
+        });
+        
+        // Execute all updates
+        await Promise.all([
+          ...appointmentUpdates,
+          ...slotUpdates,
+          ...slotRequestUpdates,
+          ...appointmentRequestUpdates,
+          ...notificationUpdates,
+          ...inquiryUpdates
+        ]);
+        
+        console.log('Successfully updated all lecturer references');
+        
+      } catch (error) {
+        console.error('Error updating lecturer email references:', error);
+        throw new Error('Failed to update all lecturer references');
+      }
+    }
+
     // Form submission
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -1039,8 +1161,29 @@
         };
 
         if (editingDocId) {
-          await updateDoc(doc(db, 'lecturers', editingDocId), lecturerData);
-          showSuccess('Lecturer updated successfully');
+          // Check if email has changed
+          const oldEmail = editingDocId;
+          const newEmail = email;
+          
+          if (oldEmail !== newEmail) {
+            // Email has changed - need to create new document and delete old one
+            console.log('Lecturer email changed from', oldEmail, 'to', newEmail);
+            
+            // Create new document with new email as ID
+            await setDoc(doc(db, 'lecturers', newEmail), lecturerData);
+            
+            // Update all related collections that reference this lecturer
+            await updateLecturerEmailReferences(oldEmail, newEmail, lecturerData);
+            
+            // Delete old document
+            await deleteDoc(doc(db, 'lecturers', oldEmail));
+            
+            showSuccess('Lecturer email updated successfully');
+          } else {
+            // Email hasn't changed - normal update
+            await updateDoc(doc(db, 'lecturers', editingDocId), lecturerData);
+            showSuccess('Lecturer updated successfully');
+          }
         } else {
           await setDoc(doc(db, 'lecturers', email), lecturerData);
           showSuccess('Lecturer added successfully');
