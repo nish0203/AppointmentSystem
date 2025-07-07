@@ -354,8 +354,6 @@
     }
 
     .priority-option input[type="radio"]:checked + .priority-label {
-      border-color: #ef4444;
-      background: #ef4444;
       color: white;
     }
 
@@ -364,26 +362,29 @@
     }
 
     .priority-medium .priority-label {
-      color: #d97706;
+      color: #ca8a04;
     }
 
     .priority-high .priority-label {
       color: #dc2626;
     }
 
-    .priority-option input[type="radio"]:checked + .priority-label.priority-low {
-      background: #059669;
-      border-color: #059669;
+    .priority-low input[type="radio"]:checked + .priority-label {
+      background: #059669 !important;
+      border-color: #059669 !important;
+      color: white !important;
     }
 
-    .priority-option input[type="radio"]:checked + .priority-label.priority-medium {
-      background: #d97706;
-      border-color: #d97706;
+    .priority-medium input[type="radio"]:checked + .priority-label {
+      background: #eab308 !important;
+      border-color: #eab308 !important;
+      color: white !important;
     }
 
-    .priority-option input[type="radio"]:checked + .priority-label.priority-high {
-      background: #dc2626;
-      border-color: #dc2626;
+    .priority-high input[type="radio"]:checked + .priority-label {
+      background: #dc2626 !important;
+      border-color: #dc2626 !important;
+      color: white !important;
     }
 
     .submit-section {
