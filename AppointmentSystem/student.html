@@ -704,6 +704,15 @@
         } else {
           console.error('❌ AppointmentReminderService not found!');
         }
+        
+        // Initialize appointment history service
+        if (window.AppointmentHistoryService) {
+          console.log('🕒 Initializing appointment history service...');
+          await window.AppointmentHistoryService.initialize(db);
+          console.log('✅ Appointment history service initialized for student');
+        } else {
+          console.error('❌ AppointmentHistoryService not found!');
+        }
       } else {
         nameEl.textContent = 'Welcome!';
         emailEl.textContent = '-';
@@ -1231,6 +1240,7 @@
     // Make functions global
     window.changeAvatar = changeAvatar;
   </script>
+  <script src="appointment-history-service.js"></script>
 
 </body>
 </html> 

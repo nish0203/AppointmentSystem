@@ -702,6 +702,12 @@
       console.log('✅ Appointment reminder service initialized for student-manage-appointments');
     }
     
+    // Initialize appointment history service
+    if (window.AppointmentHistoryService) {
+      window.AppointmentHistoryService.initialize(db);
+      console.log('✅ Appointment history service initialized for student-manage-appointments');
+    }
+    
     const storage = getStorage(app);
 
     let currentStudentEmail = '';
@@ -1766,6 +1772,9 @@
   
   <!-- Include appointment reminder service -->
   <script src="appointment-reminder-service.js"></script>
+  
+  <!-- Include appointment history service -->
+  <script src="appointment-history-service.js"></script>
   
   <!-- Notification Service -->
   <script src="notification-service.js"></script>
