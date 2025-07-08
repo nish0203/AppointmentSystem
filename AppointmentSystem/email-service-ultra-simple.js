@@ -31,13 +31,11 @@
 
 class EmailService {
     constructor() {
-        // Your existing EmailJS credentials (already working for OTP)
         this.serviceId = 'service_mailgun';
         this.publicKey = 'CO_25CIKuZ9YpYqQt';
-        this.templateId = 'template_otp'; // Your existing working template
+        this.templateId = 'template_otp';
     }
 
-    // OTP emails (unchanged - already working)
     async sendOTP(email, code) {
         try {
             console.log(`📧 Sending OTP to ${email} via EmailJS...`);
@@ -64,7 +62,6 @@ class EmailService {
         }
     }
 
-    // Send appointment emails as plain text (same format as OTP)
     async sendPlainEmail(toEmail, messageText) {
         try {
             console.log(`📧 Sending email to ${toEmail} via EmailJS...`);
@@ -91,7 +88,6 @@ class EmailService {
         }
     }
 
-    // Appointment email methods (using proper templates)
     async sendBookingConfirmation(studentEmail, studentName, lecturerName, appointmentDate, appointmentTime, meetingLink = null) {
         try {
             console.log(`📧 Sending booking confirmation to ${studentEmail} via EmailJS...`);
@@ -128,8 +124,6 @@ class EmailService {
                 console.error('❌ Detailed template error:', templateError);
                 console.log('🔍 Response status:', templateError.status);
                 console.log('🔍 Response text:', templateError.text);
-                
-                // Fallback to OTP template with formatted message
                 const fallbackMessage = `
 🎓 APPOINTMENT CONFIRMED!
 
@@ -156,7 +150,7 @@ This is an automated message from the University Booking System.
                 
                 const fallbackResponse = await emailjs.send(
                     this.serviceId,
-                    this.templateId, // Use OTP template
+                    this.templateId,
                     fallbackParams,
                     { publicKey: this.publicKey }
                 );
@@ -177,7 +171,7 @@ This is an automated message from the University Booking System.
             console.log(`📚 Sending slot booked alert to ${lecturerEmail} via EmailJS...`);
             
             const templateParams = {
-                email: lecturerEmail,  // Use same field name as working OTP
+                email: lecturerEmail,
                 lecturer_name: lecturerName,
                 student_name: studentName,
                 student_email: studentEmail,
@@ -192,7 +186,7 @@ This is an automated message from the University Booking System.
             
             const response = await emailjs.send(
                 this.serviceId,
-                'slot_booked_alert', // Use the new template
+                'slot_booked_alert',
                 templateParams,
                 { publicKey: this.publicKey }
             );
@@ -212,10 +206,10 @@ This is an automated message from the University Booking System.
             console.log(`📧 Sending cancellation notification to ${email} via EmailJS...`);
             
             const templateParams = {
-                email: email,                      // Required: recipient email
-                recipient_name: name,              // Name of recipient (student or lecturer)
-                student_name: studentName || name, // Student's name
-                lecturer_name: lecturerName || 'Lecturer', // Lecturer's name
+                email: email,
+                recipient_name: name,
+                student_name: studentName || name,
+                lecturer_name: lecturerName || 'Lecturer',
                 appointment_date: appointmentDate,
                 appointment_time: appointmentTime,
                 cancellation_reason: reason || ''
@@ -246,13 +240,13 @@ This is an automated message from the University Booking System.
             console.log(`📧 Sending appointment reminder to ${email} via EmailJS...`);
             
             const templateParams = {
-                email: email,                    // Required: recipient email
-                recipient_name: recipientName,  // Name of recipient
-                reminder_timing: reminderTiming, // Flexible timing message
+                email: email,
+                recipient_name: recipientName,
+                reminder_timing: reminderTiming,
                 appointment_date: appointmentDate,
                 appointment_time: appointmentTime,
                 other_party_name: otherPartyName,
-                purpose: purpose                 // Simple purpose field
+                purpose: purpose
             };
             
             console.log('📤 Template params:', templateParams);
@@ -276,14 +270,12 @@ This is an automated message from the University Booking System.
         }
     }
 
-    // NEW EMAIL TEMPLATES - Following lecturer approved appointment style
-
     async sendLecturerRejectedAppointment(studentEmail, studentName, lecturerName, appointmentDate, appointmentTime, rejectionReason = '') {
         try {
             console.log(`📧 Sending lecturer rejection notification to ${studentEmail} via EmailJS...`);
             
             const templateParams = {
-                email: studentEmail,             // Required: recipient email
+                email: studentEmail,
                 student_name: studentName,
                 lecturer_name: lecturerName,
                 appointment_date: appointmentDate,

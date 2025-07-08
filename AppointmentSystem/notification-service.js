@@ -5,7 +5,6 @@ class NotificationService {
     this.userType = null;
     this.db = null;
     this.initialized = false;
-    // Initialize EmailService for dual notifications
     this.emailService = null;
   }
 
@@ -13,7 +12,6 @@ class NotificationService {
     this.db = db;
     this.initialized = true;
     
-    // Initialize EmailService
     if (typeof EmailService !== 'undefined') {
       this.emailService = new EmailService();
       console.log('📧 EmailService initialized in NotificationService');
@@ -39,7 +37,6 @@ class NotificationService {
     if (!this.currentUser || !this.db) return;
     
     try {
-      // Import Firebase functions dynamically
       const { collection, query, where, orderBy, getDocs, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
       
       const notificationsRef = collection(this.db, 'notifications');
@@ -64,7 +61,6 @@ class NotificationService {
       this.updateUI();
     } catch (error) {
       console.error('Error loading notifications:', error);
-      // Fallback to empty array
       this.notifications = [];
       this.updateUI();
     }
@@ -74,7 +70,6 @@ class NotificationService {
     if (!this.currentUser || !this.db) return;
     
     try {
-      // Import Firebase functions dynamically
       const { collection, addDoc, updateDoc, deleteDoc, doc } = await import("https://www.gstatic.com/firebasejs/11.9.1/firebase-firestore.js");
       
       // For now, we'll just update the UI since notifications are loaded from Firebase
@@ -102,7 +97,6 @@ class NotificationService {
       
       const docRef = await addDoc(collection(this.db, 'notifications'), newNotification);
       
-      // Add to local array with the document ID
       this.notifications.unshift({
         id: docRef.id,
         ...newNotification,
@@ -115,7 +109,6 @@ class NotificationService {
     }
   }
 
-  // STUDENT NOTIFICATIONS
   async addStudentBookedAppointment(data) {
     await this.addNotification({
       type: 'student_booked_appointment',
@@ -166,7 +159,6 @@ class NotificationService {
     });
   }
 
-  // LECTURER NOTIFICATIONS
   async addStudentBookedSlot(data) {
     await this.addNotification({
       type: 'student_booked_slot',
@@ -524,7 +516,6 @@ class NotificationService {
       
       await deleteDoc(doc(this.db, 'notifications', notificationId));
       
-      // Remove from local array
       this.notifications = this.notifications.filter(n => n.id !== notificationId);
       this.updateUI();
     } catch (error) {
@@ -624,7 +615,6 @@ class NotificationService {
     console.log('🔍 NotificationService - Dropdown found:', notificationDropdown);
     
     if (notificationBtn && notificationDropdown) {
-      // Remove any existing event listeners to prevent duplicates
       const newBtn = notificationBtn.cloneNode(true);
       notificationBtn.parentNode.replaceChild(newBtn, notificationBtn);
       
@@ -655,7 +645,6 @@ class NotificationService {
   }
 
   setupEventListeners() {
-    // Set up event listeners for notification actions
     document.addEventListener('click', (e) => {
       if (e.target.classList.contains('mark-read')) {
         const notificationId = e.target.closest('.notification-item').dataset.id;
@@ -668,7 +657,6 @@ class NotificationService {
   }
 }
 
-// Create global instance only if it doesn't exist
 if (!window.NotificationService) {
   window.NotificationService = new NotificationService();
   console.log('✅ NotificationService created');

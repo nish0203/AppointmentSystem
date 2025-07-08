@@ -9,8 +9,6 @@ document.getElementById('search-btn').addEventListener('click', function() {
     }
   });
   
-// Your existing search lecturer script...
-
 // Collapsible functionality
 document.querySelectorAll('.collapsible h3').forEach(h3 => {
   h3.addEventListener('click', function() {
@@ -32,28 +30,22 @@ const cancelButtons = document.querySelectorAll('.cancel-btn');
 
 bookButtons.forEach((btn, index) => {
   btn.addEventListener('click', () => {
-    // Hide all cancel buttons first
     cancelButtons.forEach(c => c.style.display = 'none');
-
-    // Show only the corresponding cancel button
     cancelButtons[index].style.display = 'inline-block';
   });
 });
 
 cancelButtons.forEach((cancelBtn, index) => {
   cancelBtn.addEventListener('click', () => {
-    // Hide this cancel button
     cancelBtn.style.display = 'none';
   });
 });
 
 function bookTime(slot) {
-// First hide all cancel buttons
 document.getElementById('cancel-8am-10am').style.display = 'none';
     document.getElementById('cancel-10am-12pm').style.display = 'none';
     document.getElementById('cancel-4pm-6pm').style.display = 'none';
 
-// Then show only the selected cancel button
 var cancelButton = document.getElementById('cancel-' + slot);
 if (cancelButton) {
   cancelButton.style.display = 'inline-block';
@@ -63,7 +55,6 @@ if (cancelButton) {
 }
 
 function cancelTime(slot) {
-// Hide the cancel button for that slot
 var cancelButton = document.getElementById('cancel-' + slot);
 if (cancelButton) {
   cancelButton.style.display = 'none';
@@ -83,7 +74,6 @@ dateFormat: "Y-m-d"
 
 function submitFeedback() {
   const text = document.getElementById('feedbackText').value;
-          // Show success notification instead of alert
         if (typeof showNotification === 'function') {
           showNotification('Thank you! Feedback submitted successfully.', 'success');
         } else {
