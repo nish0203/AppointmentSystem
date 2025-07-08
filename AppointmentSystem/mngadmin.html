@@ -703,10 +703,10 @@
         const snapshot = await getDocs(collection(db, 'admins'));
         allAdmins = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         
-        // Sort by role (super admin first) then by name
+        // Sort by role (super admin first) then by admin ID
         allAdmins.sort((a, b) => {
           if (a.isSuper !== b.isSuper) return (b.isSuper ? 1 : 0) - (a.isSuper ? 1 : 0);
-          return (a.name || '').localeCompare(b.name || '');
+          return (a.id || '').localeCompare(b.id || '');
         });
 
         updateStatistics();
