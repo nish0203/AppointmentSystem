@@ -721,6 +721,20 @@
           <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Additional Notes:</label>
           <textarea id="request-notes" rows="2" style="width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-family: inherit; resize: vertical;" placeholder="Any additional information or special requirements..."></textarea>
         </div>
+        
+        <!-- Document Upload Section -->
+        <div style="margin-bottom: 20px;">
+          <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #374151;">Supporting Documents (Optional):</label>
+          <div style="border: 2px dashed #d1d5db; border-radius: 8px; padding: 16px; text-align: center; background: #f9fafb;">
+            <input type="file" id="request-documents" multiple accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png" style="display: none;" onchange="handleRequestDocumentUpload(event)">
+            <div onclick="document.getElementById('request-documents').click()" style="cursor: pointer;">
+              <i class="fa fa-cloud-upload" style="font-size: 2rem; color: #6b7280; margin-bottom: 8px;"></i>
+              <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">Click to upload documents</p>
+              <p style="margin: 4px 0 0 0; color: #9ca3af; font-size: 0.8rem;">Supports: PDF, DOC, DOCX, TXT, JPG, PNG (Max 5MB each)</p>
+            </div>
+          </div>
+          <div id="request-documents-list" style="margin-top: 12px;"></div>
+        </div>
         <div style="display: flex; gap: 12px; justify-content: flex-end;">
           <button type="button" onclick="closeRequestSlotModal()" style="background: #6b7280; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">
             Cancel
@@ -1012,8 +1026,65 @@
       document.getElementById('success-modal').style.display = 'none';
     };
 
+    // Document handling for slot requests
+    let requestDocuments = [];
+
+    window.handleRequestDocumentUpload = function(event) {
+      const files = Array.from(event.target.files);
+      
+      // Validate file size (5MB per file)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      for (const file of files) {
+        if (file.size > maxSize) {
+          showErrorModal('File Too Large', `${file.name} is larger than 5MB. Please select smaller files.`);
+          event.target.value = ''; // Clear the input
+          return;
+        }
+      }
+      
+      // Add new files to the list
+      requestDocuments = [...requestDocuments, ...files];
+      
+      // Update the display
+      updateRequestDocumentsList();
+      
+      // Clear the file input for future uploads
+      event.target.value = '';
+    };
+
+    function updateRequestDocumentsList() {
+      const container = document.getElementById('request-documents-list');
+      
+      if (requestDocuments.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+      
+      container.innerHTML = requestDocuments.map((file, index) => `
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #f3f4f6; border-radius: 6px; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <i class="fa fa-file" style="color: #6b7280;"></i>
+            <span style="font-size: 0.9rem; color: #374151;">${file.name}</span>
+            <span style="font-size: 0.8rem; color: #6b7280;">(${(file.size / 1024 / 1024).toFixed(2)} MB)</span>
+          </div>
+          <button type="button" onclick="removeRequestDocument(${index})" style="background: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+      `).join('');
+    }
+
+    window.removeRequestDocument = function(index) {
+      requestDocuments.splice(index, 1);
+      updateRequestDocumentsList();
+    };
+
     // Request slot modal functions
     window.openRequestSlotModal = function() {
+      // Reset documents when opening modal
+      requestDocuments = [];
+      updateRequestDocumentsList();
+      
       // Set minimum date to tomorrow
       const tomorrow = new Date();
       tomorrow.setDate(tomorrow.getDate() + 1);
@@ -1026,6 +1097,8 @@
     window.closeRequestSlotModal = function() {
       document.getElementById('request-slot-modal').style.display = 'none';
       document.getElementById('request-slot-form').reset();
+      requestDocuments = [];
+      updateRequestDocumentsList();
     };
 
     // Handle request slot form submission
@@ -1092,6 +1165,34 @@
           return;
         }
 
+        submitBtn.textContent = 'Uploading documents...';
+
+        // Upload documents to Firebase Storage if any
+        let documentUrls = [];
+        if (requestDocuments.length > 0) {
+          for (const file of requestDocuments) {
+            try {
+              const fileName = `slot_request_${Date.now()}_${file.name}`;
+              const storageRef = ref(storage, `slot_requests/${studentEmail}/${fileName}`);
+              const snapshot = await uploadBytes(storageRef, file);
+              const downloadURL = await getDownloadURL(snapshot.ref);
+              
+              documentUrls.push({
+                name: file.name,
+                url: downloadURL,
+                type: file.type,
+                size: file.size
+              });
+            } catch (uploadError) {
+              console.error(`Failed to upload ${file.name}:`, uploadError);
+              showErrorModal('Upload Failed', `Failed to upload ${file.name}. Please try again.`);
+              submitBtn.textContent = originalText;
+              submitBtn.disabled = false;
+              return;
+            }
+          }
+        }
+
         submitBtn.textContent = 'Sending Request...';
 
         // Create slot request
@@ -1106,6 +1207,7 @@
           endTime: endTime,
           purpose: purpose,
           notes: notes,
+          documents: documentUrls,
           status: 'pending',
           requestedAt: new Date().toISOString()
         };

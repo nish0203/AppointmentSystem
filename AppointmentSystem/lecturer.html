@@ -1235,6 +1235,23 @@
               <p style="margin: 4px 0; color: #64748b;">${request.notes}</p>
             </div>
           ` : ''}
+          ${request.documents && request.documents.length > 0 ? `
+            <div style="margin-bottom: 12px;">
+              <h4 style="margin: 0 0 8px 0; color: #374151;">Supporting Documents</h4>
+              <div style="display: flex; flex-direction: column; gap: 8px;">
+                ${request.documents.map(doc => `
+                  <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 6px;">
+                    <i class="fa fa-file" style="color: #6b7280;"></i>
+                    <span style="flex: 1; font-size: 0.9rem; color: #374151;">${doc.name}</span>
+                    <span style="font-size: 0.8rem; color: #6b7280;">(${(doc.size / 1024 / 1024).toFixed(2)} MB)</span>
+                    <a href="${doc.url}" target="_blank" style="background: #3b82f6; color: white; border: none; padding: 4px 8px; border-radius: 4px; text-decoration: none; font-size: 0.8rem;">
+                      <i class="fa fa-download"></i> View
+                    </a>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          ` : ''}
           <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #e2e8f0;">
             <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">
               <i class="fa fa-clock"></i> Requested on ${formattedDate}
@@ -1279,6 +1296,7 @@
           endTime: currentRequest.endTime,
           purpose: currentRequest.purpose,
           notes: currentRequest.notes,
+          documents: currentRequest.documents || [],
           status: 'approved',
           bookedAt: new Date().toISOString()
         };
