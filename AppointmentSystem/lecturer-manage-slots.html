@@ -1155,6 +1155,14 @@
           // Delete the appointment
           await deleteDoc(doc(db, 'appointments', appointmentId));
           
+          // Notify student of cancellation
+          if (window.NotificationService) {
+            await window.NotificationService.addAppointmentCancelled({
+              lecturerName: appointmentData.lecturerName || 'Lecturer',
+              date: appointmentData.date,
+              time: `${appointmentData.startTime} - ${appointmentData.endTime}`
+            });
+          }
         } else if (requestType === 'reschedule') {
           // For reschedule, we'll mark the appointment as needing rescheduling
           // In a real system, you might want to show available slots to the lecturer
@@ -1162,6 +1170,15 @@
             status: 'rescheduling',
             rescheduleRequested: true
           });
+          
+          // Notify student of approval (could use a reschedule notification if needed)
+          if (window.NotificationService) {
+            await window.NotificationService.addAppointmentApproved({
+              lecturerName: appointmentData.lecturerName || 'Lecturer',
+              date: appointmentData.date,
+              time: `${appointmentData.startTime} - ${appointmentData.endTime}`
+            });
+          }
         }
         
         // Update the request status
@@ -1187,6 +1204,15 @@
           rejectedAt: new Date().toISOString()
         });
         
+        // Notify student of rejection
+        if (window.NotificationService) {
+          // You may need to fetch appointment data here if needed for message
+          await window.NotificationService.addAppointmentRejected({
+            lecturerName: 'Lecturer', // Replace with actual lecturer name if available
+            date: 'DATE', // Replace with actual date if available
+            time: 'TIME' // Replace with actual time if available
+          });
+        }
         showSuccessModal('Success!', 'Request rejected.');
         await loadStudentRequests(currentLecturerEmail);
       } catch (error) {
@@ -1337,6 +1363,15 @@
           await deleteDoc(doc(db, 'appointment_slots', appointmentData.slotId));
         }
         
+        // Notify student of cancellation
+        if (window.NotificationService) {
+          await window.NotificationService.addAppointmentCancelled({
+            lecturerName: appointmentData.lecturerName || 'Lecturer',
+            date: appointmentData.date,
+            time: `${appointmentData.startTime} - ${appointmentData.endTime}`
+          });
+        }
+        
         closeCancelAppointmentModal();
         showSuccessModal('Appointment Cancelled', 'The appointment has been cancelled and the student has been notified.');
         await loadAppointments(currentLecturerEmail);
@@ -1346,6 +1381,66 @@
       }
     });
 
+    // Approve appointment
+    async function approveAppointment(appointmentId) {
+      try {
+        // Get appointment data first
+        const appointmentDoc = await getDoc(doc(db, 'appointments', appointmentId));
+        const appointmentData = appointmentDoc.data();
+        
+        await updateDoc(doc(db, 'appointments', appointmentId), {
+          status: 'approved',
+          approvedAt: new Date().toISOString()
+        });
+        
+        // Send notification to student
+        if (window.NotificationService && appointmentData) {
+          // Create notification for the student
+          const studentNotificationService = new window.NotificationService.constructor();
+          studentNotificationService.setUser(appointmentData.studentEmail, 'student');
+          await studentNotificationService.addAppointmentApproved({
+            lecturerName: appointmentData.lecturerName || 'Lecturer',
+            date: appointmentData.date,
+            time: `${appointmentData.startTime} - ${appointmentData.endTime}`
+          });
+        }
+        
+        // Reload appointments
+        await loadAppointments(currentLecturerEmail);
+        showSuccessModal('Approved!', 'Appointment approved successfully!');
+      } catch (error) {
+        console.error('Error approving appointment:', error);
+        showSuccessModal('Error', 'Failed to approve appointment. Please try again.');
+      }
+    }
+
+    // Reject appointment
+    async function rejectAppointment(appointmentId) {
+      showRejectConfirmModal(appointmentId);
+    }
+
+    // Mark appointment as done
+    async function markAppointmentDone(appointmentId) {
+      try {
+        await updateDoc(doc(db, 'appointments', appointmentId), {
+          status: 'done',
+          completedAt: new Date().toISOString()
+        });
+        
+        await loadAppointments(currentLecturerEmail);
+        showSuccessModal('Completed!', 'Appointment marked as completed successfully!');
+      } catch (error) {
+        console.error('Error marking appointment as done:', error);
+        showSuccessModal('Error', 'Failed to mark appointment as done. Please try again.');
+      }
+    }
+
+    // View appointment details (for approved appointments)
+    function viewAppointmentDetails(appointmentId) {
+      // You can implement a detailed view modal here if needed
+      console.log('Viewing appointment details for:', appointmentId);
+    }
+
     // Make student request functions global
     window.approveStudentRequest = approveStudentRequest;
     window.rejectStudentRequest = rejectStudentRequest;
@@ -1354,6 +1449,14 @@
     window.closeSuccessModal = closeSuccessModal;
     window.showCancelAppointmentModal = showCancelAppointmentModal;
     window.closeCancelAppointmentModal = closeCancelAppointmentModal;
+    
+    // Make appointment functions global
+    window.approveAppointment = approveAppointment;
+    window.rejectAppointment = rejectAppointment;
+    window.markAppointmentDone = markAppointmentDone;
+    window.viewAppointmentDetails = viewAppointmentDetails;
+    window.debugDatabase = debugDatabase;
+    window.reloadAppointments = reloadAppointments;
 
     // Render appointments
     function renderAppointments(appointments) {

@@ -2451,31 +2451,9 @@
          const date = currentInquiry.createdAt?.toDate?.() || new Date(currentInquiry.createdAt) || new Date();
          
          document.getElementById('inquiry-details').innerHTML = `
-           <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
-             <div><strong>Inquiry ID:</strong> ${inquiryIdDisplay}</div>
-             <div><strong>Status:</strong> ${(currentInquiry.status || 'open').toUpperCase()}</div>
-             <div><strong>Priority:</strong> ${(currentInquiry.priority || 'low').toUpperCase()}</div>
-             <div><strong>User:</strong> ${currentInquiry.userName || 'Unknown'} (${currentInquiry.userType || 'Unknown'})</div>
-             <div><strong>Email:</strong> ${currentInquiry.userEmail}</div>
-             <div><strong>Category:</strong> ${currentInquiry.category || 'Other'}</div>
+           <div style="margin-bottom: 1.5rem;">
+             ${generateConversationThreadStudent(currentInquiry)}
            </div>
-           <div style="margin-bottom: 1rem;">
-             <strong>Subject:</strong> ${currentInquiry.subject}
-           </div>
-           <div style="margin-bottom: 1rem;">
-             <strong>Description:</strong>
-             <div style="background: white; padding: 1rem; border-radius: 4px; border: 1px solid #e2e8f0; margin-top: 0.5rem;">
-               ${currentInquiry.description}
-             </div>
-           </div>
-           ${currentInquiry.attachmentUrl ? `
-             <div>
-               <strong>Attachment:</strong>
-               <a href="${currentInquiry.attachmentUrl}" target="_blank" style="color: #3b82f6; text-decoration: none; margin-left: 0.5rem;">
-                 <i class="fa fa-paperclip"></i> ${currentInquiry.attachmentName || 'View Attachment'}
-               </a>
-             </div>
-           ` : ''}
          `;
 
          document.getElementById('inquiry-response-modal').style.display = 'flex';
@@ -2613,6 +2591,88 @@
            submitBtn.innerHTML = originalText;
          }
        });
+
+       // ... add this function near the top-level script ...
+       function generateConversationThreadStudent(inquiry) {
+         let conversationHtml = '';
+         // Get all messages from the conversation thread
+         const messages = [];
+         // Add initial admin response if exists
+         if (inquiry.response) {
+           messages.push({
+             type: 'admin',
+             message: inquiry.response,
+             date: inquiry.responseDate?.toDate?.() || new Date(inquiry.responseDate) || null,
+             author: inquiry.respondedBy || 'Admin'
+           });
+         }
+         // Add user response if exists and NOT already in conversation array
+         let userResponseAdded = false;
+         if (inquiry.conversation && Array.isArray(inquiry.conversation)) {
+           inquiry.conversation.forEach(msg => {
+             if ((msg.type === 'user' || (!msg.type && !msg.isAdmin)) && (msg.message === inquiry.userResponse)) {
+               userResponseAdded = true;
+             }
+           });
+         }
+         if (inquiry.userResponse && !userResponseAdded) {
+           messages.push({
+             type: 'user',
+             message: inquiry.userResponse,
+             date: inquiry.userResponseDate?.toDate?.() || new Date(inquiry.userResponseDate) || null,
+             author: 'You'
+           });
+         }
+         // Add conversation thread if exists (new structure)
+         if (inquiry.conversation && Array.isArray(inquiry.conversation)) {
+           inquiry.conversation.forEach(msg => {
+             messages.push({
+               type: msg.type || (msg.isAdmin ? 'admin' : 'user'),
+               message: msg.message || msg.response,
+               date: msg.timestamp?.toDate ? msg.timestamp.toDate() : (msg.timestamp instanceof Date ? msg.timestamp : new Date(msg.timestamp || Date.now())),
+               author: msg.isAdmin || msg.type === 'admin' ? (msg.author || 'Admin') : 'You'
+             });
+           });
+         }
+         // Sort messages by date
+         messages.sort((a, b) => {
+           const dateA = a.date || new Date(0);
+           const dateB = b.date || new Date(0);
+           return dateA - dateB;
+         });
+         // Generate HTML for each message
+         messages.forEach((msg, index) => {
+           const isAdmin = msg.type === 'admin';
+           const sectionClass = isAdmin ? 'response-section' : 'user-response-section';
+           const headerClass = isAdmin ? 'response-header' : 'user-response-header';
+           const contentClass = isAdmin ? 'response-content' : 'user-response-content';
+           const icon = isAdmin ? 'fa-user-shield' : 'fa-user';
+           const formattedDate = msg.date ? formatDate(msg.date) : '';
+           conversationHtml += `
+             <div class="${sectionClass}">
+               <div class="${headerClass}">
+                 <i class="fas ${icon}"></i>
+                 ${msg.author}
+                 ${formattedDate ? `(${formattedDate})` : ''}
+               </div>
+               <div class="${contentClass}">${msg.message}</div>
+             </div>
+           `;
+         });
+         return conversationHtml;
+       }
+
+       // ... add near the top of the script, before generateConversationThreadStudent ...
+       function formatDate(date) {
+         if (!date) return '';
+         const d = new Date(date);
+         const year = d.getFullYear();
+         const month = String(d.getMonth() + 1).padStart(2, '0');
+         const day = String(d.getDate()).padStart(2, '0');
+         const hours = String(d.getHours()).padStart(2, '0');
+         const minutes = String(d.getMinutes()).padStart(2, '0');
+         return `${year}-${month}-${day} ${hours}:${minutes}`;
+       }
     </script>
     <script src="notification-service.js"></script>
   </body>

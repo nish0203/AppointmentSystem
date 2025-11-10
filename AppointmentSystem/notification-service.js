@@ -103,12 +103,12 @@ class NotificationService {
     }
   }
 
-  // Appointment-related notifications
+  // STUDENT NOTIFICATIONS
   async addAppointmentBooked(data) {
     await this.addNotification({
       type: 'appointment_booked',
       title: 'Appointment Booked',
-      message: `Your appointment with ${data.lecturerName} has been booked for ${data.date} at ${data.time}`,
+      message: `You have successfully booked an appointment with ${data.lecturerName} on ${data.date} at ${data.time}.`,
       icon: 'fa-calendar-check',
       category: 'Appointments'
     });
@@ -118,7 +118,7 @@ class NotificationService {
     await this.addNotification({
       type: 'appointment_approved',
       title: 'Appointment Approved',
-      message: `Your appointment with ${data.lecturerName} on ${data.date} has been approved`,
+      message: `${data.lecturerName} has approved your appointment slot on ${data.date} at ${data.time}.`,
       icon: 'fa-check-circle',
       category: 'Appointments'
     });
@@ -128,7 +128,7 @@ class NotificationService {
     await this.addNotification({
       type: 'appointment_rejected',
       title: 'Appointment Rejected',
-      message: `Your appointment request with ${data.lecturerName} has been rejected. Reason: ${data.reason || 'Not specified'}`,
+      message: `${data.lecturerName} has rejected your appointment slot on ${data.date} at ${data.time}.`,
       icon: 'fa-times-circle',
       category: 'Appointments'
     });
@@ -138,7 +138,7 @@ class NotificationService {
     await this.addNotification({
       type: 'appointment_cancelled',
       title: 'Appointment Cancelled',
-      message: `Your appointment with ${data.lecturerName} on ${data.date} has been cancelled`,
+      message: `${data.lecturerName} has cancelled your appointment slot on ${data.date} at ${data.time}.`,
       icon: 'fa-calendar-times',
       category: 'Appointments'
     });
@@ -154,13 +154,33 @@ class NotificationService {
     });
   }
 
-  // For lecturers
+  // LECTURER NOTIFICATIONS
   async addSlotBookedAlert(data) {
     await this.addNotification({
       type: 'slot_booked',
-      title: 'New Appointment Request',
-      message: `${data.studentName} has booked your slot on ${data.date} at ${data.time}`,
+      title: 'Slot Booked',
+      message: `${data.studentName} has booked your slot on ${data.date} at ${data.time}.`,
       icon: 'fa-user-clock',
+      category: 'Bookings'
+    });
+  }
+
+  async addSlotRequestAlert(data) {
+    await this.addNotification({
+      type: 'slot_request',
+      title: 'Slot Request',
+      message: `${data.studentName} has requested to book a slot on ${data.date} at ${data.time}.`,
+      icon: 'fa-user-plus',
+      category: 'Bookings'
+    });
+  }
+
+  async addSlotRescheduleAlert(data) {
+    await this.addNotification({
+      type: 'slot_reschedule',
+      title: 'Slot Reschedule Request',
+      message: `${data.studentName} has requested to reschedule a slot to ${data.date} at ${data.time}.`,
+      icon: 'fa-user-edit',
       category: 'Bookings'
     });
   }
@@ -318,7 +338,11 @@ class NotificationService {
       return;
     }
 
-    container.innerHTML = this.notifications.map(notification => `
+    console.log('NotificationService userType:', this.userType);
+    // Force lecturer layout for testing
+    const isLecturer = true;
+    container.innerHTML = this.notifications.map(notification => {
+      return `
       <div class="notification-item ${notification.read ? 'read' : 'unread'}" data-id="${notification.id}" style="display: flex; align-items: flex-start; gap: 12px;">
         <div class="notification-icon" style="flex-shrink: 0;">
           <i class="fa ${notification.icon || 'fa-bell'}" style="font-size: 1.2em;"></i>
@@ -326,7 +350,7 @@ class NotificationService {
         <div class="notification-content">
           <p class="notification-message" style="margin-top: 0; margin-bottom: 6px; line-height: 1.2;">${notification.message}</p>
           <div class="notification-time" style="margin-bottom: 8px; font-size: 0.92em;">${this.formatTime(notification.timestamp)}</div>
-          <div class="notification-actions" style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
+          <div class="notification-actions" style="display: flex; ${isLecturer ? 'flex-direction: column; align-items: flex-start; gap: 6px; width: 100%;' : 'justify-content: flex-end; gap: 8px;'} margin-top: 8px;">
             <button class="mark-read-btn" onclick="window.NotificationService.markAsRead('${notification.id}')">
               ${notification.read ? 'Read' : 'Mark as read'}
             </button>
@@ -336,7 +360,8 @@ class NotificationService {
           </div>
         </div>
       </div>
-    `).join('');
+      `;
+    }).join('');
   }
 
   formatTime(timestamp) {
